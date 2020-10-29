@@ -1,23 +1,39 @@
-import React from 'react';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Switch,
+} from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignUpPage";
 
-import './App.css';
+import "./App.css";
 
 function App() {
   return (
     <div className="App">
-      <Navbar className="App-header" expand="lg">
-        <Navbar.Brand className="white-text" href="#home">❀ Flower Power ❀</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto">
-            <Nav.Link className="white-text spacing" href="#home">About</Nav.Link>
-            <Nav.Link className="white-text spacing" href="#link">Sign up</Nav.Link>
-            <Nav.Link className="white-text spacing" href="#link">Log in</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
+      <Router>
+        <Switch>
+          <Route path="/" exact>
+            <HomePage />
+          </Route>
+          <Route path="/login" exact>
+            <LoginPage />
+          </Route>
+          <Route path="/signup" exact>
+            <SignupPage />
+          </Route>
+          <Route path="/verify" exact>
+            // TODO: Verification page for app
+          </Route>
+          <Route path="/about" exact>
+            // TODO: About page for app
+          </Route>
+          <Redirect to="/" />
+        </Switch>
+      </Router>
     </div>
   );
 }

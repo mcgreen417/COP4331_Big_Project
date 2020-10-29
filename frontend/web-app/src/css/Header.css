@@ -1,0 +1,18 @@
+.Navbar-header {
+  background-color: #a5dfb2;
+  width: auto;
+  height: auto;
+}
+
+.white-text {
+  font-family: Roboto;
+  font-style: italic;
+  font-weight: 300;
+  color: white !important;
+  font-size: 36px !important;
+  line-height: 42px !important;
+}
+
+.spacing {
+  padding-right: 35px !important;
+}
