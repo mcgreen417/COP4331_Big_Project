@@ -5,9 +5,10 @@ import {
   Redirect,
   Switch,
 } from "react-router-dom";
-import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignUpPage";
+import HomePage from "./pages/HomePage";
+import { ProtectedRoute } from "./components/protected.route";
 
 import "./App.css";
 
@@ -16,21 +17,15 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/" exact>
-            <HomePage />
-          </Route>
-          <Route path="/login" exact>
-            <LoginPage />
-          </Route>
-          <Route path="/signup" exact>
-            <SignupPage />
-          </Route>
+          <Route path="/" exact component={LoginPage} />
+          <Route path="/signup" exact component={SignupPage} />
           <Route path="/verify" exact>
-            // TODO: Verification page for app
+            {/* // TODO: Verification page for app */}
           </Route>
           <Route path="/about" exact>
-            // TODO: About page for app
+            {/* // TODO: About page for app */}
           </Route>
+          <ProtectedRoute exact path="/home" component={HomePage} />
           <Redirect to="/" />
         </Switch>
       </Router>
