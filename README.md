@@ -8,3 +8,6 @@ Michaela Green, Aden Carver, Donald Poland, Hung Nguyen, Nolan Schafer, Scott Mc
 10/12/20 - 11/30/20 (roughly 6 weeks)
 
 ## Project Functions
+
+## Live Site Links
+All files on the main branch for the website can be viewed [here](https://myflowerpower.net).
