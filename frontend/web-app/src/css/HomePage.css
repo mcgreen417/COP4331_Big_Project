@@ -1,0 +1,8 @@
+.middle-line {
+  position: fixed;
+  height: 60%;
+  left: 50%;
+  top: 25%;
+
+  border: 1px solid #816868;
+}
