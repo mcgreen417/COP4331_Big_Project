@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -13,6 +13,10 @@ import { ProtectedRoute } from "./components/protected.route";
 import "./App.css";
 
 function App() {
+  useEffect(() => {
+    document.title = "Flower Power";
+  });
+
   return (
     <div className="App">
       <Router>
