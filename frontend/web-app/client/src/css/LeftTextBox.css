@@ -2,8 +2,10 @@
   width: 40%;
   text-align: center;
   letter-spacing: 0.5px;
-  padding-top: 5%;
+  padding-top: 8%;
   padding-left: 10%;
+  display: inline;
+  float: left;
 }
 
 .header-text {
@@ -35,4 +37,9 @@
 
 .bold {
   font-weight: bold;
+}
+
+.scrollable {
+  max-height: 40vh;
+  overflow-y: scroll;
 }
