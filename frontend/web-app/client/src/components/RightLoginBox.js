@@ -1,9 +1,34 @@
 import React from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import {Form, Button} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import "../css/RightLoginBox.css";
 
-function RightLoginBox() {
+class RightLoginBox extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      response: '',
+      username: '',
+      password: '',
+    };
+  }
+
+  login = async e => {
+    e.preventDefault();
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({user: this.state.username, pass: this.state.password})
+    });
+    const body = await response.text();
+
+    console.log(body);
+  }
+
+  render() {
   return (
     <div className="right-text-box">
       <div className="header-text">Welcome to Flower Power</div>
@@ -17,6 +42,8 @@ function RightLoginBox() {
             className="username-field"
             type="username"
             placeholder="Username"
+            value={this.state.username}
+            onChange={e => this.setState({username: e.target.value})}
           />
         </Form.Group>
         <Form.Group controlId="formBasicPassword">
@@ -24,25 +51,28 @@ function RightLoginBox() {
             className="password-field"
             type="password"
             placeholder="Password"
+            value={this.state.password}
+            onChange={e => this.setState({password: e.target.value})}
           />
         </Form.Group>
-        <Button className="login-button" variant="primary" type="submit">
+        <Button className="login-button" variant="primary" type="submit" onClick={this.login}>
           LOG IN
         </Button>
       </Form>
       <div>
         <p className="sign-up-text">
           Don't have an account?{" "}
-          <a className="signup-link" href="">
+          <Link to="/signup" className="signup-link">
             Sign up here.
-          </a>
+          </Link>
         </p>
-        <a className="signup-link" href="">
+        <Link to="/forgot-password" className="signup-link">
           Forgot your password?
-        </a>
+        </Link>
       </div>
     </div>
   );
+  }
 }
 
 export default RightLoginBox;
