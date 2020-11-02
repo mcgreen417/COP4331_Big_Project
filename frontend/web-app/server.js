@@ -1,6 +1,14 @@
 const express = require("express");
 const path = require("path");
 const bodyParser = require('body-parser');
+var AWS = require("aws-sdk");
+let awsConfig = {
+    "region": "us-east-2",
+    "endpoint": "http://dynamodb.us-east-2.amazonaws.com",
+    // Access Key of wizard
+    "accessKeyId": "AKIA53B2MINS4VX2KSEL", "secretAccessKey": "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"
+};
+AWS.config.update(awsConfig);
 
 const app = express();
 
@@ -10,8 +18,47 @@ const port = 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+// LOGIN API
 app.post('/api/login', (req, res) => {
-  res.send(`User is: ${req.body.user} and Password is ${req.body.pass}`);
+    
+    let documentClient = new AWS.DynamoDB.DocumentClient();
+
+    let searchUser = function () {
+        var params = {
+          TableName : "Users",
+          FilterExpression : "Username = :this_user AND Password = :this_pass",
+          ExpressionAttributeValues : {
+              ":this_user" : req.body.username,
+              ":this_pass" : req.body.password
+          }
+        };
+        
+        documentClient.scan(params, function(err, data) {
+
+          var uid = -1;
+          var mail = "";
+          var user = "";
+          var pass = "";
+          var error = "";
+
+          if (err) {
+              console.log(err);
+              var ret = { UserID:uid, Email:mail, Username:user, Password:pass, Error:"Login Failed" };
+              res.status(200).json(ret);
+          }
+          else {
+              data.Items.forEach(function(item) {
+                uid = item.UserID;
+                mail = item.Email;
+                user = item.Username;
+                pass = item.Password;
+                var ret = { UserID:uid, Email:mail, Username:user, Password:pass, Error:error };
+                res.status(200).json(ret);
+              });
+          }
+        });
+    }
+    searchUser();
 });
 
 // Serve static assets if production (aka EC2)
