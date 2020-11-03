@@ -12,6 +12,8 @@ AWS.config.getCredentials(function (err) {
     );
   }
 });
+const CognitoService = require("./cognito.service");
+const { validationResult } = require("express-validator");
 
 const app = express();
 const port = 5000;
@@ -25,56 +27,22 @@ AWS.config.update({
 });
 
 // LOGIN API
-// TODO: This likely needs to be refactored to include Cognito.
 app.post("/api/login", async (req, res) => {
-  let documentClient = new AWS.DynamoDB.DocumentClient();
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(422).json({ errors: result.array() });
+  }
 
-  let searchUser = function () {
-    var params = {
-      TableName: "Users",
-      FilterExpression: "Username = :this_user AND Password = :this_pass",
-      ExpressionAttributeValues: {
-        ":this_user": req.body.username,
-        ":this_pass": req.body.password,
-      },
-    };
-
-    documentClient.scan(params, function (err, data) {
-      var uid = -1;
-      var mail = "";
-      var user = "";
-      var pass = "";
-      var error = "";
-
-      if (err) {
-        console.log(err);
-        var ret = {
-          UserID: uid,
-          Email: mail,
-          Username: user,
-          Password: pass,
-          Error: "Login Failed",
-        };
-        res.status(200).json(ret);
-      } else {
-        data.Items.forEach(function (item) {
-          uid = item.UserID;
-          mail = item.Email;
-          user = item.Username;
-          pass = item.Password;
-          var ret = {
-            UserID: uid,
-            Email: mail,
-            Username: user,
-            Password: pass,
-            Error: error,
-          };
-          res.status(200).json(ret);
-        });
-      }
-    });
-  };
-  searchUser();
+  const { username, password } = req.body;
+  console.log(username, password);
+  const cognito = new CognitoService();
+  cognito.signInUser(username, password).then((success) => {
+    if (success) {
+      res.status(200).end();
+    } else {
+      res.status(500).end();
+    }
+  });
 });
 
 // Serve static assets if production (aka EC2)
