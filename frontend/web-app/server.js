@@ -45,6 +45,43 @@ app.post("/api/login", async (req, res) => {
   });
 });
 
+app.post("/api/signup", async (req, res) => {
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(422).json({ errors: result.array() });
+  }
+
+  const { username, password, email } = req.body;
+  let userAttr = [];
+  userAttr.push({ Name: "email", Value: email });
+
+  const cognito = new CognitoService();
+  cognito.signUpUser(username, password, userAttr).then((success) => {
+    if (success) {
+      res.status(200).end();
+    } else {
+      res.status(500).end();
+    }
+  });
+});
+
+app.post("/api/verify", async (req, res) => {
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    return res.status(422).json({ errors: result.array() });
+  }
+
+  const { username, code } = req.body;
+  const cognito = new CognitoService();
+  cognito.verifyAccount(username, code).then((success) => {
+    if (success) {
+      res.status(200).end();
+    } else {
+      res.status(500).end();
+    }
+  });
+});
+
 // Serve static assets if production (aka EC2)
 if (process.env.NODE_ENV === "production") {
   console.log("Running server in PRODUCTION mode");
