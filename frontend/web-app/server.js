@@ -25,6 +25,7 @@ AWS.config.update({
 });
 
 // LOGIN API
+// TODO: This likely needs to be refactored to include Cognito.
 app.post("/api/login", async (req, res) => {
   let documentClient = new AWS.DynamoDB.DocumentClient();
 

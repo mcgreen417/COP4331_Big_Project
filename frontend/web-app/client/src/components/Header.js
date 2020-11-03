@@ -8,8 +8,9 @@ function Header(props) {
   const links = props.default
     ? ["About", "Sign up", "Log in"]
     : ["Home", "Search", "Nursery", "Account"];
-  const generatedLinks = links.map((link) => (
+  const generatedLinks = links.map((link, idx) => (
     <Nav.Link
+      key={idx}
       className="white-text spacing"
       href={link.toLowerCase().split(" ").join("")}
     >

@@ -6,7 +6,6 @@ import {
   Switch,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignUpPage";
 import HomePage from "./pages/HomePage";
 import { ProtectedRoute } from "./components/protected.route";
 
@@ -22,7 +21,11 @@ function App() {
       <Router>
         <Switch>
           <Route path="/" exact component={LoginPage} />
-          <Route path="/signup" exact component={SignupPage} />
+          <Route
+            path="/signup"
+            exact
+            render={() => <LoginPage isSignUp={true} />}
+          />
           <Route path="/verify" exact>
             {/* // TODO: Verification page for app */}
           </Route>
