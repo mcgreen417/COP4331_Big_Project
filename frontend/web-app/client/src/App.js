@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import { ProtectedRoute } from "./components/protected.route";
 
 import "./App.css";
@@ -26,6 +27,7 @@ function App() {
             exact
             render={() => <LoginPage isSignUp={true} />}
           />
+          <Route path="/forgot-password" exact component={ForgotPasswordPage} />
           <Route path="/verify" exact>
             {/* // TODO: Verification page for app */}
           </Route>

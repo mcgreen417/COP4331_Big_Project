@@ -1,0 +1,52 @@
+.center-text-box {
+  margin: 0 auto;
+  width: 40%;
+  text-align: center;
+  letter-spacing: 0.5px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 80vh;
+  min-width: 10vh;
+}
+
+.username-field,
+.password-field {
+  text-align: center;
+  border: 1px solid #a5dfb2 !important;
+}
+
+.login-button {
+  width: 90%;
+  height: 45px;
+  border-radius: 5px;
+  background-color: #a5dfb2 !important;
+  margin-bottom: 10px;
+}
+
+.form-box {
+  padding-top: 6%;
+}
+
+.sub-text-right {
+  padding-top: 7%;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 200;
+  font-size: 1.4rem;
+  line-height: 1.4rem;
+  /* or 94% */
+
+  color: #816868 !important;
+}
+
+.signup-link,
+.signup-link:link:visited,
+.signup-link:hover {
+  color: green;
+}
+
+.sign-up-text {
+  margin-bottom: 5px;
+}
