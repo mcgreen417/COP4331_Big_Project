@@ -12,74 +12,19 @@ AWS.config.getCredentials(function (err) {
     );
   }
 });
-const CognitoService = require("./cognito.service");
-const { validationResult } = require("express-validator");
-
-const app = express();
-const port = 5000;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const App = require("./app");
+const AuthController = require("./controllers/auth.controller");
+const ProtectedController = require("./controllers/protected.controller");
 
 AWS.config.update({
   region: "us-east-2",
   endpoint: "http://dynamodb.us-east-2.amazonaws.com",
 });
 
-// LOGIN API
-app.post("/api/login", async (req, res) => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    return res.status(422).json({ errors: result.array() });
-  }
-
-  const { username, password } = req.body;
-  console.log(username, password);
-  const cognito = new CognitoService();
-  cognito.signInUser(username, password).then((success) => {
-    if (success) {
-      res.status(200).end();
-    } else {
-      res.status(500).end();
-    }
-  });
-});
-
-app.post("/api/signup", async (req, res) => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    return res.status(422).json({ errors: result.array() });
-  }
-
-  const { username, password, email } = req.body;
-  let userAttr = [];
-  userAttr.push({ Name: "email", Value: email });
-
-  const cognito = new CognitoService();
-  cognito.signUpUser(username, password, userAttr).then((success) => {
-    if (success) {
-      res.status(200).end();
-    } else {
-      res.status(500).end();
-    }
-  });
-});
-
-app.post("/api/verify", async (req, res) => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    return res.status(422).json({ errors: result.array() });
-  }
-
-  const { username, code } = req.body;
-  const cognito = new CognitoService();
-  cognito.verifyAccount(username, code).then((success) => {
-    if (success) {
-      res.status(200).end();
-    } else {
-      res.status(500).end();
-    }
-  });
+const app = new App({
+  port: 5000,
+  controllers: [new AuthController(), new ProtectedController()],
+  middleWares: [bodyParser.json(), bodyParser.urlencoded({ extended: true })],
 });
 
 // Serve static assets if production (aka EC2)
@@ -93,4 +38,4 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
+app.listen();
