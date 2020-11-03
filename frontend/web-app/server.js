@@ -78,6 +78,8 @@ app.post("/api/login", (req, res) => {
 
 // Serve static assets if production (aka EC2)
 if (process.env.NODE_ENV === "production") {
+  console.log("Running server in PRODUCTION mode");
+  console.log(`Only use the script: "npm run server" on production.`);
   app.use(express.static("client/build"));
 
   app.get("*", (req, res) => {
