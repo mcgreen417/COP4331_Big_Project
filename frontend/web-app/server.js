@@ -19,14 +19,14 @@ const port = 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-let DynamoDB = new AWS.DynamoDB({
+AWS.config.update({
   region: "us-east-2",
   endpoint: "http://dynamodb.us-east-2.amazonaws.com",
 });
 
 // LOGIN API
-app.post("/api/login", (req, res) => {
-  let documentClient = DynamoDB.DocumentClient();
+app.post("/api/login", async (req, res) => {
+  let documentClient = new AWS.DynamoDB.DocumentClient();
 
   let searchUser = function () {
     var params = {
