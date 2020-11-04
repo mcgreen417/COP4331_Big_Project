@@ -48,12 +48,11 @@ class AuthController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    console.log(req.body);
 
     const { username, password } = req.body;
     let cognitoService = new Cognito();
     cognitoService.signInUser(username, password).then((success) => {
-      success ? res.status(200).end() : res.status(400).end();
+      success[0] ? res.status(200).json(success[1]) : res.status(400).end();
     });
   };
 

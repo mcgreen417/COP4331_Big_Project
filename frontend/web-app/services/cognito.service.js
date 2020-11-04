@@ -44,11 +44,12 @@ class CognitoService {
 
     try {
       let data = await this.cognitoIdentity.initiateAuth(params).promise();
-      console.log(data);
-      return true;
+      console.log("Signed in to user:");
+      console.log(data["AuthenticationResult"]["AccessToken"]);
+      return [true, data["AuthenticationResult"]["AccessToken"]];
     } catch (error) {
       console.log(error);
-      return false;
+      return [false];
     }
   }
 

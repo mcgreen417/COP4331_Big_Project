@@ -4,6 +4,7 @@ import {
   Route,
   Redirect,
   Switch,
+  withRouter,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";

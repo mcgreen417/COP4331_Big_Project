@@ -1,7 +1,8 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import "../css/RightLoginBox.css";
+import Auth from "./Auth";
 
 class RightLoginBox extends React.Component {
   constructor(props) {
@@ -11,6 +12,7 @@ class RightLoginBox extends React.Component {
       username: "",
       password: "",
     };
+    console.log(this.props);
   }
 
   login = async (e) => {
@@ -27,10 +29,14 @@ class RightLoginBox extends React.Component {
       }),
     });
     const body = await response.text();
+    const sessionTkn = JSON.parse(body);
+    localStorage.jwt = sessionTkn;
+    // const { Session } = bodyJson;
 
     if (response.status === 200) {
       // TODO: Indicate successfully logged in
-      console.log("Logged in");
+      Auth.login(() => console.log("authenticated"));
+      this.props.history.push("/home");
     } else if (response.status === 400) {
       // TODO: Indicate not logged in
       console.log("Unsuccessful login");
@@ -93,4 +99,4 @@ class RightLoginBox extends React.Component {
   }
 }
 
-export default RightLoginBox;
+export default withRouter(RightLoginBox);
