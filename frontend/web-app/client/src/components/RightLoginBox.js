@@ -14,6 +14,7 @@ class RightLoginBox extends React.Component {
   }
 
   login = async (e) => {
+    console.log("Logging in");
     e.preventDefault();
     const response = await fetch("/api/login", {
       method: "POST",
@@ -27,7 +28,17 @@ class RightLoginBox extends React.Component {
     });
     const body = await response.text();
 
-    console.log(body);
+    if (response.status === 200) {
+      // TODO: Indicate successfully logged in
+      console.log("Logged in");
+    } else if (response.status === 400) {
+      // TODO: Indicate not logged in
+      console.log("Unsuccessful login");
+    } else {
+      console.log("Not logged in due to incorrect input");
+      const jsonBody = JSON.parse(body);
+      const { value, msg, param } = jsonBody.errors[0];
+    }
   };
 
   render() {

@@ -2,6 +2,10 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
 const AWS = require("aws-sdk");
+const App = require("./app");
+const AuthController = require("./controllers/auth.controller");
+const ProtectedController = require("./controllers/protected.controller");
+
 AWS.config.getCredentials(function (err) {
   if (err) {
     console.log("AWS Credentials not configured properly");
@@ -12,10 +16,6 @@ AWS.config.getCredentials(function (err) {
     );
   }
 });
-const App = require("./app");
-const AuthController = require("./controllers/auth.controller");
-const ProtectedController = require("./controllers/protected.controller");
-
 AWS.config.update({
   region: "us-east-2",
   endpoint: "http://dynamodb.us-east-2.amazonaws.com",

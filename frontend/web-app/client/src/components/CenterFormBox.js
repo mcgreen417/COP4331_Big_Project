@@ -8,9 +8,8 @@ class CenterFormBox extends React.Component {
     super(props);
 
     this.differentSubtexts = [
-      "To reset your password, please enter the username and e-mail address associated with your account.",
-      "A verification code has been sent to the e-mail address you used to create your account. Please type the code you received below to reset your password.",
-      "You may now change your password. Enter your new password below.",
+      "To reset your password, please enter the username associated with your account.",
+      "A verification code has been sent to the e-mail address you used to create your account. Please type the code you received below and your new password.",
       "A verification code has been sent to the e-mail address you used to create your account. Please type the code you received below to activate your account.",
     ];
 
@@ -24,7 +23,7 @@ class CenterFormBox extends React.Component {
     };
   }
 
-  resetPassword = async (e) => {
+  confirmPassword = async (e) => {
     e.preventDefault();
 
     // TODO: Do checks to ensure user and email is valid input
@@ -33,62 +32,59 @@ class CenterFormBox extends React.Component {
       // TODO: Display issue regarding password not equal to confirm password.
     }
 
-    // const response = await fetch("/api/resetPassword", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     test: "You resetting password?"
-    //   }),
-    // });
+    const response = await fetch("/api/confirm-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: this.state.username,
+        password: this.state.password,
+        code: this.state.verifyCode,
+      }),
+    });
 
-    // const body = await response.text();
+    const body = await response.text();
+
+    if (response.status === 200) {
+      // TODO: Indicate successfully logged in
+      console.log("Password Successfully Changed");
+    } else if (response.status === 400) {
+      // TODO: Indicate not logged in
+      console.log("Wrong code");
+    } else {
+      console.log("Password or code fields are invalid");
+    }
+
+    console.log(body);
   };
 
-  verificateCode = async (e) => {
+  forgotPassword = async (e) => {
     e.preventDefault();
 
-    // TODO: Do checks to ensure user and email is valid input
+    const response = await fetch("/api/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: this.state.password,
+      }),
+    });
+    const body = await response.text();
 
-    if (this.state.password !== this.state.confirmPassword) {
-      // TODO: Display issue regarding password not equal to confirm password.
+    if (response.status === 200) {
+      // TODO: Indicate successfully logged in
+      console.log("Username successfully found");
+    } else if (response.status === 400) {
+      // TODO: Indicate not logged in
+      console.log("Username not found");
+    } else {
+      console.log("Incorrect input for username field");
     }
-
-    // const response = await fetch("/api/verificateCode", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     test: "Hi there"
-    //   }),
-    // });
-
-    // const body = await response.text();
-    this.setState({ stage: 2 });
-  };
-
-  verifyAccount = async (e) => {
-    e.preventDefault();
-
-    // TODO: Do checks to ensure user and email is valid input
-
-    if (this.state.password !== this.state.confirmPassword) {
-      // TODO: Display issue regarding password not equal to confirm password.
-    }
-
-    // const response = await fetch("/api/verifyAccount", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     test: "Hello"
-    //   }),
-    // });
-    // const body = await response.text();
     this.setState({ stage: 1 });
+
+    console.log(body);
   };
 
   render() {
@@ -110,20 +106,11 @@ class CenterFormBox extends React.Component {
                   onChange={(e) => this.setState({ username: e.target.value })}
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Control
-                  className="password-field"
-                  type="password"
-                  placeholder="E-mail address"
-                  value={this.state.email}
-                  onChange={(e) => this.setState({ email: e.target.value })}
-                />
-              </Form.Group>
               <Button
                 className="login-button"
                 variant="primary"
                 type="submit"
-                onClick={this.verifyAccount}
+                onClick={this.forgotPassword}
               >
                 RESET
               </Button>
@@ -142,18 +129,6 @@ class CenterFormBox extends React.Component {
                   }
                 />
               </Form.Group>
-              <Button
-                className="login-button"
-                variant="primary"
-                type="submit"
-                onClick={this.verificateCode}
-              >
-                VERIFY
-              </Button>
-            </>
-          )}
-          {this.state.stage === 2 && (
-            <>
               <Form.Group>
                 <Form.Control
                   className="password-field"
@@ -178,9 +153,9 @@ class CenterFormBox extends React.Component {
                 className="login-button"
                 variant="primary"
                 type="submit"
-                href="/login"
+                onClick={this.confirmPassword}
               >
-                RESET
+                VERIFY AND CHANGE
               </Button>
             </>
           )}

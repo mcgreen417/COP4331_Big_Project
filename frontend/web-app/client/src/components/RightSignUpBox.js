@@ -35,6 +35,7 @@ class RightSignUpBox extends React.Component {
       }),
     });
     const body = await response.text();
+    console.log(response.status);
 
     console.log(body);
   };

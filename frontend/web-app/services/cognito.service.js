@@ -13,42 +13,28 @@ class CognitoService {
   }
 
   async signUpUser(username, password, userAttr) {
-    const params = {
-      ClientId: this.clientId,
-      Password: password,
-      Username: username,
+    var params = {
+      ClientId: this.clientId /* required */,
+      Password: password /* required */,
+      Username: username /* required */,
       SecretHash: this.generateHash(username),
       UserAttributes: userAttr,
     };
 
     try {
       const data = await this.cognitoIdentity.signUp(params).promise();
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
-
-  async verifyAccount(username, code) {
-    const params = {
-      ClientId: this.clientId,
-      ConfirmationCode: code,
-      SecretHash: this.generateHash(username),
-      Username: username,
-    };
-
-    try {
-      const data = await this.cognitoIdentity.confirmSignUp(params).promise();
+      console.log(data);
       return true;
     } catch (error) {
+      console.log(error);
       return false;
     }
   }
 
   async signInUser(username, password) {
-    const params = {
-      AuthFlow: "USER_PASSWORD_AUTH",
-      ClientId: this.clientId,
+    var params = {
+      AuthFlow: "USER_PASSWORD_AUTH" /* required */,
+      ClientId: this.clientId /* required */,
       AuthParameters: {
         USERNAME: username,
         PASSWORD: password,
@@ -58,12 +44,72 @@ class CognitoService {
 
     try {
       let data = await this.cognitoIdentity.initiateAuth(params).promise();
+      console.log(data);
       return true;
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
       return false;
     }
   }
+
+  async confirmSignUp(username, code) {
+    var params = {
+      ClientId: this.clientId,
+      ConfirmationCode: code,
+      Username: username,
+      SecretHash: this.generateHash(username),
+    };
+
+    try {
+      const cognitoResp = await this.cognitoIdentity
+        .confirmSignUp(params)
+        .promise();
+      console.log(cognitoResp);
+      return true;
+    } catch (error) {
+      console.log("error", error);
+      return false;
+    }
+  }
+
+  async forgotPassword(username) {
+    var params = {
+      ClientId: this.clientId /* required */,
+      Username: username /* required */,
+      SecretHash: this.generateHash(username),
+    };
+
+    try {
+      const data = await this.cognitoIdentity.forgotPassword(params).promise();
+      console.log(data);
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  async confirmNewPassword(username, password, code) {
+    var params = {
+      ClientId: this.clientId /* required */,
+      ConfirmationCode: code /* required */,
+      Password: password /* required */,
+      Username: username /* required */,
+      SecretHash: this.generateHash(username),
+    };
+
+    try {
+      const data = await this.cognitoIdentity
+        .confirmForgotPassword(params)
+        .promise();
+      console.log(data);
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
   generateHash(username) {
     return crypto
       .createHmac("SHA256", this.secretHash)
