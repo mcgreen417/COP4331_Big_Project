@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import "../css/RightLoginBox.css";
 
 class RightSignUpBox extends React.Component {
@@ -35,7 +35,19 @@ class RightSignUpBox extends React.Component {
       }),
     });
     const body = await response.text();
-    console.log(response.status);
+
+    if (response.status === 200) {
+      // TODO: Indicate successfully logged in
+      console.log(
+        "User successfully signed up... redirect to verification code"
+      );
+      this.props.handleUsernameChange(this.state.username);
+    } else if (response.status === 400) {
+      // TODO: Indicate invalid code
+      console.log("????? 400 error");
+    } else {
+      console.log("Password or code fields are invalid");
+    }
 
     console.log(body);
   };
@@ -109,4 +121,4 @@ class RightSignUpBox extends React.Component {
   }
 }
 
-export default RightSignUpBox;
+export default withRouter(RightSignUpBox);

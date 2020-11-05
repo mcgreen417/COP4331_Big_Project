@@ -4,7 +4,6 @@ import {
   Route,
   Redirect,
   Switch,
-  withRouter,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
@@ -29,9 +28,6 @@ function App() {
             render={() => <LoginPage isSignUp={true} />}
           />
           <Route path="/forgot-password" exact component={ForgotPasswordPage} />
-          <Route path="/verify" exact>
-            {/* // TODO: Verification page for app */}
-          </Route>
           <Route path="/about" exact>
             {/* // TODO: About page for app */}
           </Route>

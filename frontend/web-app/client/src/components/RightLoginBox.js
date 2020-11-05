@@ -12,7 +12,6 @@ class RightLoginBox extends React.Component {
       username: "",
       password: "",
     };
-    console.log(this.props);
   }
 
   login = async (e) => {
