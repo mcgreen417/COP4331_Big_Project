@@ -6,8 +6,8 @@ import {
   Switch,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import HomePage from "./pages/HomePage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import HomePage from "./pages/protected/HomePage";
 import { ProtectedRoute } from "./components/protected.route";
 
 import "./App.css";

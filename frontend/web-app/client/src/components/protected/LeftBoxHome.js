@@ -1,6 +1,6 @@
 import React from "react";
 
-import "../css/LeftTextBox.css";
+import "../../css/LeftTextBox.css";
 
 class LeftBoxHome extends React.Component {
   componentDidMount() {
