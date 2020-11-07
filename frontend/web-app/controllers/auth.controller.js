@@ -1,6 +1,7 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const Cognito = require("../services/cognito.service");
+const { v4: uuidv4 } = require('uuid');
 
 class AuthController {
   constructor() {
@@ -23,6 +24,7 @@ class AuthController {
       this.validateBody("confirmPassword"),
       this.confirmPassword
     );
+    this.router.post("/newentry", this.newEntry);
   }
 
   // Signup new user
@@ -98,6 +100,78 @@ class AuthController {
       success ? res.status(200).end() : res.status(400).end();
     });
   };
+
+  
+  // Create a New Plant Entry
+  newEntry = (req, res) => {
+    
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(422).json({ errors: result.array() });
+    }
+    // Note:
+    // - classifications is expected to be a list of strings
+    // - reminders is expected to be an object
+    const { userid, nickname, species, sunlight, water, notes, date, classifications, reminders } = req.body;
+    var plantid = uuidv4();
+    //let cognitoService = new Cognito();
+
+    function error() {
+      return typeof userid == "string" && typeof nickname == "string" && typeof species == "string" && typeof sunlight == "number" && typeof water == "number" && typeof date == "string" && typeof notes == "string" && typeof classifications == "object" && typeof reminders == "object"
+    }
+
+    if (!error()) {
+      var ret = {
+        UserID: userid,
+        Nickname: nickname,
+        Species: species,
+        Sunlight: sunlight,
+        Water: water,
+        Notes: notes,
+        DateAcquired: date,
+        Classifications: classifications,
+        Reminders: reminders,
+        Error: "Incorrect field type"
+      };
+      res.status(400).json(ret);
+    }
+    else {
+      var params = {
+        TableName : "Plants",
+        Item: {
+           PlantID: plantid,
+           UserID: userid,
+           Nickname: nickname,
+           Species: species,
+           Sunlight: sunlight,
+           Water: water,
+           DateAcquired: date,
+           Notes: notes,
+           Classifications: classifications,
+           Reminders: reminders,
+        }
+      };
+      
+      var documentClient = new AWS.DynamoDB.DocumentClient();
+      
+      documentClient.put(params, function(err, data) {
+        var ret = {
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classifications: classifications,
+          Reminders: reminders,
+          Error: ""
+        };
+        res.status(200).json(ret);
+      });
+    }
+  };
+  
 
   validateBody(type) {
     switch (type) {
