@@ -46,7 +46,7 @@ class AuthController {
   };
 
   // Use username and password to authenticate user
-  signIn = function(req, res) /*=>*/ {
+  signIn = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -60,7 +60,7 @@ class AuthController {
   };
 
   // confirm signup account with code sent to email
-  verify = function(req, res) /*=>*/ {
+  verify = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -74,7 +74,7 @@ class AuthController {
     });
   };
 
-  confirmPassword = function(req, res) /*=>*/ {
+  confirmPassword = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -89,7 +89,7 @@ class AuthController {
       });
   };
 
-  forgotPassword = function(req, res) /*=>*/ {
+  forgotPassword = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -103,7 +103,7 @@ class AuthController {
   };
 
   // Create a New Plant Entry
-  newEntry = function(req, res) /*=>*/ {
+  newEntry = (req, res) => {
     
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -173,7 +173,7 @@ class AuthController {
   };
   
   //edit an existing plant entry
-  editEntry = function(req, res) /*=>*/ {
+  editEntry = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
