@@ -181,7 +181,9 @@ class AuthController {
 
     const { plantid, userid, nickname, species, sunlight, water, notes, date, classifications, reminders } = req.body;
 
-    function error() {
+    //console.log(typeof reminders);
+
+    /*function error() {
       return typeof plantid == "string" && typeof userid == "string" && typeof nickname == "string" && typeof species == "string" && typeof sunlight == "number" && typeof water == "number" && typeof date == "string" && typeof notes == "string" && typeof classifications == "object" && typeof reminders == "object"
     }
 
@@ -200,9 +202,9 @@ class AuthController {
         Error: "Incorrect field type"
       };
       res.status(400).json(ret);
-    }
+    }*/
 
-    else {
+    //else {
       const params = {
         TableName: Plants,
         Key: {
@@ -261,7 +263,7 @@ class AuthController {
           res.status(400).json(ret);
         }
       });
-    }
+    //}
   }
 
   validateBody(type) {
