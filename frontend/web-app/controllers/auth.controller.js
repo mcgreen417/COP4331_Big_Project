@@ -24,8 +24,8 @@ class AuthController {
       this.validateBody("confirmPassword"),
       this.confirmPassword
     );
-    this.router.post("/newentry", this.validateBody("newEntry"), this.newEntry);
-    this.router.post("/editEntry", this.validateBody("editEntry"), this.editEntry);
+    this.router.post("/newentry", this.newEntry);
+    this.router.post("/editEntry", this.editEntry);
   }
 
   // Signup new user
