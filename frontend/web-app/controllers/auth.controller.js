@@ -24,11 +24,12 @@ class AuthController {
       this.validateBody("confirmPassword"),
       this.confirmPassword
     );
-    this.router.post("/newentry", this.newEntry);
+    this.router.post("/newentry", this.validateBody("newEntry"), this.newEntry);
+    this.router.post("/editEntry", this.validateBody("editEntry"), this.editEntry);
   }
 
   // Signup new user
-  signUp = (req, res) => {
+  signUp = function(req, res) /*=>*/ {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -45,7 +46,7 @@ class AuthController {
   };
 
   // Use username and password to authenticate user
-  signIn = (req, res) => {
+  signIn = function(req, res) /*=>*/ {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -59,7 +60,7 @@ class AuthController {
   };
 
   // confirm signup account with code sent to email
-  verify = (req, res) => {
+  verify = function(req, res) /*=>*/ {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -73,7 +74,7 @@ class AuthController {
     });
   };
 
-  confirmPassword = (req, res) => {
+  confirmPassword = function(req, res) /*=>*/ {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -88,7 +89,7 @@ class AuthController {
       });
   };
 
-  forgotPassword = (req, res) => {
+  forgotPassword = function(req, res) /*=>*/ {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -101,9 +102,8 @@ class AuthController {
     });
   };
 
-  
   // Create a New Plant Entry
-  newEntry = (req, res) => {
+  newEntry = function(req, res) /*=>*/ {
     
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -172,6 +172,97 @@ class AuthController {
     }
   };
   
+  //edit an existing plant entry
+  editEntry = function(req, res) /*=>*/ {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(422).json({ errors: result.array() });
+    }
+
+    const { plantid, userid, nickname, species, sunlight, water, notes, date, classifications, reminders } = req.body;
+
+    function error() {
+      return typeof plantid == "string" && typeof userid == "string" && typeof nickname == "string" && typeof species == "string" && typeof sunlight == "number" && typeof water == "number" && typeof date == "string" && typeof notes == "string" && typeof classifications == "object" && typeof reminders == "object"
+    }
+
+    if(!error()) {
+      var ret = {
+        PlantID: plantid,
+        UserID: userid,
+        Nickname: nickname,
+        Species: species,
+        Sunlight: sunlight,
+        Water: water,
+        Notes: notes,
+        DateAcquired: date,
+        Classifications: classifications,
+        Reminders: reminders,
+        Error: "Incorrect field type"
+      };
+      res.status(400).json(ret);
+    }
+
+    else {
+      const params = {
+        TableName: Plants,
+        Key: {
+          "UserID": uid,
+          "PlantID": plantid
+        },
+        UpdateExpression: "set Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisnotes, Date Acquired = :thisDate, Classifications = :thisClass, Reminders = :thisReminders",
+        ExpressionAttributes: {
+          ":thisNick": nickname,
+          ":thisSpecies": species,
+          ":thisClass": classifications,
+          ":thisSunlight": sunlight,
+          ":thisWater": water,
+          ":thisReminders": reminders,
+          ":thisNotes": notes,
+          ":thisDate": date
+        },
+        ReturnValues:"UPDATED_NEW"
+      };
+
+      var documentClient = new AWS.DynamoDB.DocumentClient();
+  
+      //update table
+      documentClient.update(params, function(err, data) {
+        if(err) {
+          console.log(" Failed To Update Item ");
+          var ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classifications: classifications,
+            Reminders: reminders,
+            Error: err
+          };
+          res.status(400).json(ret);
+        } else {
+          console.log(" Successfully Updated Item ");
+          var ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classifications: classifications,
+            Reminders: reminders,
+            Error: "Incorrect field type"
+          };
+          res.status(400).json(ret);
+        }
+      });
+    }
+  }
 
   validateBody(type) {
     switch (type) {
