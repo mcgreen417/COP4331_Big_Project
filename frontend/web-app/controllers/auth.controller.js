@@ -26,6 +26,7 @@ class AuthController {
     );
     this.router.post("/newentry", this.newEntry);
     this.router.post("/editEntry", this.editEntry);
+    this.router.post("/deleteEntry", this.deleteEntry);
   }
 
   // Signup new user
@@ -181,6 +182,8 @@ class AuthController {
 
     const { plantid, userid, nickname, species, sunlight, water, notes, date, classifications, reminders } = req.body;
 
+    //check if entry exists
+
     //console.log(typeof reminders);
 
     /*function error() {
@@ -264,6 +267,13 @@ class AuthController {
         }
       });
     //}
+  }
+
+  //delete plant entry
+  deleteEntry =(req, res) => {
+    //check if entry exists
+
+    //remove entry
   }
 
   validateBody(type) {
