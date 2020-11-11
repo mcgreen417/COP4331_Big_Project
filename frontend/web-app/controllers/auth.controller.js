@@ -27,6 +27,7 @@ class AuthController {
     this.router.post("/newentry", this.newEntry);
     this.router.post("/editEntry", this.editEntry);
     this.router.post("/deleteEntry", this.deleteEntry);
+    this.router.post("/searchentry", this.searchEntry);
   }
 
   // Signup new user
@@ -104,57 +105,54 @@ class AuthController {
   };
 
   // Create a New Plant Entry
+  // Input:
+  //  - "userid"
+  //  - "nickname"
+  //  - "species"
+  //  - "sunlight"
+  //  - "water"
+  //  - "notes"
+  //  - "date"
+  //  - "classification"
+  //  - "reminders"
+  // Output:
+  //  - If input types are correct: json object of all input pairs and empty error pair
+  //  - If input types are incorrect: json object of all input pairs and error pair
   newEntry = (req, res) => {
-    
-    const result = validationResult(req);
-    if (!result.isEmpty()) {
-      return res.status(422).json({ errors: result.array() });
-    }
-    // Note:
-    // - classifications is expected to be a list of strings
-    // - reminders is expected to be an object
-    const { userid, nickname, species, sunlight, water, notes, date, classifications, reminders } = req.body;
-    var plantid = uuidv4();
-    //let cognitoService = new Cognito();
+    var documentClient = new AWS.DynamoDB.DocumentClient();
 
-    function error() {
-      return typeof userid == "string" && typeof nickname == "string" && typeof species == "string" && typeof sunlight == "number" && typeof water == "number" && typeof date == "string" && typeof notes == "string" && typeof classifications == "object" && typeof reminders == "object"
-    }
+    let createEntry = function () {
+      // Note:
+      // - classification is expected to be a list of strings
+      // - reminders is expected to be an object
 
-    if (!error()) {
-      var ret = {
-        UserID: userid,
-        Nickname: nickname,
-        Species: species,
-        Sunlight: sunlight,
-        Water: water,
-        Notes: notes,
-        DateAcquired: date,
-        Classifications: classifications,
-        Reminders: reminders,
-        Error: "Incorrect field type"
-      };
-      res.status(400).json(ret);
-    }
-    else {
+      var userid = req.body.userid;
+      var nickname = req.body.nickname;
+      var species = req.body.species;
+      var sunlight = req.body.sunlight;
+      var water = req.body.water;
+      var notes = req.body.notes;
+      var date = req.body.date;
+      var classification = req.body.classification;
+      var reminders = req.body.reminders;
+      var plantid = uuidv4();
+
       var params = {
         TableName : "Plants",
         Item: {
-           PlantID: plantid,
-           UserID: userid,
-           Nickname: nickname,
-           Species: species,
-           Sunlight: sunlight,
-           Water: water,
-           DateAcquired: date,
-           Notes: notes,
-           Classifications: classifications,
-           Reminders: reminders,
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            DateAcquired: date,
+            Notes: notes,
+            Classification: classification,
+            Reminders: reminders,
         }
       };
-      
-      var documentClient = new AWS.DynamoDB.DocumentClient();
-      
+
       documentClient.put(params, function(err, data) {
         var ret = {
           UserID: userid,
@@ -164,13 +162,14 @@ class AuthController {
           Water: water,
           Notes: notes,
           DateAcquired: date,
-          Classifications: classifications,
+          Classification: classification,
           Reminders: reminders,
           Error: ""
         };
         res.status(200).json(ret);
       });
     }
+    createEntry();
   };
   
   //edit an existing plant entry
@@ -275,6 +274,57 @@ class AuthController {
 
     //remove entry
   }
+  
+  // Search for an existing plant entry
+  // Input:
+  //  - "userid"
+  //  - "search"
+  // Output:
+  //  - If items found: json array of objects with key pairs of all attributes
+  //  - If no items found: json object of userid, search, and error
+  searchEntry = (req, res) => {
+    var documentClient = new AWS.DynamoDB.DocumentClient();
+
+    let searchEntry = function () {
+      //const { userid, search } = req.body;
+      var userid = req.body.userid;
+      var search = req.body.search;
+
+      var params = {
+        TableName: "Plants",
+        FilterExpression: "contains(#nickname, :nickname) AND #userid = :userid",
+        ExpressionAttributeNames: {
+            "#nickname": "Nickname",
+            "#userid": "UserID",
+        },
+        ExpressionAttributeValues: {
+            ":nickname": search,
+            ":userid": userid,
+      }     
+      };
+
+
+      documentClient.scan(params, function (err, data) {
+          if (data.Items === undefined || data.Items.length == 0) {
+              var ret = {
+                UserID: userid,
+                Search: search,
+                Error: "Entry not found"
+              };
+              res.status(400).json(ret);
+          } 
+
+          else {
+              var ret = [];
+              data.Items.forEach(function (item) {
+                ret.push(item)
+              });
+              res.status(200).json(ret);
+          }
+      });
+    }
+    searchEntry();
+  };
 
   validateBody(type) {
     switch (type) {
