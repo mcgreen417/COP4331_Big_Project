@@ -1,4 +1,5 @@
 const express = require("express");
+const { v4: uuidv4 } = require("uuid");
 
 const AuthMiddleware = require("../middleware/auth.middleware");
 
@@ -302,16 +303,18 @@ class ProtectedController {
           body("userid").notEmpty().isString(),
           body("nickname").notEmpty().isString(),
           body("species").notEmpty().isString(),
-          body("sunlight").notEmpty().isNumeric().isIn([1,2,3]),
-          body("water").notEmpty().isNumeric().isIn([1,2,3]),
+          body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
+          body("water").notEmpty().isNumeric().isIn([1, 2, 3]),
           body("notes").notEmpty().isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
-          body("reminders").notEmpty().custom(reminders => {
-            if (typeof(reminders) === "object") {
-              throw new Error("Input must be an object")
-            }
-          }),
+          body("reminders")
+            .notEmpty()
+            .custom((reminders) => {
+              if (typeof reminders === "object") {
+                throw new Error("Input must be an object");
+              }
+            }),
         ];
       case "editEntry":
         return [];
