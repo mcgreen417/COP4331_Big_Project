@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
-const cors = require("cors");
 const AWS = require("aws-sdk");
 const App = require("./app");
 const AuthController = require("./controllers/auth.controller");

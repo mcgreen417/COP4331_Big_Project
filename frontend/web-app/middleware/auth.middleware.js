@@ -13,20 +13,15 @@ class AuthMiddleware {
 
   verifyToken(req, resp, next) {
     const { token } = req.body;
-    console.log("The token is:");
-    console.log(token);
     if (!token) return resp.status(401).end();
 
     let decodedJwt = jwt.decode(token, { complete: true });
     if (decodedJwt === null) {
-      console.log("test");
       resp.status(401).end();
       return;
     }
-    console.log(decodedJwt);
     let kid = decodedJwt.header.kid;
     let pem = pems[kid];
-    console.log(pem);
     if (!pem) {
       resp.status(401).end();
       return;

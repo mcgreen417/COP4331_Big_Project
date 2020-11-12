@@ -15,7 +15,6 @@ class RightLoginBox extends React.Component {
   }
 
   login = async (e) => {
-    console.log("Logging in");
     e.preventDefault();
     const response = await fetch("/api/login", {
       method: "POST",
@@ -34,6 +33,7 @@ class RightLoginBox extends React.Component {
 
     if (response.status === 200) {
       // TODO: Indicate successfully logged in
+      localStorage.jwt = sessionTkn;
       Auth.login(() => console.log("authenticated"));
       this.props.history.push("/home");
     } else if (response.status === 400) {

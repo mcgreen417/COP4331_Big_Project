@@ -1,7 +1,7 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const Cognito = require("../services/cognito.service");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 class AuthController {
   constructor() {
@@ -24,6 +24,7 @@ class AuthController {
       this.validateBody("confirmPassword"),
       this.confirmPassword
     );
+    // TODO: Needs a this.validateBody and should be moved to protected.controller.js
     this.router.post("/newentry", this.newEntry);
     this.router.post("/editEntry", this.editEntry);
     this.router.post("/deleteEntry", this.deleteEntry);
@@ -31,7 +32,7 @@ class AuthController {
   }
 
   // Signup new user
-  signUp = function(req, res) /*=>*/ {
+  signUp = function (req, res) /*=>*/ {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
@@ -50,6 +51,7 @@ class AuthController {
   // Use username and password to authenticate user
   signIn = (req, res) => {
     const result = validationResult(req);
+    console.log(result);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
@@ -104,6 +106,9 @@ class AuthController {
     });
   };
 
+  // TODO: Need to mvoe everything below to protected.controller.js since these should only be accessed
+  // when user is successfully logged in.
+
   // Create a New Plant Entry
   // Input:
   //  - "userid"
@@ -119,6 +124,7 @@ class AuthController {
   //  - If input types are correct: json object of all input pairs and empty error pair
   //  - If input types are incorrect: json object of all input pairs and error pair
   newEntry = (req, res) => {
+    // TODO: Should use validateBody with validationResult or else request could cause failure.
     var documentClient = new AWS.DynamoDB.DocumentClient();
 
     let createEntry = function () {
@@ -138,22 +144,23 @@ class AuthController {
       var plantid = uuidv4();
 
       var params = {
-        TableName : "Plants",
+        TableName: "Plants",
         Item: {
-            PlantID: plantid,
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            DateAcquired: date,
-            Notes: notes,
-            Classification: classification,
-            Reminders: reminders,
-        }
+          PlantID: plantid,
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          DateAcquired: date,
+          Notes: notes,
+          Classification: classification,
+          Reminders: reminders,
+        },
       };
 
-      documentClient.put(params, function(err, data) {
+      // TODO: Below needs a 400 error
+      documentClient.put(params, function (err, data) {
         var ret = {
           UserID: userid,
           Nickname: nickname,
@@ -164,14 +171,14 @@ class AuthController {
           DateAcquired: date,
           Classification: classification,
           Reminders: reminders,
-          Error: ""
+          Error: "",
         };
         res.status(200).json(ret);
       });
-    }
+    };
     createEntry();
   };
-  
+
   //edit an existing plant entry
   editEntry = (req, res) => {
     const result = validationResult(req);
@@ -179,7 +186,20 @@ class AuthController {
       return res.status(422).json({ errors: result.array() });
     }
 
-    const { plantid, userid, nickname, species, sunlight, water, notes, date, classifications, reminders } = req.body;
+    const {
+      plantid,
+      userid,
+      nickname,
+      species,
+      sunlight,
+      water,
+      notes,
+      date,
+      classifications,
+      reminders,
+    } = req.body;
+
+    // TODO: everything you're trying to do below can be done in this.validateBody() with validationResult().
 
     //check if entry exists
 
@@ -207,74 +227,74 @@ class AuthController {
     }*/
 
     //else {
-      const params = {
-        TableName: Plants,
-        Key: {
-          "UserID": uid,
-          "PlantID": plantid
-        },
-        UpdateExpression: "set Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisnotes, Date Acquired = :thisDate, Classifications = :thisClass, Reminders = :thisReminders",
-        ExpressionAttributes: {
-          ":thisNick": nickname,
-          ":thisSpecies": species,
-          ":thisClass": classifications,
-          ":thisSunlight": sunlight,
-          ":thisWater": water,
-          ":thisReminders": reminders,
-          ":thisNotes": notes,
-          ":thisDate": date
-        },
-        ReturnValues:"UPDATED_NEW"
-      };
+    const params = {
+      TableName: Plants,
+      Key: {
+        UserID: uid,
+        PlantID: plantid,
+      },
+      UpdateExpression:
+        "set Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisnotes, Date Acquired = :thisDate, Classifications = :thisClass, Reminders = :thisReminders",
+      ExpressionAttributes: {
+        ":thisNick": nickname,
+        ":thisSpecies": species,
+        ":thisClass": classifications,
+        ":thisSunlight": sunlight,
+        ":thisWater": water,
+        ":thisReminders": reminders,
+        ":thisNotes": notes,
+        ":thisDate": date,
+      },
+      ReturnValues: "UPDATED_NEW",
+    };
 
-      var documentClient = new AWS.DynamoDB.DocumentClient();
-  
-      //update table
-      documentClient.update(params, function(err, data) {
-        if(err) {
-          console.log(" Failed To Update Item ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classifications: classifications,
-            Reminders: reminders,
-            Error: err
-          };
-          res.status(400).json(ret);
-        } else {
-          console.log(" Successfully Updated Item ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classifications: classifications,
-            Reminders: reminders,
-            Error: "Incorrect field type"
-          };
-          res.status(400).json(ret);
-        }
-      });
+    var documentClient = new AWS.DynamoDB.DocumentClient();
+
+    //update table
+    documentClient.update(params, function (err, data) {
+      if (err) {
+        console.log(" Failed To Update Item ");
+        var ret = {
+          PlantID: plantid,
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classifications: classifications,
+          Reminders: reminders,
+          Error: err,
+        };
+        res.status(400).json(ret);
+      } else {
+        console.log(" Successfully Updated Item ");
+        var ret = {
+          PlantID: plantid,
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classifications: classifications,
+          Reminders: reminders,
+          Error: "Incorrect field type",
+        };
+        res.status(200).json(ret);
+      }
+    });
     //}
-  }
+  };
 
   //delete plant entry
-  deleteEntry =(req, res) => {
+  deleteEntry = (req, res) => {
     //check if entry exists
-
     //remove entry
-  }
-  
+  };
+
   // Search for an existing plant entry
   // Input:
   //  - "userid"
@@ -283,6 +303,7 @@ class AuthController {
   //  - If items found: json array of objects with key pairs of all attributes
   //  - If no items found: json object of userid, search, and error
   searchEntry = (req, res) => {
+    // TODO: Should use validateBody with validationResult or request could cause failure.
     var documentClient = new AWS.DynamoDB.DocumentClient();
 
     let searchEntry = function () {
@@ -292,37 +313,35 @@ class AuthController {
 
       var params = {
         TableName: "Plants",
-        FilterExpression: "contains(#nickname, :nickname) AND #userid = :userid",
+        FilterExpression:
+          "contains(#nickname, :nickname) AND #userid = :userid",
         ExpressionAttributeNames: {
-            "#nickname": "Nickname",
-            "#userid": "UserID",
+          "#nickname": "Nickname",
+          "#userid": "UserID",
         },
         ExpressionAttributeValues: {
-            ":nickname": search,
-            ":userid": userid,
-      }     
+          ":nickname": search,
+          ":userid": userid,
+        },
       };
 
-
       documentClient.scan(params, function (err, data) {
-          if (data.Items === undefined || data.Items.length == 0) {
-              var ret = {
-                UserID: userid,
-                Search: search,
-                Error: "Entry not found"
-              };
-              res.status(400).json(ret);
-          } 
-
-          else {
-              var ret = [];
-              data.Items.forEach(function (item) {
-                ret.push(item)
-              });
-              res.status(200).json(ret);
-          }
+        if (data.Items === undefined || data.Items.length == 0) {
+          var ret = {
+            UserID: userid,
+            Search: search,
+            Error: "Entry not found",
+          };
+          res.status(400).json(ret);
+        } else {
+          var ret = [];
+          data.Items.forEach(function (item) {
+            ret.push(item);
+          });
+          res.status(200).json(ret);
+        }
       });
-    }
+    };
     searchEntry();
   };
 

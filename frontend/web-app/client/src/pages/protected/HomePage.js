@@ -5,7 +5,7 @@ import LeftBoxHome from "../../components/protected/LeftBoxHome";
 const HomePage = () => {
   return (
     <div>
-      <Header default />
+      <Header />
       <LeftBoxHome />
     </div>
   );
