@@ -1,4 +1,5 @@
 const express = require("express");
+const { v4: uuidv4 } = require("uuid");
 
 const AuthMiddleware = require("../middleware/auth.middleware");
 
@@ -45,7 +46,11 @@ class ProtectedController {
   //  - If input types are correct: json object of all input pairs and empty error pair
   //  - If input types are incorrect: json object of all input pairs and error pair
   newEntry = (req, res) => {
-    // TODO: Should use validateBody with validationResult or else request could cause failure.
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(422).json({ errors: result.array() });
+    }
+    console.log(req.body);
     var documentClient = new AWS.DynamoDB.DocumentClient();
 
     let createEntry = function () {
@@ -80,21 +85,39 @@ class ProtectedController {
         },
       };
 
-      // TODO: Below needs a 400 error
       documentClient.put(params, function (err, data) {
-        var ret = {
-          UserID: userid,
-          Nickname: nickname,
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          Notes: notes,
-          DateAcquired: date,
-          Classification: classification,
-          Reminders: reminders,
-          Error: "",
-        };
-        res.status(200).json(ret);
+        if (err) {
+          console.log(" Failed to Create Item ");
+          var ret = {
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classification: classification,
+            Reminders: reminders,
+            Error: "Error Creating Entry",
+          };
+          res.status(400).json(ret);
+        } else {
+          console.log(" Successfully Created Item ");
+          var ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classification: classification,
+            Reminders: reminders,
+            Error: "",
+          };
+          res.status(200).json(ret);
+        }
       });
     };
     createEntry();
@@ -224,11 +247,14 @@ class ProtectedController {
   //  - If items found: json array of objects with key pairs of all attributes
   //  - If no items found: json object of userid, search, and error
   searchEntry = (req, res) => {
-    // TODO: Should use validateBody with validationResult or request could cause failure.
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(422).json({ errors: result.array() });
+    }
+    console.log(req.body);
     var documentClient = new AWS.DynamoDB.DocumentClient();
 
     let searchEntry = function () {
-      //const { userid, search } = req.body;
       var userid = req.body.userid;
       var search = req.body.search;
 
@@ -270,13 +296,32 @@ class ProtectedController {
   validateBody(type) {
     switch (type) {
       case "newEntry":
-        return [];
+        return [
+          body("userid").notEmpty().isString(),
+          body("nickname").notEmpty().isString(),
+          body("species").notEmpty().isString(),
+          body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
+          body("water").notEmpty().isNumeric().isIn([1, 2, 3]),
+          body("notes").notEmpty().isString(),
+          body("date").notEmpty().isISO8601(),
+          body("classification").notEmpty().isArray(),
+          body("reminders")
+            .notEmpty()
+            .custom((reminders) => {
+              if (typeof reminders === "object") {
+                throw new Error("Input must be an object");
+              }
+            }),
+        ];
       case "editEntry":
         return [];
       case "deleteEntry":
         return [];
       case "searchEntry":
-        return [];
+        return [
+          body("userid").notEmpty().isString(),
+          body("search").notEmpty().isString(),
+        ];
     }
   }
 }
