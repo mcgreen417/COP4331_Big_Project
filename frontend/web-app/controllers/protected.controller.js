@@ -13,7 +13,10 @@ class ProtectedController {
 
   initRoutes() {
     this.router.use(this.authMiddleware.verifyToken);
-    this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
+    this.router.post(
+      "/newEntry",
+      this.validateBody("newEntry"),
+      this.newEntry);
     this.router.post(
       "/editEntry",
       this.validateBody("editEntry"),
