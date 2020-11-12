@@ -24,11 +24,6 @@ class AuthController {
       this.validateBody("confirmPassword"),
       this.confirmPassword
     );
-    // TODO: Needs a this.validateBody and should be moved to protected.controller.js
-    this.router.post("/newentry", this.newEntry);
-    this.router.post("/editEntry", this.editEntry);
-    this.router.post("/deleteEntry", this.deleteEntry);
-    this.router.post("/searchentry", this.searchEntry);
   }
 
   // Signup new user
