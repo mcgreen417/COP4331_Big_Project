@@ -1,4 +1,5 @@
 const express = require("express");
+const { body, validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 
 const AuthMiddleware = require("../middleware/auth.middleware");
@@ -12,7 +13,8 @@ class ProtectedController {
   }
 
   initRoutes() {
-    this.router.use(this.authMiddleware.verifyToken);
+    //comment line out below to test
+    //this.router.use(this.authMiddleware.verifyToken);
     this.router.post(
       "/newEntry",
       this.validateBody("newEntry"),
@@ -269,16 +271,8 @@ class ProtectedController {
   //delete plant entry
   //check if entry exists in table
   // Input:
-  //  -s "plantid"
+  //  - "plantid"
   //  - "userid"
-  //  - "nickname"
-  //  - "species"
-  //  - "sunlight"
-  //  - "water"
-  //  - "notes"
-  //  - "date"
-  //  - "classification"
-  //  - "reminders"
   // Output:
   //  - If input types are correct: 
   //    - If input is not already an instance in the table: json object of all input pairs and error pair
@@ -292,14 +286,6 @@ class ProtectedController {
     }
 
     var userid = req.body.userid;
-    var nickname = req.body.nickname;
-    var species = req.body.species;
-    var sunlight = req.body.sunlight;
-    var water = req.body.water;
-    var notes = req.body.notes;
-    var date = req.body.date;
-    var classification = req.body.classification;
-    var reminders = req.body.reminders;
     var plantid = req.body.plantid;
 
     var documentClient = new AWS.DynamoDB.DocumentClient();
@@ -309,15 +295,7 @@ class ProtectedController {
         TableName: Plants,
         Key: {
           "PlantID": plantid,
-          "UserID": userid,
-          "Nickname": nickname,
-          "Species": species,
-          "Sunlight": sunlight,
-          "Water": water,
-          "Notes": notes,
-          "DateAcquired": date,
-          "Classifications": classification,
-          "Reminders": reminders
+          "UserID": userid
         }
       }
 
@@ -327,14 +305,6 @@ class ProtectedController {
           var ret = {
             PlantID: plantid,
             UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classification: classification,
-            Reminders: reminders,
             Error: " Item Does Not Exist In Table ",
           };
           res.status(400).json(ret);
@@ -362,14 +332,6 @@ class ProtectedController {
           ret = {
             PlantID: plantid,
             UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classifications: classifications,
-            Reminders: reminders,
             Error: " Unable To Insert Item "
           }
           res.status(400).json(ret);
@@ -378,14 +340,6 @@ class ProtectedController {
           ret = {
             PlantID: plantid,
             UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classifications: classifications,
-            Reminders: reminders,
             Error: ""
           }
           res.status(200).json(ret);
@@ -474,7 +428,7 @@ class ProtectedController {
       case "editEntry":
         return [
           body("plantid").notEmpty().isString(),
-          body("userid").notEmpty().isString(),
+          body("userid").notEmpty().isString(),PlantID
           body("nickname").notEmpty().isString(),
           body("species").notEmpty().isString(),
           body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
@@ -493,7 +447,7 @@ class ProtectedController {
       case "deleteEntry":
         return [
           body("plantid").notEmpty().isString(),
-          body("userid").notEmpty().isString(),
+          body("userid").notEmpty().isString()/*,
           body("nickname").notEmpty().isString(),
           body("species").notEmpty().isString(),
           body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
@@ -507,7 +461,7 @@ class ProtectedController {
               if (typeof reminders === "object") {
                 throw new Error("Input must be an object");
               }
-            }),
+            }),*/
         ];
       case "searchEntry":
         return [
