@@ -127,119 +127,274 @@ class ProtectedController {
   };
 
   //edit an existing plant entry
+  // Input:
+  //  - "plantid"
+  //  - "userid"
+  //  - "nickname"
+  //  - "species"
+  //  - "sunlight"
+  //  - "water"
+  //  - "notes"
+  //  - "date"
+  //  - "classification"
+  //  - "reminders"
+  // Output:
+  //  - If input types are correct: json object of all input pairs and empty error pair
+  //    - If input is not already an instance in the table: json object of all input pairs and error pair
+  //    - If input was not able to be deleted: json object of all input pairs and error pair
+  //    - If input was successfully deleted: json object of all input pairs and empty error pair
+  //  - If input types are incorrect: json object of all input pairs and error pair
   editEntry = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
 
-    const {
-      plantid,
-      userid,
-      nickname,
-      species,
-      sunlight,
-      water,
-      notes,
-      date,
-      classifications,
-      reminders,
-    } = req.body;
-
-    // TODO: everything you're trying to do below can be done in this.validateBody() with validationResult().
-
-    //check if entry exists
-
-    //console.log(typeof reminders);
-
-    /*function error() {
-      return typeof plantid == "string" && typeof userid == "string" && typeof nickname == "string" && typeof species == "string" && typeof sunlight == "number" && typeof water == "number" && typeof date == "string" && typeof notes == "string" && typeof classifications == "object" && typeof reminders == "object"
-    }
-
-    if(!error()) {
-      var ret = {
-        PlantID: plantid,
-        UserID: userid,
-        Nickname: nickname,
-        Species: species,
-        Sunlight: sunlight,
-        Water: water,
-        Notes: notes,
-        DateAcquired: date,
-        Classifications: classifications,
-        Reminders: reminders,
-        Error: "Incorrect field type"
-      };
-      res.status(400).json(ret);
-    }*/
-
-    //else {
-    const params = {
-      TableName: Plants,
-      Key: {
-        UserID: uid,
-        PlantID: plantid,
-      },
-      UpdateExpression:
-        "set Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisnotes, Date Acquired = :thisDate, Classifications = :thisClass, Reminders = :thisReminders",
-      ExpressionAttributes: {
-        ":thisNick": nickname,
-        ":thisSpecies": species,
-        ":thisClass": classifications,
-        ":thisSunlight": sunlight,
-        ":thisWater": water,
-        ":thisReminders": reminders,
-        ":thisNotes": notes,
-        ":thisDate": date,
-      },
-      ReturnValues: "UPDATED_NEW",
-    };
+    var userid = req.body.userid;
+    var nickname = req.body.nickname;
+    var species = req.body.species;
+    var sunlight = req.body.sunlight;
+    var water = req.body.water;
+    var notes = req.body.notes;
+    var date = req.body.date;
+    var classification = req.body.classification;
+    var reminders = req.body.reminders;
+    var plantid = req.body.plantid;
 
     var documentClient = new AWS.DynamoDB.DocumentClient();
 
-    //update table
-    documentClient.update(params, function (err, data) {
-      if (err) {
-        console.log(" Failed To Update Item ");
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Nickname: nickname,
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          Notes: notes,
-          DateAcquired: date,
-          Classifications: classifications,
-          Reminders: reminders,
-          Error: err,
-        };
-        res.status(400).json(ret);
-      } else {
-        console.log(" Successfully Updated Item ");
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Nickname: nickname,
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          Notes: notes,
-          DateAcquired: date,
-          Classifications: classifications,
-          Reminders: reminders,
-          Error: "Incorrect field type",
-        };
-        res.status(200).json(ret);
+    //check if entry exists in table
+    let checkInst = function() {
+      const params = {
+        TableName: Plants,
+        Key: {
+          "PlantID": plantid,
+          "UserID": userid,
+          "Nickname": nickname,
+          "Species": species,
+          "Sunlight": sunlight,
+          "Water": water,
+          "Notes": notes,
+          "DateAcquired": date,
+          "Classifications": classification,
+          "Reminders": reminders
+        }
       }
-    });
-    //}
+
+      documentClient.get(params, function (err, data) {
+        if (err) {
+          console.log(" Item Does Not Exist ");
+          var ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classification: classification,
+            Reminders: reminders,
+            Error: " Item Does Not Exist In Table ",
+          };
+          res.status(400).json(ret);
+        }
+      })
+    }
+
+    let editEntry = function() {
+      const params = {
+        TableName: Plants,
+        Key: {
+          UserID: userid,
+          PlantID: plantid,
+        },
+        UpdateExpression:
+          "set Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisnotes, DateAcquired = :thisDate, Classifications = :thisClass, Reminders = :thisReminders",
+        ExpressionAttributes: {
+          ":thisNick": nickname,
+          ":thisSpecies": species,
+          ":thisClass": classification,
+          ":thisSunlight": sunlight,
+          ":thisWater": water,
+          ":thisReminders": reminders,
+          ":thisNotes": notes,
+          ":thisDate": date,
+        },
+        ReturnValues: "UPDATED_NEW",
+      };
+
+      //update table
+      documentClient.update(params, function (err, data) {
+        if (err) {
+          console.log(" Failed To Update Item ");
+          var ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classifications: classifications,
+            Reminders: reminders,
+            Error: err
+          };
+          res.status(400).json(ret);
+        } else {
+          console.log(" Successfully Updated Item ");
+          var ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classifications: classifications,
+            Reminders: reminders,
+            Error: ""
+          };
+          res.status(200).json(ret);
+        }
+      });
+    }
+
+    checkInst();
+    editEntry();
   };
 
   //delete plant entry
+  //check if entry exists in table
+  // Input:
+  //  -s "plantid"
+  //  - "userid"
+  //  - "nickname"
+  //  - "species"
+  //  - "sunlight"
+  //  - "water"
+  //  - "notes"
+  //  - "date"
+  //  - "classification"
+  //  - "reminders"
+  // Output:
+  //  - If input types are correct: 
+  //    - If input is not already an instance in the table: json object of all input pairs and error pair
+  //    - If input was not able to be deleted: json object of all input pairs and error pair
+  //    - If input was successfully deleted: json object of all input pairs and empty error pair
+  //  - If input types are incorrect: json object of all input pairs and error pair
   deleteEntry = (req, res) => {
-    //check if entry exists
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(422).json({ errors: result.array() });
+    }
+
+    var userid = req.body.userid;
+    var nickname = req.body.nickname;
+    var species = req.body.species;
+    var sunlight = req.body.sunlight;
+    var water = req.body.water;
+    var notes = req.body.notes;
+    var date = req.body.date;
+    var classification = req.body.classification;
+    var reminders = req.body.reminders;
+    var plantid = req.body.plantid;
+
+    var documentClient = new AWS.DynamoDB.DocumentClient();
+
+    let checkInst = function() {
+      const params = {
+        TableName: Plants,
+        Key: {
+          "PlantID": plantid,
+          "UserID": userid,
+          "Nickname": nickname,
+          "Species": species,
+          "Sunlight": sunlight,
+          "Water": water,
+          "Notes": notes,
+          "DateAcquired": date,
+          "Classifications": classification,
+          "Reminders": reminders
+        }
+      }
+
+      documentClient.get(params, function (err, data) {
+        if (err) {
+          console.log(" Item Does Not Exist ");
+          var ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classification: classification,
+            Reminders: reminders,
+            Error: " Item Does Not Exist In Table ",
+          };
+          res.status(400).json(ret);
+        }
+      })
+    }
+
     //remove entry
+    let removeEntry = function() {
+      const params = {
+        TableName: Plants,
+        Key: {
+          UserID: uid,
+          PlantID: plantid,
+        },
+        Key: "PlantID == :thisPlantid",
+        ExpressionAttributeValues: {
+          ":thisPlantid": plantid
+        }
+      }
+
+      documentClient.delete(params, function (err, data) {
+        if(err) {
+          console.log(" Unable To Delete Item ");
+          ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classifications: classifications,
+            Reminders: reminders,
+            Error: " Unable To Insert Item "
+          }
+          res.status(400).json(ret);
+        } else {
+          console.log(" Successfully Deleted Item ");
+          ret = {
+            PlantID: plantid,
+            UserID: userid,
+            Nickname: nickname,
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classifications: classifications,
+            Reminders: reminders,
+            Error: ""
+          }
+          res.status(200).json(ret);
+        }
+      });
+    }
+
+    checkInst();
+    removeEntry();
   };
 
   // Search for an existing plant entry
@@ -317,9 +472,43 @@ class ProtectedController {
             }),
         ];
       case "editEntry":
-        return [];
+        return [
+          body("plantid").notEmpty().isString(),
+          body("userid").notEmpty().isString(),
+          body("nickname").notEmpty().isString(),
+          body("species").notEmpty().isString(),
+          body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
+          body("water").notEmpty().isNumeric().isIn([1, 2, 3]),
+          body("notes").notEmpty().isString(),
+          body("date").notEmpty().isISO8601(),
+          body("classification").notEmpty().isArray(),
+          body("reminders")
+            .notEmpty()
+            .custom((reminders) => {
+              if (typeof reminders === "object") {
+                throw new Error("Input must be an object");
+              }
+            }),
+        ];
       case "deleteEntry":
-        return [];
+        return [
+          body("plantid").notEmpty().isString(),
+          body("userid").notEmpty().isString(),
+          body("nickname").notEmpty().isString(),
+          body("species").notEmpty().isString(),
+          body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
+          body("water").notEmpty().isNumeric().isIn([1, 2, 3]),
+          body("notes").notEmpty().isString(),
+          body("date").notEmpty().isISO8601(),
+          body("classification").notEmpty().isArray(),
+          body("reminders")
+            .notEmpty()
+            .custom((reminders) => {
+              if (typeof reminders === "object") {
+                throw new Error("Input must be an object");
+              }
+            }),
+        ];
       case "searchEntry":
         return [
           body("userid").notEmpty().isString(),
