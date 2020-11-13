@@ -102,8 +102,6 @@ class CenterFormBox extends React.Component {
       }),
     });
 
-    const body = await response.text();
-
     if (response.status === 200) {
       // TODO: Indicate code was successful
       console.log("Password Successfully Changed");

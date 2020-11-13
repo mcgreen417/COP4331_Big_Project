@@ -1,51 +1,45 @@
 import React from "react";
+import { Spinner } from "react-bootstrap";
 
-import "../../css/LeftTextBox.css";
+import "../../css/protected/LeftBoxHome.css";
 
 class LeftBoxHome extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: "",
+    };
+  }
+
   componentDidMount() {
-    fetch("/protected/secret", {
+    fetch("/protected/fetchUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        token: localStorage.jwt,
+        token: localStorage.accessToken,
       }),
-    }).then((resp) => console.log(resp.text()));
+    })
+      .then((response) => response.json())
+      .then((data) => this.setState({ username: data.Username }));
   }
 
   render() {
     return (
       <div className="left-text-box">
-        <div className="header-text">
-          Your next generation tool for garden management.
-        </div>
+        {!this.state.username && (
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        )}
+        {this.state.username && (
+          <div className="header-text">
+            {`Good afternoon, ${this.state.username}!`}
+          </div>
+        )}
         <br />
-        <div className="scrollable">
-          <div className="sub-text">
-            <b className="bold">Flower</b> Power helps put control of the garden
-            back into your hands. No green thumb? No worries!
-          </div>
-          <br />
-          <div className="sub-text">
-            <b className="bold">Track</b> your plant’s growth and receive
-            automated reminders for important care tasks. Log important data
-            about your plant such as its nickname, species, classification,
-            water and sunglight requirements, and store custom notes.
-          </div>
-          <br />
-          <div className="sub-text">
-            <b className="bold">Search</b> through your stored plant files to
-            pull up information on any plant in your garden on demand. Add,
-            edit, and delete entries as your garden grows.
-          </div>
-          <br />
-          <div className="sub-text">
-            <b className="bold">Explore</b> nearby plant nurseries to find the
-            perfect new addition to your garden!
-          </div>
-        </div>
+        {/* TODO: Implement text and plant pictures */}
       </div>
     );
   }
