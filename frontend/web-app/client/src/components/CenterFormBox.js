@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
 import "../css/CenterFormBox.css";
 
@@ -20,6 +20,7 @@ class CenterFormBox extends React.Component {
       password: "",
       confirmPassword: "",
       stage: props.stage || 0,
+      enableAlert: false,
     };
   }
 
@@ -117,6 +118,7 @@ class CenterFormBox extends React.Component {
       this.props.history.push("/");
     } else if (response.status === 400) {
       // TODO: Indicate invalid code
+      this.setState({ enableAlert: true });
       console.log("Wrong code");
     } else {
       // TODO: Indicate code is incorrect
@@ -127,6 +129,19 @@ class CenterFormBox extends React.Component {
   render() {
     return (
       <div className="center-text-box">
+        {this.state.enableAlert && (
+          <Alert
+            variant="danger"
+            onClose={() => this.setState({ enableAlert: false })}
+            dismissible
+          >
+            <Alert.Heading>Account Creation Unsuccessful</Alert.Heading>
+            <p>
+              You may have another account with the same email address, or your
+              verification code is incorrect.
+            </p>
+          </Alert>
+        )}
         <div className="header-text">Welcome to Flower Power</div>
         <div className="sub-text-right">
           {this.differentSubtexts[this.state.stage]}
@@ -202,7 +217,7 @@ class CenterFormBox extends React.Component {
                 <Form.Control
                   className="username-field"
                   type="username"
-                  placeholder="Reset code"
+                  placeholder="Verification code"
                   value={this.state.verifyCode}
                   onChange={(e) =>
                     this.setState({ verifyCode: e.target.value })

@@ -40,7 +40,6 @@ class RightLoginBox extends React.Component {
       console.log("Unsuccessful login");
     } else {
       console.log("Not logged in due to incorrect input");
-      const jsonBody = JSON.parse(body);
     }
   };
 
