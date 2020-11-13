@@ -21,6 +21,7 @@ class LoginPage extends React.Component {
   }
 
   componentDidMount() {
+    // TODO: Ensure access token is still valid
     if (localStorage.accessToken) {
       Auth.login(() => console.log("authenticated"));
       this.props.history.push("/home");
@@ -33,7 +34,7 @@ class LoginPage extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="loginpage">
         <Header default />
         {!this.state.username && (
           <>

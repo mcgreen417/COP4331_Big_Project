@@ -4,7 +4,7 @@ import CenterFormBox from "../components/CenterFormBox";
 
 const ForgotPasswordPage = () => {
   return (
-    <div>
+    <div className="forgotpassword">
       <Header default />
       <CenterFormBox />
     </div>

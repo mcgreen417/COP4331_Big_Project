@@ -39,6 +39,9 @@ class LeftBoxHome extends React.Component {
           </div>
         )}
         <br />
+        <div>
+          Ready for another day of gardening? Let Flower Power lend you a hand!
+        </div>
         {/* TODO: Implement text and plant pictures */}
       </div>
     );

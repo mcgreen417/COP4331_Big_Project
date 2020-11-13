@@ -10,8 +10,6 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import HomePage from "./pages/protected/HomePage";
 import { ProtectedRoute } from "./components/protected.route";
 
-import "./App.css";
-
 function App() {
   useEffect(() => {
     document.title = "Flower Power";
