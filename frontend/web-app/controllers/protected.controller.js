@@ -446,13 +446,15 @@ class ProtectedController {
           body("notes").notEmpty().isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
-          body("reminders")
+          /*body("reminders")
             .notEmpty()
             .custom((reminders) => {
-              if (typeof reminders !== object) {
+              //console.log(JSON.parse(reminders));
+              //var obj = JSON.parse(reminders);
+              if (typeof JSON.parse(reminders) !== object) {
                 throw new Error("Input must be an object");
               }
-            }),
+            }),*/
         ];
       case "deleteEntry":
         return [
