@@ -2,6 +2,7 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 
+const Cognito = require("../services/cognito.service");
 const AuthMiddleware = require("../middleware/auth.middleware");
 
 class ProtectedController {
@@ -35,6 +36,14 @@ class ProtectedController {
       this.searchEntry
     );
   }
+
+  fetchUser = (req, res) => {
+    const { token } = req.body;
+    let cognitoService = new Cognito();
+    cognitoService.getUser(token).then((success) => {
+      success[0] ? res.status(200).json(success[1]) : res.status(400).end();
+    });
+  };
 
   // Create a New Plant Entry
   // Input:
@@ -166,22 +175,22 @@ class ProtectedController {
     var documentClient = new AWS.DynamoDB.DocumentClient();
 
     //check if entry exists in table
-    let checkInst = function() {
+    let checkInst = function () {
       const params = {
         TableName: Plants,
         Key: {
-          "PlantID": plantid,
-          "UserID": userid,
-          "Nickname": nickname,
-          "Species": species,
-          "Sunlight": sunlight,
-          "Water": water,
-          "Notes": notes,
-          "DateAcquired": date,
-          "Classifications": classification,
-          "Reminders": reminders
-        }
-      }
+          PlantID: plantid,
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classifications: classification,
+          Reminders: reminders,
+        },
+      };
 
       documentClient.get(params, function (err, data) {
         if (err) {
@@ -201,10 +210,10 @@ class ProtectedController {
           };
           res.status(400).json(ret);
         }
-      })
-    }
+      });
+    };
 
-    let editEntry = function() {
+    let editEntry = function () {
       const params = {
         TableName: Plants,
         Key: {
@@ -241,7 +250,7 @@ class ProtectedController {
             DateAcquired: date,
             Classifications: classifications,
             Reminders: reminders,
-            Error: err
+            Error: err,
           };
           res.status(400).json(ret);
         } else {
@@ -257,12 +266,12 @@ class ProtectedController {
             DateAcquired: date,
             Classifications: classifications,
             Reminders: reminders,
-            Error: ""
+            Error: "",
           };
           res.status(200).json(ret);
         }
       });
-    }
+    };
 
     checkInst();
     editEntry();
@@ -274,7 +283,7 @@ class ProtectedController {
   //  - "plantid"
   //  - "userid"
   // Output:
-  //  - If input types are correct: 
+  //  - If input types are correct:
   //    - If input is not already an instance in the table: json object of all input pairs and error pair
   //    - If input was not able to be deleted: json object of all input pairs and error pair
   //    - If input was successfully deleted: json object of all input pairs and empty error pair
@@ -290,14 +299,14 @@ class ProtectedController {
 
     var documentClient = new AWS.DynamoDB.DocumentClient();
 
-    let checkInst = function() {
+    let checkInst = function () {
       const params = {
         TableName: Plants,
         Key: {
-          "PlantID": plantid,
-          "UserID": userid
-        }
-      }
+          PlantID: plantid,
+          UserID: userid
+        },
+      };
 
       documentClient.get(params, function (err, data) {
         if (err) {
@@ -309,11 +318,11 @@ class ProtectedController {
           };
           res.status(400).json(ret);
         }
-      })
-    }
+      });
+    };
 
     //remove entry
-    let removeEntry = function() {
+    let removeEntry = function () {
       const params = {
         TableName: Plants,
         Key: {
@@ -322,12 +331,12 @@ class ProtectedController {
         },
         Key: "PlantID == :thisPlantid",
         ExpressionAttributeValues: {
-          ":thisPlantid": plantid
-        }
-      }
+          ":thisPlantid": plantid,
+        },
+      };
 
       documentClient.delete(params, function (err, data) {
-        if(err) {
+        if (err) {
           console.log(" Unable To Delete Item ");
           ret = {
             PlantID: plantid,
@@ -345,7 +354,7 @@ class ProtectedController {
           res.status(200).json(ret);
         }
       });
-    }
+    };
 
     checkInst();
     removeEntry();
@@ -420,7 +429,7 @@ class ProtectedController {
           body("reminders")
             .notEmpty()
             .custom((reminders) => {
-              if (typeof reminders === "object") {
+              if (typeof reminders !== "object") {
                 throw new Error("Input must be an object");
               }
             }),
@@ -428,7 +437,7 @@ class ProtectedController {
       case "editEntry":
         return [
           body("plantid").notEmpty().isString(),
-          body("userid").notEmpty().isString(),PlantID
+          body("userid").notEmpty().isString(),
           body("nickname").notEmpty().isString(),
           body("species").notEmpty().isString(),
           body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
@@ -439,7 +448,7 @@ class ProtectedController {
           body("reminders")
             .notEmpty()
             .custom((reminders) => {
-              if (typeof reminders === "object") {
+              if (typeof reminders !== object) {
                 throw new Error("Input must be an object");
               }
             }),

@@ -20,7 +20,7 @@ function Header(props) {
 
   return (
     <Navbar className="Navbar-header" expand="lg">
-      <Navbar.Brand className="white-text" href="#home">
+      <Navbar.Brand className="white-text" href="/">
         ❀ Flower Power ❀
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
