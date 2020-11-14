@@ -472,7 +472,13 @@ class ProtectedController {
           body("notes").notEmpty().isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
-          body("reminders").notEmpty(),
+          body("reminders")
+            .notEmpty()
+            .custom((reminders) => {
+              if (typeof reminders !== "object") {
+                throw new Error("Input must be an object");
+              }
+            }),
         ];
       case "editEntry":
         return [
@@ -488,7 +494,7 @@ class ProtectedController {
           body("reminders")
             .notEmpty()
             .custom((reminders) => {
-              if (typeof reminders === "object") {
+              if (typeof reminders !== "object") {
                 throw new Error("Input must be an object");
               }
             }),
@@ -507,7 +513,7 @@ class ProtectedController {
           body("reminders")
             .notEmpty()
             .custom((reminders) => {
-              if (typeof reminders === "object") {
+              if (typeof reminders !== "object") {
                 throw new Error("Input must be an object");
               }
             }),
