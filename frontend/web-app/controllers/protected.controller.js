@@ -472,13 +472,7 @@ class ProtectedController {
           body("notes").notEmpty().isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
-          body("reminders")
-            .notEmpty()
-            .custom((reminders) => {
-              if (typeof reminders !== "object") {
-                throw new Error("Input must be an object");
-              }
-            }),
+          body("reminders").notEmpty(),
         ];
       case "editEntry":
         return [
@@ -491,13 +485,7 @@ class ProtectedController {
           body("notes").notEmpty().isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
-          body("reminders")
-            .notEmpty()
-            .custom((reminders) => {
-              if (typeof reminders !== "object") {
-                throw new Error("Input must be an object");
-              }
-            }),
+          body("reminders").notEmpty(),
         ];
       case "deleteEntry":
         return [
@@ -510,13 +498,7 @@ class ProtectedController {
           body("notes").notEmpty().isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
-          body("reminders")
-            .notEmpty()
-            .custom((reminders) => {
-              if (typeof reminders !== "object") {
-                throw new Error("Input must be an object");
-              }
-            }),
+          body("reminders").notEmpty(),
         ];
       case "searchEntry":
         return [
