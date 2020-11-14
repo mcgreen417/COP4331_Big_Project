@@ -1,6 +1,7 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
+const AWS = require("aws-sdk");
 
 const Cognito = require("../services/cognito.service");
 const AuthMiddleware = require("../middleware/auth.middleware");
@@ -467,7 +468,7 @@ class ProtectedController {
           body("reminders")
             .notEmpty()
             .custom((reminders) => {
-              if (typeof reminders === "object") {
+              if (typeof reminders !== "object") {
                 throw new Error("Input must be an object");
               }
             }),*/
