@@ -1,44 +1,50 @@
-.left-text-box {
-  width: 40%;
-  text-align: center;
-  letter-spacing: 0.5px;
-  padding-top: 8%;
-  padding-left: 10%;
-  display: inline;
-  float: left;
+.left-box-text {
+  padding-left: 50px;
+  padding-top: 40px;
+  text-align: left;
+  padding-right: 8%;
+  display: inline-block;
 }
-
-.header-text {
+.welcome-text {
   font-family: Roboto;
   font-style: italic;
-  font-weight: 500;
-  font-size: 2.8rem;
-  line-height: 2.5rem;
-  /* or 78% */
-
+  font-weight: 700;
+  font-size: 3.1rem;
+  line-height: 3.2rem;
+  padding-bottom: 30px;
   align-items: center;
-
   color: #816868;
 }
 
-.sub-text {
+.subtext {
   font-family: Roboto;
   font-style: normal;
-  font-weight: 200;
-  font-size: 1.4rem;
-  line-height: 1.4rem;
-  /* or 94% */
-
+  font-weight: 540;
+  font-size: 1.6rem;
+  line-height: 1.1rem;
   color: #816868;
+  float: left;
+
+  letter-spacing: 0.5px;
 }
 
-/* miscellaneous  */
-
-.bold {
-  font-weight: bold;
+.cutePlant {
+  /* float: left; */
+  /* padding-top: 5%; */
+  /* position: absolute; */
 }
 
-.scrollable {
-  max-height: 40vh;
-  overflow-y: scroll;
+.middle-line {
+  position: fixed;
+  height: 80%;
+  left: 50%;
+  top: 10%;
+  border: 1px solid #816868;
+}
+
+hr {
+  position: fixed;
+  width: 50%;
+  border: 1px solid #816868 !important;
+  /* float: left; */
 }

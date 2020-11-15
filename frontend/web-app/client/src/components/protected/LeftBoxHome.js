@@ -1,7 +1,8 @@
 import React from "react";
-import { Spinner } from "react-bootstrap";
+import { Spinner, Container, Row, Col, Image } from "react-bootstrap";
 
 import "../../css/protected/LeftBoxHome.css";
+import cutePlant from "../../images/cute-plant.png";
 
 class LeftBoxHome extends React.Component {
   constructor(props) {
@@ -27,21 +28,44 @@ class LeftBoxHome extends React.Component {
 
   render() {
     return (
-      <div className="left-text-box">
-        {!this.state.username && (
-          <Spinner animation="border" role="status">
-            <span className="sr-only">Loading...</span>
-          </Spinner>
-        )}
-        {this.state.username && (
-          <div className="header-text">
-            {`Good afternoon, ${this.state.username}!`}
-          </div>
-        )}
-        <br />
-        <div>
-          Ready for another day of gardening? Let Flower Power lend you a hand!
+      <div className="left-box">
+        <div className="left-box-text">
+          {!this.state.username && (
+            <Spinner animation="border" role="status">
+              <span className="sr-only">Loading...</span>
+            </Spinner>
+          )}
+          {this.state.username && (
+            <div className="welcome-text">
+              Good afternoon, <br />
+              {`${this.state.username}!`}
+            </div>
+          )}
+          <br />
+          <p className="subtext">
+            Ready for another day of gardening? <br />
+            <br />
+            Let Flower Power lend you a hand!
+          </p>
         </div>
+        <img className="cutePlant" src={cutePlant} width={188} height={200} />
+        <hr className="left-horizontal-line" />
+        <br />
+        <Container className="container">
+          <Row>
+            <Col xs={6} md={4}>
+              <Image src="holder.js/171x180" rounded />
+            </Col>
+            <Col xs={6} md={4}>
+              <Image src="holder.js/171x180" roundedCircle />
+            </Col>
+            <Col xs={6} md={4}>
+              <Image src="holder.js/171x180" thumbnail />
+            </Col>
+          </Row>
+        </Container>
+        <div className="middle-line" />
+        <br />
         {/* TODO: Implement text and plant pictures */}
       </div>
     );
