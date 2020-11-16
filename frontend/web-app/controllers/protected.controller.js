@@ -321,27 +321,23 @@ class ProtectedController {
       const params = {
         TableName: "Plants",
         Key: {
-          UserID: uid,
+          UserID: userid,
           PlantID: plantid,
-        },
-        Key: "PlantID == :thisPlantid",
-        ExpressionAttributeValues: {
-          ":thisPlantid": plantid,
-        },
+        }
       };
 
       documentClient.delete(params, function (err, data) {
         if (err) {
-          console.log(" Unable To Delete Item ");
-          ret = {
+          console.log(err);
+          var ret = {
             PlantID: plantid,
             UserID: userid,
-            Error: " Unable To Insert Item "
+            Error: " Unable To Delete Item "
           }
           res.status(400).json(ret);
         } else {
           console.log(" Successfully Deleted Item ");
-          ret = {
+          var ret = {
             PlantID: plantid,
             UserID: userid,
             Error: ""
