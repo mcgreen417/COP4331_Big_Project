@@ -4,18 +4,18 @@ const { v4: uuidv4 } = require("uuid");
 const AWS = require("aws-sdk");
 
 const Cognito = require("../services/cognito.service");
-const AuthMiddleware = require("../middleware/auth.middleware"); //Remove for Testing
+const AuthMiddleware = require("../middleware/auth.middleware");
 
 class ProtectedController {
   constructor() {
     this.path = "/protected";
     this.router = express.Router();
-    this.authMiddleware = new AuthMiddleware(); //Remove for Testing
+    this.authMiddleware = new AuthMiddleware();
     this.initRoutes();
   }
 
   initRoutes() {
-    this.router.use(this.authMiddleware.verifyToken); //Remove for Testing
+    //this.router.use(this.authMiddleware.verifyToken); //Remove for Testing
     this.router.post("/fetchUser", this.fetchUser);
     this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
     this.router.post(
@@ -180,18 +180,10 @@ class ProtectedController {
     //check if entry exists in table
     let checkInst = function () {
       const params = {
-        TableName: Plants,
+        TableName: "Plants",
         Key: {
           PlantID: plantid,
-          UserID: userid,
-          Nickname: nickname,
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          Notes: notes,
-          DateAcquired: date,
-          Classifications: classification,
-          Reminders: reminders,
+          UserID: userid
         },
       };
 
@@ -218,14 +210,14 @@ class ProtectedController {
 
     let editEntry = function () {
       const params = {
-        TableName: Plants,
+        TableName: "Plants",
         Key: {
-          UserID: userid,
           PlantID: plantid,
+          UserID: userid
         },
         UpdateExpression:
-          "set Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisnotes, DateAcquired = :thisDate, Classifications = :thisClass, Reminders = :thisReminders",
-        ExpressionAttributes: {
+          "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
+        ExpressionAttributeValues: {
           ":thisNick": nickname,
           ":thisSpecies": species,
           ":thisClass": classification,
@@ -251,7 +243,7 @@ class ProtectedController {
             Water: water,
             Notes: notes,
             DateAcquired: date,
-            Classifications: classifications,
+            Classification: classification,
             Reminders: reminders,
             Error: err,
           };
@@ -267,7 +259,7 @@ class ProtectedController {
             Water: water,
             Notes: notes,
             DateAcquired: date,
-            Classifications: classifications,
+            Classification: classification,
             Reminders: reminders,
             Error: "",
           };
@@ -304,7 +296,7 @@ class ProtectedController {
 
     let checkInst = function () {
       const params = {
-        TableName: Plants,
+        TableName: "Plants",
         Key: {
           PlantID: plantid,
           UserID: userid
@@ -327,7 +319,7 @@ class ProtectedController {
     //remove entry
     let removeEntry = function () {
       const params = {
-        TableName: Plants,
+        TableName: "Plants",
         Key: {
           UserID: uid,
           PlantID: plantid,
