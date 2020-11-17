@@ -27,13 +27,12 @@ class RightLoginBox extends React.Component {
       }),
     });
     const body = await response.text();
-    const sessionTkn = JSON.parse(body);
-    localStorage.jwt = sessionTkn;
-    // const { Session } = bodyJson;
-
+    const { AccessToken, RefreshToken, IdToken } = JSON.parse(body);
     if (response.status === 200) {
-      // TODO: Indicate successfully logged in
-      localStorage.jwt = sessionTkn;
+      localStorage.accessToken = AccessToken;
+      localStorage.refreshToken = RefreshToken;
+      localStorage.idToken = IdToken;
+
       Auth.login(() => console.log("authenticated"));
       this.props.history.push("/home");
     } else if (response.status === 400) {
@@ -41,8 +40,6 @@ class RightLoginBox extends React.Component {
       console.log("Unsuccessful login");
     } else {
       console.log("Not logged in due to incorrect input");
-      const jsonBody = JSON.parse(body);
-      const { value, msg, param } = jsonBody.errors[0];
     }
   };
 

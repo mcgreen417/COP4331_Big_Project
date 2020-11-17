@@ -12,6 +12,18 @@ class CognitoService {
     this.cognitoIdentity = new AWS.CognitoIdentityServiceProvider(this.config);
   }
 
+  async getUser(AccessToken) {
+    try {
+      const data = await this.cognitoIdentity
+        .getUser({ AccessToken: AccessToken })
+        .promise();
+      return [true, data];
+    } catch (error) {
+      console.log(error);
+      return [false];
+    }
+  }
+
   async signUpUser(username, password, userAttr) {
     var params = {
       ClientId: this.clientId /* required */,
@@ -45,8 +57,7 @@ class CognitoService {
     try {
       let data = await this.cognitoIdentity.initiateAuth(params).promise();
       console.log("Signed in to user:");
-      console.log(data["AuthenticationResult"]["AccessToken"]);
-      return [true, data["AuthenticationResult"]["AccessToken"]];
+      return [true, data["AuthenticationResult"]];
     } catch (error) {
       console.log(error);
       return [false];

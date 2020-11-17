@@ -1,9 +1,11 @@
 import React from "react";
+import { withRouter } from "react-router-dom";
 import Header from "../components/Header";
 import LeftTextBox from "../components/LeftTextBox";
 import RightLoginBox from "../components/RightLoginBox";
 import RightSignUpBox from "../components/RightSignUpBox";
 import CenterFormBox from "../components/CenterFormBox";
+import Auth from "../components/Auth";
 
 import "../css/LoginPage.css";
 
@@ -18,13 +20,21 @@ class LoginPage extends React.Component {
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
   }
 
+  componentDidMount() {
+    // TODO: Ensure access token is still valid
+    if (localStorage.accessToken) {
+      Auth.login(() => console.log("authenticated"));
+      this.props.history.push("/home");
+    }
+  }
+
   handleUsernameChange(username) {
     this.setState({ username: username });
   }
 
   render() {
     return (
-      <div>
+      <div className="loginpage">
         <Header default />
         {!this.state.username && (
           <>
@@ -47,4 +57,4 @@ class LoginPage extends React.Component {
   }
 }
 
-export default LoginPage;
+export default withRouter(LoginPage);
