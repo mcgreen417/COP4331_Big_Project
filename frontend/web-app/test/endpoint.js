@@ -8,40 +8,39 @@ chai.use(chaiHttp);
 
 // TODO: Add remaining API unit tests, reference newEntry/search api testing to set up
 
-/*
 describe("New Entry API Testing", () => {
     // Test 1: Create Newton's Nemesis
     describe("POST /protected/newEntry", () => {
         it("Create and verify new plant entry 'Newton's Nemesis'", (done) => {
             const endpoint = {
-                userid:"10",
-                nickname:"Newton's Nemesis",
-                species:"Apple Tree",
-                sunlight:3,
-                water:3,
-                notes:"Claims to have been a major contributor to Newton's work on gravity",
-                date:"2020-3-11",
-                classification:["Flower", "Fruit", "Tree"],
-                reminders:{"Watered":2, "Pruned":60}
+                userid: "10",
+                nickname: "Newton's Nemesis",
+                species: "Apple Tree",
+                sunlight: 3,
+                water: 3,
+                notes: "Claims to have been a major contributor to Newton's work on gravity",
+                date: "2020-11-13",
+                classification: ["Flower", "Fruit", "Tree"],
+                reminders: {"Watered":2, "Pruned":60}
             };
             chai.request(port)
-                .post("/protected/searchEntry")
+                .post("/protected/newEntry")
                 .send(endpoint)
                 .end((err, response) => {
                     response.should.have.status(200);
-                    response.body[0].should.have.property("UserID").eq("10");
-                    response.body[0].should.have.property("Nickname").eq("Newton's Nemesis");
-                    response.body[0].should.have.property("Species").eq("Cactus");
-                    response.body[0].should.have.property("Sunlight").eq(3);
-                    response.body[0].should.have.property("Water").eq(1);
-                    response.body[0].should.have.property("Notes").eq("Claims to have been a major contributor to Newton's work on gravity");
-                    response.body[0].should.have.property("DateAcquired").eq("2020-3-11");
+                    response.body.should.have.property("UserID").eq("10");
+                    response.body.should.have.property("Nickname").eq("Newton's Nemesis");
+                    response.body.should.have.property("Species").eq("Apple Tree");
+                    response.body.should.have.property("Sunlight").eq(3);
+                    response.body.should.have.property("Water").eq(3);
+                    response.body.should.have.property("Notes").eq("Claims to have been a major contributor to Newton's work on gravity");
+                    response.body.should.have.property("DateAcquired").eq("2020-11-13");
                 done();
                 });
         });
     });
 });
-*/
+
 
 describe("Update Entry API Testing", () => {
     // TODO: update tests here
