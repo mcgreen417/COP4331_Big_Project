@@ -6,6 +6,8 @@ const port = "http://localhost:5000";
 chai.should();
 chai.use(chaiHttp);
 
+// TODO: Add remaining API unit tests, reference newEntry/search api testing to set up
+
 /*
 describe("New Entry API Testing", () => {
     // Test 1: Create Newton's Nemesis
@@ -40,6 +42,14 @@ describe("New Entry API Testing", () => {
     });
 });
 */
+
+describe("Update Entry API Testing", () => {
+    // TODO: update tests here
+});
+
+describe("Delete Entry API Testing", () => {
+    // TODO: delete tests here
+});
 
 describe("Search Entry API Testing", () => {
     // Test 1: Find Cactus Jack
