@@ -16,10 +16,6 @@ AWS.config.getCredentials(function (err) {
     );
   }
 });
-AWS.config.update({
-  region: "us-east-2",
-  endpoint: "http://dynamodb.us-east-2.amazonaws.com",
-});
 
 const app = new App({
   port: 5000,

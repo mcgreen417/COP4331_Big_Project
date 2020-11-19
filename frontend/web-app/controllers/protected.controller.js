@@ -5,9 +5,14 @@ const AWS = require("aws-sdk");
 
 const Cognito = require("../services/cognito.service");
 const AuthMiddleware = require("../middleware/auth.middleware");
+const S3Service = require("../services/s3.service");
 
 class ProtectedController {
   constructor() {
+    this.config = {
+      region: "us-east-2",
+      endpoint: "http://dynamodb.us-east-2.amazonaws.com",
+    };
     this.path = "/protected";
     this.router = express.Router();
     this.authMiddleware = new AuthMiddleware();
@@ -15,7 +20,7 @@ class ProtectedController {
   }
 
   initRoutes() {
-    //this.router.use(this.authMiddleware.verifyToken); //Remove for Testing
+    this.router.use(this.authMiddleware.verifyToken); // Keep this uncommented when committing
     this.router.post("/fetchUser", this.fetchUser);
     this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
     this.router.post(
@@ -41,11 +46,31 @@ class ProtectedController {
   }
 
   fetchUser = (req, res) => {
-    const { token } = req.body;
+    const { accessToken } = req.body;
     let cognitoService = new Cognito();
-    cognitoService.getUser(token).then((success) => {
-      success[0] ? res.status(200).json(success[1]) : res.status(400).end();
-    });
+    let s3Service = new S3Service();
+
+    let fetchUserPhotos = (json) => {
+      let subId = json.UserAttributes[0].Value;
+      if (!subId) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
+      }
+
+      s3Service
+        .listAndGetObjects(json)
+        .then((json) => res.status(200).json(json))
+        .catch((err) => {
+          throw err;
+        });
+    };
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? fetchUserPhotos(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
   };
 
   // Create a New Plant Entry
@@ -68,76 +93,61 @@ class ProtectedController {
       return res.status(422).json({ errors: result.array() });
     }
     console.log(req.body);
-    var documentClient = new AWS.DynamoDB.DocumentClient();
+    var documentClient = new AWS.DynamoDB.DocumentClient(this.config);
 
-    let createEntry = function () {
-      // Note:
-      // - classification is expected to be a list of strings
-      // - reminders is expected to be an object
+    // Note:
+    // - classification is expected to be a list of strings
+    // - reminders is expected to be an object
+    const {
+      userid,
+      nickname,
+      species,
+      sunlight,
+      water,
+      notes,
+      date,
+      classification,
+      reminders,
+    } = req.body;
+    const plantid = uuidv4();
 
-      var userid = req.body.userid;
-      var nickname = req.body.nickname;
-      var species = req.body.species;
-      var sunlight = req.body.sunlight;
-      var water = req.body.water;
-      var notes = req.body.notes;
-      var date = req.body.date;
-      var classification = req.body.classification;
-      var reminders = req.body.reminders;
-      var plantid = uuidv4();
-
-      var params = {
-        TableName: "Plants",
-        Item: {
-          PlantID: plantid,
-          UserID: userid,
-          Nickname: nickname,
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          DateAcquired: date,
-          Notes: notes,
-          Classification: classification,
-          Reminders: reminders,
-        },
-      };
-
-      documentClient.put(params, function (err, data) {
-        if (err) {
-          console.log(" Failed to Create Item ");
-          var ret = {
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classification: classification,
-            Reminders: reminders,
-            Error: "Error Creating Entry",
-          };
-          res.status(400).json(ret);
-        } else {
-          console.log(" Successfully Created Item ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classification: classification,
-            Reminders: reminders,
-            Error: "",
-          };
-          res.status(200).json(ret);
-        }
-      });
+    const params = {
+      TableName: "Plants",
+      Item: {
+        PlantID: plantid,
+        UserID: userid,
+        Nickname: nickname,
+        Species: species,
+        Sunlight: sunlight,
+        Water: water,
+        DateAcquired: date,
+        Notes: notes,
+        Classification: classification,
+        Reminders: reminders,
+      },
     };
-    createEntry();
+    documentClient.put(params, function (err, data) {
+      let returnFormat = {
+        UserID: userid,
+        Nickname: nickname,
+        Species: species,
+        Sunlight: sunlight,
+        Water: water,
+        Notes: notes,
+        DateAcquired: date,
+        Classification: classification,
+        Reminders: reminders,
+        Error: "",
+      };
+      if (err) {
+        console.log(" Failed to Create Item ");
+        returnFormat.Error = "Error Creating Entry";
+        res.status(400).json(returnFormat);
+      } else {
+        console.log(" Successfully Created Item ");
+        res.status(200).json(returnFormat);
+      }
+    });
   };
 
   //edit an existing plant entry
@@ -163,113 +173,104 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
+    const {
+      userid,
+      nickname,
+      species,
+      sunlight,
+      water,
+      notes,
+      date,
+      classification,
+      reminders,
+      plantid,
+    } = req.body;
 
-    var userid = req.body.userid;
-    var nickname = req.body.nickname;
-    var species = req.body.species;
-    var sunlight = req.body.sunlight;
-    var water = req.body.water;
-    var notes = req.body.notes;
-    var date = req.body.date;
-    var classification = req.body.classification;
-    var reminders = req.body.reminders;
-    var plantid = req.body.plantid;
-
-    var documentClient = new AWS.DynamoDB.DocumentClient();
-
-    //check if entry exists in table
-    let checkInst = function () {
-      const params = {
-        TableName: "Plants",
-        Key: {
-          PlantID: plantid,
-          UserID: userid
-        },
-      };
-
-      documentClient.get(params, function (err, data) {
-        if (err) {
-          console.log(" Item Does Not Exist ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classification: classification,
-            Reminders: reminders,
-            Error: " Item Does Not Exist In Table ",
-          };
-          res.status(400).json(ret);
-        }
-      });
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    let params = {
+      TableName: "Plants",
+      Key: {
+        PlantID: plantid,
+        UserID: userid,
+      },
     };
-
-    let editEntry = function () {
-      const params = {
-        TableName: "Plants",
-        Key: {
+    // NOTE: The ret value below in both .get() and .update() should maybe be refactored due to DRY
+    // Maybe make a single object and remodify the Error attribute for each ret declaration.
+    documentClient.get(params, function (err, data) {
+      if (err) {
+        console.log(" Item Does Not Exist ");
+        var ret = {
           PlantID: plantid,
-          UserID: userid
-        },
-        UpdateExpression:
-          "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
-        ExpressionAttributeValues: {
-          ":thisNick": nickname,
-          ":thisSpecies": species,
-          ":thisClass": classification,
-          ":thisSunlight": sunlight,
-          ":thisWater": water,
-          ":thisReminders": reminders,
-          ":thisNotes": notes,
-          ":thisDate": date,
-        },
-        ReturnValues: "UPDATED_NEW",
-      };
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classification: classification,
+          Reminders: reminders,
+          Error: " Item Does Not Exist In Table ",
+        };
+        res.status(400).json(ret);
+      }
+    });
 
-      //update table
-      documentClient.update(params, function (err, data) {
-        if (err) {
-          console.log(" Failed To Update Item ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classification: classification,
-            Reminders: reminders,
-            Error: err,
-          };
-          res.status(400).json(ret);
-        } else {
-          console.log(" Successfully Updated Item ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Nickname: nickname,
-            Species: species,
-            Sunlight: sunlight,
-            Water: water,
-            Notes: notes,
-            DateAcquired: date,
-            Classification: classification,
-            Reminders: reminders,
-            Error: "",
-          };
-          res.status(200).json(ret);
-        }
-      });
+    let updateParams = {
+      TableName: "Plants",
+      Key: {
+        PlantID: plantid,
+        UserID: userid,
+      },
+      UpdateExpression:
+        "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
+      ExpressionAttributeValues: {
+        ":thisNick": nickname,
+        ":thisSpecies": species,
+        ":thisClass": classification,
+        ":thisSunlight": sunlight,
+        ":thisWater": water,
+        ":thisReminders": reminders,
+        ":thisNotes": notes,
+        ":thisDate": date,
+      },
+      ReturnValues: "UPDATED_NEW",
     };
-
-    checkInst();
-    editEntry();
+    documentClient.update(updateParams, function (err, data) {
+      if (err) {
+        console.log(" Failed To Update Item ");
+        var ret = {
+          PlantID: plantid,
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classification: classification,
+          Reminders: reminders,
+          Error: err,
+        };
+        res.status(400).json(ret);
+      } else {
+        console.log(" Successfully Updated Item ");
+        var ret = {
+          PlantID: plantid,
+          UserID: userid,
+          Nickname: nickname,
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classification: classification,
+          Reminders: reminders,
+          Error: "",
+        };
+        res.status(200).json(ret);
+      }
+    });
   };
 
   //delete plant entry
@@ -288,67 +289,46 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
+    const { userid, plantid } = req.body;
 
-    var userid = req.body.userid;
-    var plantid = req.body.plantid;
-
-    var documentClient = new AWS.DynamoDB.DocumentClient();
-
-    let checkInst = function () {
-      const params = {
-        TableName: "Plants",
-        Key: {
-          PlantID: plantid,
-          UserID: userid
-        },
-      };
-
-      documentClient.get(params, function (err, data) {
-        if (err) {
-          console.log(" Item Does Not Exist ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Error: " Item Does Not Exist In Table ",
-          };
-          res.status(400).json(ret);
-        }
-      });
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const params = {
+      TableName: "Plants",
+      Key: {
+        PlantID: plantid,
+        UserID: userid,
+      },
     };
-
-    //remove entry
-    let removeEntry = function () {
-      const params = {
-        TableName: "Plants",
-        Key: {
+    documentClient.get(params, function (err, data) {
+      if (err) {
+        console.log(`Error getting entry: ${err}`);
+        var ret = {
+          PlantID: plantid,
           UserID: userid,
+          Error: "Item Does Not Exist In Table ",
+        };
+        res.status(400).json(ret);
+      }
+    });
+    documentClient.delete(params, function (err, data) {
+      if (err) {
+        console.log(err);
+        var ret = {
           PlantID: plantid,
-        }
-      };
-
-      documentClient.delete(params, function (err, data) {
-        if (err) {
-          console.log(err);
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Error: " Unable To Delete Item "
-          }
-          res.status(400).json(ret);
-        } else {
-          console.log(" Successfully Deleted Item ");
-          var ret = {
-            PlantID: plantid,
-            UserID: userid,
-            Error: ""
-          }
-          res.status(200).json(ret);
-        }
-      });
-    };
-
-    checkInst();
-    removeEntry();
+          UserID: userid,
+          Error: " Unable To Delete Item ",
+        };
+        res.status(400).json(ret);
+      } else {
+        console.log(" Successfully Deleted Item ");
+        var ret = {
+          PlantID: plantid,
+          UserID: userid,
+          Error: "",
+        };
+        res.status(200).json(ret);
+      }
+    });
   };
 
   // Search for an existing plant entry
@@ -364,44 +344,38 @@ class ProtectedController {
       return res.status(422).json({ errors: result.array() });
     }
     console.log(req.body);
-    var documentClient = new AWS.DynamoDB.DocumentClient();
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const { userid, search } = req.body;
 
-    let searchEntry = function () {
-      var userid = req.body.userid;
-      var search = req.body.search;
-
-      var params = {
-        TableName: "Plants",
-        FilterExpression:
-          "contains(#nickname, :nickname) AND #userid = :userid",
-        ExpressionAttributeNames: {
-          "#nickname": "Nickname",
-          "#userid": "UserID",
-        },
-        ExpressionAttributeValues: {
-          ":nickname": search,
-          ":userid": userid,
-        },
-      };
-
-      documentClient.scan(params, function (err, data) {
-        if (data.Items === undefined || data.Items.length == 0) {
-          var ret = {
-            UserID: userid,
-            Search: search,
-            Error: "Entry not found",
-          };
-          res.status(400).json(ret);
-        } else {
-          var ret = [];
-          data.Items.forEach(function (item) {
-            ret.push(item);
-          });
-          res.status(200).json(ret);
-        }
-      });
+    var params = {
+      TableName: "Plants",
+      FilterExpression: "contains(#nickname, :nickname) AND #userid = :userid",
+      ExpressionAttributeNames: {
+        "#nickname": "Nickname",
+        "#userid": "UserID",
+      },
+      ExpressionAttributeValues: {
+        ":nickname": search,
+        ":userid": userid,
+      },
     };
-    searchEntry();
+
+    documentClient.scan(params, function (err, data) {
+      if (data.Items === undefined || data.Items.length == 0) {
+        var ret = {
+          UserID: userid,
+          Search: search,
+          Error: "Entry not found",
+        };
+        res.status(400).json(ret);
+      } else {
+        var ret = [];
+        data.Items.forEach(function (item) {
+          ret.push(item);
+        });
+        res.status(200).json(ret);
+      }
+    });
   };
 
   // Reports a problem from the user and stores it into the database.
@@ -414,53 +388,48 @@ class ProtectedController {
     }
 
     var userid = req.body.userid;
-
     // Problem to be added to DB
     var problem = req.body.problem;
 
-    var documentClient = new AWS.DynamoDB.DocumentClient();
+    var documentClient = new AWS.DynamoDB.DocumentClient(this.config);
 
-    let reportAProblem = function () {
-      const params = {
-        TableName: "Users",
-        Key: {
-          UserID: userid,
-        },
-        UpdateExpression:
-          "set #Problems = list_append(:problem, if_not_exists(#Problems, :e))",
-        ConditionExpression: "UserID = :UserID",
-        ExpressionAttributeNames: {
-          "#Problems": "Problems",
-        },
-        ExpressionAttributeValues: {
-          ":problem": [problem],
-          ":e": [],
-          ":UserID": userid,
-        },
-      };
-
-      documentClient.update(params, function (err, data) {
-        if (err) {
-          console.log("Report Did Not File");
-          var ret = {
-            UserID: userid,
-            Error: err,
-          };
-          res.status(400).json(ret);
-        } else {
-          console.log("Filed Report");
-          var ret = {
-            UserID: userid,
-            Error: "",
-          };
-          res.status(200).json(ret);
-        }
-      });
+    const params = {
+      TableName: "Users",
+      Key: {
+        UserID: userid,
+      },
+      UpdateExpression:
+        "set #Problems = list_append(:problem, if_not_exists(#Problems, :e))",
+      ConditionExpression: "UserID = :UserID",
+      ExpressionAttributeNames: {
+        "#Problems": "Problems",
+      },
+      ExpressionAttributeValues: {
+        ":problem": [problem],
+        ":e": [],
+        ":UserID": userid,
+      },
     };
-    reportAProblem();
+
+    documentClient.update(params, function (err, data) {
+      if (err) {
+        console.log("Report Did Not File");
+        var ret = {
+          UserID: userid,
+          Error: err,
+        };
+        res.status(400).json(ret);
+      } else {
+        console.log("Filed Report");
+        var ret = {
+          UserID: userid,
+          Error: "",
+        };
+        res.status(200).json(ret);
+      }
+    });
   };
 
-  // TODO: Refer to auth.controller.js for how to set this up.
   validateBody(type) {
     switch (type) {
       case "newEntry":
@@ -491,7 +460,7 @@ class ProtectedController {
       case "deleteEntry":
         return [
           body("plantid").notEmpty().isString(),
-          body("userid").notEmpty().isString()
+          body("userid").notEmpty().isString(),
         ];
       case "searchEntry":
         return [

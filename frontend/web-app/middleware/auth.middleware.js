@@ -12,10 +12,10 @@ class AuthMiddleware {
   }
 
   verifyToken(req, resp, next) {
-    const { token } = req.body;
-    if (!token) return resp.status(401).end();
+    const { accessToken } = req.body;
+    if (!accessToken) return resp.status(401).end();
 
-    let decodedJwt = jwt.decode(token, { complete: true });
+    let decodedJwt = jwt.decode(accessToken, { complete: true });
     if (decodedJwt === null) {
       resp.status(401).end();
       return;
@@ -26,7 +26,7 @@ class AuthMiddleware {
       resp.status(401).end();
       return;
     }
-    jwt.verify(token, pem, function (err, payload) {
+    jwt.verify(accessToken, pem, function (err, payload) {
       if (err) {
         resp.status(401).end();
         return;
@@ -60,6 +60,27 @@ class AuthMiddleware {
       console.log(error);
       console.log("Error! Unable to download JWKs");
     }
+  }
+
+  getUserIdFromToken(token) {
+    if (!token) {
+      console.log("No token");
+      return;
+    }
+    let decodedJwt = jwt.decode(token, { complete: true });
+    if (decodedJwt === null) {
+      console.log("No decoded JWT");
+      return;
+    }
+    let kid = decodedJwt.header.kid;
+    let pem = pems[kid];
+    if (!pem) {
+      console.log("NO PEM");
+      return;
+    }
+
+    let verifiedToken = jwt.verify(token, pem);
+    return verifiedToken.sub || undefined;
   }
 }
 

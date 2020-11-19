@@ -19,7 +19,7 @@ class LeftBoxHome extends React.Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        token: localStorage.accessToken,
+        accessToken: localStorage.accessToken,
       }),
     })
       .then((response) => response.json())
