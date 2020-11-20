@@ -57,8 +57,11 @@ class ProtectedController {
       }
 
       s3Service
-        .listAndGetObjects(json)
-        .then((json) => res.status(200).json(json))
+        .getPhotoUrlsForSubId(subId)
+        .then((photoUrls) => {
+          json.photoUrls = photoUrls;
+          res.status(200).json(json);
+        })
         .catch((err) => {
           throw err;
         });

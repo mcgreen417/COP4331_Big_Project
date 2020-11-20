@@ -9,6 +9,7 @@ class LeftBoxHome extends React.Component {
     super(props);
     this.state = {
       username: "",
+      plantPhotos: [],
     };
   }
 
@@ -23,7 +24,23 @@ class LeftBoxHome extends React.Component {
       }),
     })
       .then((response) => response.json())
-      .then((data) => this.setState({ username: data.Username }));
+      .then((data) =>
+        this.setState({ username: data.Username, plantPhotos: data.photoUrls })
+      );
+  }
+
+  constructPlantPhotosContainer() {
+    return (
+      <Container className="container">
+        {this.state.plantPhotos.map((url) => (
+          <Row>
+            <Col xs={6} md={4}>
+              <Image src={url} rounded />
+            </Col>
+          </Row>
+        ))}
+      </Container>
+    );
   }
 
   render() {
@@ -51,22 +68,9 @@ class LeftBoxHome extends React.Component {
         <img className="cutePlant" src={cutePlant} width={188} height={200} />
         <hr className="left-horizontal-line" />
         <br />
-        <Container className="container">
-          <Row>
-            <Col xs={6} md={4}>
-              <Image src="holder.js/171x180" rounded />
-            </Col>
-            <Col xs={6} md={4}>
-              <Image src="holder.js/171x180" roundedCircle />
-            </Col>
-            <Col xs={6} md={4}>
-              <Image src="holder.js/171x180" thumbnail />
-            </Col>
-          </Row>
-        </Container>
+        {this.constructPlantPhotosContainer()}
         <div className="middle-line" />
         <br />
-        {/* TODO: Implement text and plant pictures */}
       </div>
     );
   }
