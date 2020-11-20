@@ -32,13 +32,18 @@ class LeftBoxHome extends React.Component {
   constructPlantPhotosContainer() {
     return (
       <Container className="container">
-        {this.state.plantPhotos.map((url) => (
-          <Row>
-            <Col xs={6} md={4}>
-              <Image src={url} rounded />
-            </Col>
-          </Row>
-        ))}
+        <Row>
+          {this.state.plantPhotos.map((url) => (
+            <>
+              <Col xs={6} md={4}>
+                <Image className="image" src={url} rounded />
+              </Col>
+              <Col xs={6} md={4}>
+                <Image className="image" src={url} rounded />
+              </Col>
+            </>
+          ))}
+        </Row>
       </Container>
     );
   }
@@ -68,6 +73,9 @@ class LeftBoxHome extends React.Component {
         <img className="cutePlant" src={cutePlant} width={188} height={200} />
         <hr className="left-horizontal-line" />
         <br />
+        <p className="checkInformationText">
+          Check information for any of your plants below!
+        </p>
         {this.constructPlantPhotosContainer()}
         <div className="middle-line" />
         <br />

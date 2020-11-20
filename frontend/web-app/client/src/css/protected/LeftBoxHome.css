@@ -24,14 +24,7 @@
   line-height: 1.1rem;
   color: #816868;
   float: left;
-
   letter-spacing: 0.5px;
-}
-
-.cutePlant {
-  /* float: left; */
-  /* padding-top: 5%; */
-  /* position: absolute; */
 }
 
 .middle-line {
@@ -42,9 +35,39 @@
   border: 1px solid #816868;
 }
 
+@media (min-width: 0px) and (max-width: 1404px) {
+  .cutePlant {
+    display: none;
+  }
+}
+
 hr {
   position: fixed;
   width: 50%;
   border: 1px solid #816868 !important;
-  /* float: left; */
+}
+
+.container {
+  padding-top: 3%;
+  padding-left: 3% !important;
+  width: 50% !important;
+  float: left;
+}
+
+.image {
+  padding-bottom: 15px;
+  width: 175px;
+  height: 175px;
+}
+
+.checkInformationText {
+  padding-top: 3%;
+  padding-left: 2%;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 540;
+  font-size: 1.6rem;
+  line-height: 1.1rem;
+  color: #816868;
+  letter-spacing: 0.5px;
 }
