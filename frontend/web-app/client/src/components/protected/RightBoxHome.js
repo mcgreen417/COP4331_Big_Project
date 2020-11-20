@@ -2,14 +2,46 @@ import React from "react";
 import {} from "react-bootstrap";
 
 import "../../css/protected/RightBoxHome.css";
+import cutePlant from "../../images/cute-plant.png";
 
 class RightBoxHome extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      days: 0,
+      species: "Cilantro",
+      nickname: "Silly Cilantro",
+    };
   }
 
-  componentDidMount() {}
+  // Reminders API should be:
+  // Input: userId
+  // Output: List of all reminders for each plant with: image url from S3, nickname, species, and water in days
+  generateReminders() {
+    return (
+      <div>
+        <img
+          className="image"
+          alt="Cute plant on home page"
+          src={cutePlant}
+          width={200}
+          height={200}
+        />
+        <div className="paragraphs">
+          <p>
+            <u>Nickname:</u> {this.state.nickname}
+          </p>
+          <p>
+            <u>Species:</u> {this.state.species}
+          </p>
+          <p>
+            <u>Reminder:</u> Water in <b>{this.state.days} days</b>
+          </p>
+        </div>
+        <div className="sequent-line"></div>
+      </div>
+    );
+  }
 
   render() {
     return (
@@ -17,6 +49,8 @@ class RightBoxHome extends React.Component {
         <p className="reminders-text">
           You have upcoming reminders for the following plants...
         </p>
+        <div className="first-line"></div>
+        {this.generateReminders()}
       </div>
     );
   }

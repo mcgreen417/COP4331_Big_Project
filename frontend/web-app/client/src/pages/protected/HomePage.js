@@ -27,8 +27,8 @@ class HomePage extends React.Component {
       .then((response) => response.json())
       .then((data) =>
         this.setState({ username: data.Username, plantPhotos: data.photoUrls })
-      )
-      .catch((_) => localStorage.clear());
+      );
+    // .catch((_) => localStorage.clear());
   }
 
   render() {
@@ -41,7 +41,7 @@ class HomePage extends React.Component {
         />
         {this.state.username && <div className="middle-line" />}
         <br />
-        <RightBoxHome />
+        {this.state.username && <RightBoxHome />}
       </div>
     );
   }

@@ -1,3 +1,8 @@
+.left-box {
+  width: 50%;
+  float: left;
+}
+
 .left-box-text {
   padding-left: 50px;
   padding-top: 40px;
@@ -42,7 +47,6 @@ hr {
 .container {
   padding-top: 3%;
   padding-left: 3% !important;
-  width: 50% !important;
   float: left;
 }
 
@@ -53,7 +57,7 @@ hr {
 }
 
 .check-information-text {
-  padding-top: 3%;
+  padding-top: 5%;
   padding-left: 2%;
   font-family: Roboto;
   font-style: normal;
