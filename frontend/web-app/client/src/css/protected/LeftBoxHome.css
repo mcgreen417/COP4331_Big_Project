@@ -16,7 +16,7 @@
   color: #816868;
 }
 
-.subtext {
+.top-left-sub-text {
   font-family: Roboto;
   font-style: normal;
   font-weight: 540;
@@ -27,16 +27,8 @@
   letter-spacing: 0.5px;
 }
 
-.middle-line {
-  position: fixed;
-  height: 80%;
-  left: 50%;
-  top: 10%;
-  border: 1px solid #816868;
-}
-
 @media (min-width: 0px) and (max-width: 1404px) {
-  .cutePlant {
+  .cute-plant {
     display: none;
   }
 }
@@ -60,7 +52,7 @@ hr {
   height: 175px;
 }
 
-.checkInformationText {
+.check-information-text {
   padding-top: 3%;
   padding-left: 2%;
   font-family: Roboto;
@@ -70,4 +62,10 @@ hr {
   line-height: 1.1rem;
   color: #816868;
   letter-spacing: 0.5px;
+}
+
+.spin {
+  position: fixed;
+  top: 50%;
+  left: 50%;
 }

@@ -6,3 +6,11 @@
   background: #f6efed;
   background-size: cover;
 }
+
+.middle-line {
+  position: fixed;
+  height: 80%;
+  left: 50%;
+  top: 10%;
+  border: 1px solid #816868;
+}
