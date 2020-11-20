@@ -85,8 +85,8 @@ class ProtectedController {
   //  - "water"
   //  - "notes"
   //  - "date"
-  //  - "classification"
-  //  - "reminders"
+  //  - "classification" (Expected list of strings)
+  //  - "reminders" (Expected object)
   // Output:
   //  - If input types are correct: json object of all input pairs and empty error pair
   //  - If input types are incorrect: json object of all input pairs and error pair
@@ -98,9 +98,6 @@ class ProtectedController {
     console.log(req.body);
     var documentClient = new AWS.DynamoDB.DocumentClient(this.config);
 
-    // Note:
-    // - classification is expected to be a list of strings
-    // - reminders is expected to be an object
     const {
       userid,
       nickname,
@@ -119,7 +116,7 @@ class ProtectedController {
       Item: {
         PlantID: plantid,
         UserID: userid,
-        Nickname: nickname,
+        Nickname: nickname.toLowerCase(),
         Species: species,
         Sunlight: sunlight,
         Water: water,
@@ -132,7 +129,7 @@ class ProtectedController {
     documentClient.put(params, function (err, data) {
       let returnFormat = {
         UserID: userid,
-        Nickname: nickname,
+        Nickname: nickname.toLowerCase(),
         Species: species,
         Sunlight: sunlight,
         Water: water,
@@ -205,7 +202,7 @@ class ProtectedController {
         var ret = {
           PlantID: plantid,
           UserID: userid,
-          Nickname: nickname,
+          Nickname: nickname.toLowerCase(),
           Species: species,
           Sunlight: sunlight,
           Water: water,
@@ -228,7 +225,7 @@ class ProtectedController {
       UpdateExpression:
         "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
       ExpressionAttributeValues: {
-        ":thisNick": nickname,
+        ":thisNick": nickname.toLowerCase(),
         ":thisSpecies": species,
         ":thisClass": classification,
         ":thisSunlight": sunlight,
@@ -245,7 +242,7 @@ class ProtectedController {
         var ret = {
           PlantID: plantid,
           UserID: userid,
-          Nickname: nickname,
+          Nickname: nickname.toLowerCase(),
           Species: species,
           Sunlight: sunlight,
           Water: water,
@@ -261,7 +258,7 @@ class ProtectedController {
         var ret = {
           PlantID: plantid,
           UserID: userid,
-          Nickname: nickname,
+          Nickname: nickname.toLowerCase(),
           Species: species,
           Sunlight: sunlight,
           Water: water,
@@ -358,7 +355,7 @@ class ProtectedController {
         "#userid": "UserID",
       },
       ExpressionAttributeValues: {
-        ":nickname": search,
+        ":nickname": search.toLowerCase(),
         ":userid": userid,
       },
     };
