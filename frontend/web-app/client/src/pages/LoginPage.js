@@ -5,7 +5,6 @@ import LeftTextBox from "../components/LeftTextBox";
 import RightLoginBox from "../components/RightLoginBox";
 import RightSignUpBox from "../components/RightSignUpBox";
 import CenterFormBox from "../components/CenterFormBox";
-import Auth from "../components/Auth";
 
 import "../css/LoginPage.css";
 
@@ -23,7 +22,6 @@ class LoginPage extends React.Component {
   componentDidMount() {
     // TODO: Ensure access token is still valid
     if (localStorage.accessToken) {
-      Auth.login(() => console.log("authenticated"));
       this.props.history.push("/home");
     }
   }

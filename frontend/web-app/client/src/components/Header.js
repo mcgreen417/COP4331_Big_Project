@@ -7,7 +7,7 @@ import "../css/Header.css";
 function Header(props) {
   const links = props.default
     ? ["About", "Sign up", "Log in"]
-    : ["Home", "Search", "Account"];
+    : ["Home", "New Entry", "Search", "Account"];
   const generatedLinks = links.map((link, idx) => (
     <Nav.Link
       key={idx}

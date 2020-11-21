@@ -8,7 +8,7 @@ import {
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import HomePage from "./pages/protected/HomePage";
-import { ProtectedRoute } from "./components/protected.route";
+import NewEntry from "./pages/protected/NewEntry";
 
 function App() {
   useEffect(() => {
@@ -29,7 +29,8 @@ function App() {
           <Route path="/about" exact>
             {/* // TODO: About page for app */}
           </Route>
-          <ProtectedRoute exact path="/home" component={HomePage} />
+          <Route exact path="/home" component={HomePage} />
+          <Route exact path="/newentry" component={NewEntry} />
           <Redirect to="/" />
         </Switch>
       </Router>

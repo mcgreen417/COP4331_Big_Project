@@ -2,7 +2,6 @@ import React from "react";
 import { Form, Button } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
 import "../css/RightLoginBox.css";
-import Auth from "./Auth";
 
 class RightLoginBox extends React.Component {
   constructor(props) {
@@ -32,8 +31,6 @@ class RightLoginBox extends React.Component {
       localStorage.accessToken = AccessToken;
       localStorage.refreshToken = RefreshToken;
       localStorage.idToken = IdToken;
-
-      Auth.login(() => console.log("authenticated"));
       this.props.history.push("/home");
     } else if (response.status === 400) {
       // TODO: Indicate not logged in
