@@ -1,7 +1,7 @@
 import React from "react";
 import {} from "react-bootstrap";
 
-import "../../css/protected/RightBoxHome.css";
+import "../../css/protected/components/RightBoxHome.css";
 import cutePlant from "../../images/cute-plant.png";
 
 class RightBoxHome extends React.Component {

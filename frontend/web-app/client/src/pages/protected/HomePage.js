@@ -1,9 +1,10 @@
 import React from "react";
+import { withRouter } from "react-router-dom";
 import Header from "../../components/Header";
 import LeftBoxHome from "../../components/protected/LeftBoxHome";
 import RightBoxHome from "../../components/protected/RightBoxHome";
 
-import "../../css/protected/HomePage.css";
+import "../../css/protected/pages/HomePage.css";
 
 class HomePage extends React.Component {
   constructor(props) {
@@ -15,6 +16,9 @@ class HomePage extends React.Component {
   }
 
   componentDidMount() {
+    if (!localStorage.accessToken) {
+      this.props.history.push("/");
+    }
     fetch("/protected/fetchUser", {
       method: "POST",
       headers: {
@@ -27,8 +31,8 @@ class HomePage extends React.Component {
       .then((response) => response.json())
       .then((data) =>
         this.setState({ username: data.Username, plantPhotos: data.photoUrls })
-      );
-    // .catch((_) => localStorage.clear());
+      )
+      .catch((_) => localStorage.clear() && this.props.history.push("/"));
   }
 
   render() {
@@ -47,4 +51,4 @@ class HomePage extends React.Component {
   }
 }
 
-export default HomePage;
+export default withRouter(HomePage);

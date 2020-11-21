@@ -1,9 +1,9 @@
 import React from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
-import "../css/CenterFormBox.css";
+import "../css/CenterFormBoxLogin.css";
 
-class CenterFormBox extends React.Component {
+class CenterFormBoxLogin extends React.Component {
   constructor(props) {
     super(props);
 
@@ -248,4 +248,4 @@ class CenterFormBox extends React.Component {
   }
 }
 
-export default withRouter(CenterFormBox);
+export default withRouter(CenterFormBoxLogin);

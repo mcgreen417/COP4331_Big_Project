@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../components/Header";
-import CenterFormBox from "../components/CenterFormBox";
+import CenterFormBox from "../components/CenterFormBoxLogin";
 
 const ForgotPasswordPage = () => {
   return (

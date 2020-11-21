@@ -1,10 +1,10 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import Header from "../components/Header";
-import LeftTextBox from "../components/LeftTextBox";
-import RightLoginBox from "../components/RightLoginBox";
-import RightSignUpBox from "../components/RightSignUpBox";
-import CenterFormBox from "../components/CenterFormBox";
+import LeftTextBoxLogin from "../components/LeftTextBoxLogin";
+import RightBoxLogin from "../components/RightBoxLogin";
+import RightSignUpBoxLogin from "../components/RightSignUpBoxLogin";
+import CenterFormBoxLogin from "../components/CenterFormBoxLogin";
 
 import "../css/LoginPage.css";
 
@@ -36,15 +36,17 @@ class LoginPage extends React.Component {
         <Header default />
         {!this.state.username && (
           <>
-            <div className="middle-line" /> <LeftTextBox />
+            <div className="middle-line" /> <LeftTextBoxLogin />
           </>
         )}
-        {!this.props.isSignUp && <RightLoginBox />}
+        {!this.props.isSignUp && <RightBoxLogin />}
         {this.props.isSignUp && !this.state.username && (
-          <RightSignUpBox handleUsernameChange={this.handleUsernameChange} />
+          <RightSignUpBoxLogin
+            handleUsernameChange={this.handleUsernameChange}
+          />
         )}
         {this.props.isSignUp && this.state.username && (
-          <CenterFormBox
+          <CenterFormBoxLogin
             stage={2}
             username={this.state.username}
             handleUsernameChange={this.handleUsernameChange}

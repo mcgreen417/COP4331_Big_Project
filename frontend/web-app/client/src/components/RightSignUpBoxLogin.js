@@ -1,43 +1,55 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
-import "../css/RightLoginBox.css";
+import "../css/RightSignUpBoxLogin.css";
 
-class RightLoginBox extends React.Component {
+class RightSignUpBoxLogin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      response: "",
       username: "",
+      email: "",
       password: "",
+      confirmPassword: "",
     };
   }
 
-  login = async (e) => {
+  signUp = async (e) => {
     e.preventDefault();
-    const response = await fetch("/api/login", {
+
+    // TODO: Do checks to ensure user and email is valid input
+
+    if (this.state.password !== this.state.confirmPassword) {
+      // TODO: Display issue regarding password not equal to confirm password.
+    }
+
+    const response = await fetch("/api/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         username: this.state.username,
+        email: this.state.email,
         password: this.state.password,
       }),
     });
     const body = await response.text();
-    const { AccessToken, RefreshToken, IdToken } = JSON.parse(body);
+
     if (response.status === 200) {
-      localStorage.accessToken = AccessToken;
-      localStorage.refreshToken = RefreshToken;
-      localStorage.idToken = IdToken;
-      this.props.history.push("/home");
+      // TODO: Indicate successfully logged in
+      console.log(
+        "User successfully signed up... redirect to verification code"
+      );
+      this.props.handleUsernameChange(this.state.username);
     } else if (response.status === 400) {
-      // TODO: Indicate not logged in
-      console.log("Unsuccessful login");
+      // TODO: Indicate invalid code
+      console.log("????? 400 error");
     } else {
-      console.log("Not logged in due to incorrect input");
+      console.log("Password or code fields are invalid");
     }
+
+    console.log(body);
   };
 
   render() {
@@ -49,7 +61,7 @@ class RightLoginBox extends React.Component {
           today!
         </div>
         <Form className="form-box">
-          <Form.Group controlId="formBasicEmail">
+          <Form.Group>
             <Form.Control
               className="username-field"
               type="username"
@@ -58,7 +70,16 @@ class RightLoginBox extends React.Component {
               onChange={(e) => this.setState({ username: e.target.value })}
             />
           </Form.Group>
-          <Form.Group controlId="formBasicPassword">
+          <Form.Group>
+            <Form.Control
+              className="username-field"
+              type="username"
+              placeholder="E-mail address"
+              value={this.state.email}
+              onChange={(e) => this.setState({ email: e.target.value })}
+            />
+          </Form.Group>
+          <Form.Group>
             <Form.Control
               className="password-field"
               type="password"
@@ -67,29 +88,37 @@ class RightLoginBox extends React.Component {
               onChange={(e) => this.setState({ password: e.target.value })}
             />
           </Form.Group>
+          <Form.Group>
+            <Form.Control
+              className="password-field"
+              type="password"
+              placeholder="Confirm password"
+              value={this.state.confirmPassword}
+              onChange={(e) =>
+                this.setState({ confirmPassword: e.target.value })
+              }
+            />
+          </Form.Group>
           <Button
             className="login-button"
             variant="primary"
             type="submit"
-            onClick={this.login}
+            onClick={this.signUp}
           >
-            LOG IN
+            SIGN UP
           </Button>
         </Form>
         <div>
           <p className="sign-up-text">
-            Don't have an account?{" "}
-            <Link to="/signup" className="signup-link">
-              Sign up here.
+            Already have an account?{" "}
+            <Link to="/login" className="signup-link">
+              Log in here.
             </Link>
           </p>
-          <Link to="/forgot-password" className="signup-link">
-            Forgot your password?
-          </Link>
         </div>
       </div>
     );
   }
 }
 
-export default withRouter(RightLoginBox);
+export default withRouter(RightSignUpBoxLogin);

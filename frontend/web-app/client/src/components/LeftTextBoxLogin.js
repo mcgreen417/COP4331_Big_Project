@@ -1,8 +1,8 @@
 import React from "react";
 
-import "../css/LeftTextBox.css";
+import "../css/LeftTextBoxLogin.css";
 
-function LeftTextBox() {
+function LeftTextBoxLogin() {
   return (
     <div className="left-text-box">
       <div className="header-text">
@@ -37,4 +37,4 @@ function LeftTextBox() {
   );
 }
 
-export default LeftTextBox;
+export default LeftTextBoxLogin;

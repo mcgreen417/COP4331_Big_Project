@@ -8,7 +8,8 @@ import {
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import HomePage from "./pages/protected/HomePage";
-import NewEntry from "./pages/protected/NewEntry";
+import NewEntryPage from "./pages/protected/NewEntryPage";
+import SearchPage from "./pages/protected/SearchPage";
 
 function App() {
   useEffect(() => {
@@ -30,7 +31,8 @@ function App() {
             {/* // TODO: About page for app */}
           </Route>
           <Route exact path="/home" component={HomePage} />
-          <Route exact path="/newentry" component={NewEntry} />
+          <Route exact path="/newentry" component={NewEntryPage} />
+          <Route exact path="/search" component={SearchPage} />
           <Redirect to="/" />
         </Switch>
       </Router>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Spinner, Container, Row, Col, Image } from "react-bootstrap";
 
-import "../../css/protected/LeftBoxHome.css";
+import "../../css/protected/components/LeftBoxHome.css";
 import cutePlant from "../../images/cute-plant.png";
 
 class LeftBoxHome extends React.Component {
