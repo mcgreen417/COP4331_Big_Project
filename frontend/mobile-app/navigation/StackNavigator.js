@@ -1,62 +1,38 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import {StyleSheet } from "react-native";
 
-import { Home } from "../screens/Home";
-import { Nursery } from "../screens/Nursery";
-import { Search } from "../screens/Search";
-import { Account } from "../screens/Account";
-import { Login } from "../screens/Login";
-import { User } from "../screens/User";
-import { Register } from "../screens/Register";
+{/* Account Managament Stack */}
+import {Login} from '../Screens/Login'
+import {Register} from '../Screens/Register'
+import {EmailVerification} from '../Screens/EmailVerification'
+import {ForgotPassword} from '../Screens/ForgotPassword'
+import {PasswordResetVerification} from '../Screens/PasswordResetVerification'
+import {ResetPassword} from '../Screens/ResetPassword'
+
+import BottomTabNavigator from './TabNavigator'
 
 const Stack = createStackNavigator();
 
-function MainStackNavigator() {
+function AccountStackNavigator () {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Home" component={Home} />
+    <Stack.Navigator
+      screenOptions = {{
+        headerShown:false
+      }}
+    >
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="EmailVerification" component={EmailVerification} />
+        <Stack.Screen name="PasswordResetVerification" component={PasswordResetVerification} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name = "Home" component = {BottomTabNavigator} />
     </Stack.Navigator>
-  );
+  )
 }
 
-function SearchStackNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Search" component={Search} />
-    </Stack.Navigator>
-  );
-}
 
-function NurseryStackNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Nursery" component={Nursery} />
-    </Stack.Navigator>
-  );
-}
 
-function AccountStackNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Register" component={Register} />
-      <Stack.Screen name="User" component={User} />
-    </Stack.Navigator>
-  );
-}
 
-function AccountNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Account" component={Account} />
-    </Stack.Navigator>
-  );
-}
-
-export {
-  MainStackNavigator,
-  SearchStackNavigator,
-  NurseryStackNavigator,
-  AccountStackNavigator,
-  AccountNavigator,
-};
+export { AccountStackNavigator};

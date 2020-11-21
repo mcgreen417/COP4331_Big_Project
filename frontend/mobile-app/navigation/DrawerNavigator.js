@@ -1,23 +1,26 @@
-// ./navigation/DrawerNavigator.js
-
 import React from "react";
-
 import { createDrawerNavigator } from "@react-navigation/drawer";
-
-import { ContactStackNavigator } from "./StackNavigator";
-import { BottomTabNavigator } from "./TabNavigator";
-import { NavigationContainer } from "@react-navigation/native";
+import DrawerContent from './DrawerContent'
+import {AccountStackNavigator} from './StackNavigator'
 
 const Drawer = createDrawerNavigator();
 
-function DrawerNavigator() {
+function DrawerNavigator() 
+{
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Home" component={BottomTabNavigator} />
-      <Drawer.Screen name="Search" component={BottomTabNavigator} />
-      <Drawer.Screen name="Nursery" component={BottomTabNavigator} />
+    <Drawer.Navigator
+    drawerContent = {props => {
+      return (<DrawerContent {...props} />)
+    }} 
+    drawerPosition = 'right'
+    screenOptions = {{
+        headerShown:false
+      }}
+    
+    >
+      <Drawer.Screen name="LoginDrawer" component={AccountStackNavigator} />
     </Drawer.Navigator>
   );
-}
+};
 
 export default DrawerNavigator;

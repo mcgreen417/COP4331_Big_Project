@@ -1,22 +1,15 @@
-import React from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
+import React from 'react'
+import {Text, View, Button, StyleSheet,StatusBar, Image, ScrollView, FlatList, TextInput} from 'react-native'
+import Color from '../constants/colors';
 
-function Nursery({ navigation }) {
-  return (
-    <View style={styles.Container}>
-      <Text style={{ alignSelf: "center", color: "white" }}>
-        Welcome to the Nursery page!
-      </Text>
-    </View>
-  );
+function Nursery({navigation})
+{
+    return(
+        <View style = {{flex:1, backgroundColor:Color.background, justifyContent:'center',alignItems:'center'}}>
+            <Text>Nursery Page Coming Soon!</Text>
+        </View>
+    )
+
 }
 
-const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "green",
-  },
-});
-
-export { Nursery };
+export default Nursery;

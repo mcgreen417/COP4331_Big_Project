@@ -1,62 +1,126 @@
-import React, { useState } from "react";
-import { Text, View, Button, StyleSheet, TextInput } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { Input } from "react-native-elements";
-import User from "./User";
+import React, { useState } from 'react';
+import {StyleSheet, View, Text, Modal,Button, Image, ImageBackground, StatusBar,TouchableOpacity, ScrollView} from 'react-native';
+import { Input } from 'react-native-elements';
+import { DialogueBox } from '../components/DialogueBox';
+import {Header} from '../components/Header'
+import {SubText} from '../components/SubText'
+import Color from '../constants/colors'
+import {CustomButton} from '../components/CustomButton'
 
-function Login({ navigation }) {
-  const [text, setText] = useState("");
-  return (
-    <View style={styles.Container}>
-      <Text style={styles.MainText}>Welcome to Flower Power!</Text>
-      <Text style={styles.MainText}>
-        Sign in below or create an account to get started tracking your garden
-        today.
-      </Text>
+function Login({navigation}) 
+{
+  return(
 
-      <Input
-        placeholder="Username"
-        leftIcon={{ type: "font-awesome", name: "envelope", color: "white" }}
-      />
+    <ScrollView contentContainerStyle = {{flexGrow:1}}>
+      {/* Main Container - purple */}
+      <View style = {styles.mainContainer}>
+        <StatusBar barstyle = "dark-content" hidden = {false} backgroundColor = {Color.theme} translucent = {true}/>
 
-      <Input
-        placeholder="Username"
-        leftIcon={{ type: "font-awesome", name: "lock", color: "white" }}
-      />
+        {/* Secondary Container Header - Blue */}
+        <View style = {styles.secondaryContainerHeader}>
+          <Image source = {require('../assets/header.png')} />
 
-      <Button
-        title="Login"
-        onPress={() => {
-          console.log("Going to User page!");
-          navigation.navigate("User");
-        }}
-      />
+          {/* Header Container - Red */}
+          <View style = {styles.headerContainer}>
+              <Header />
+              <SubText> Sign in below or create an account to get started tracking your garden today.</SubText>
+          </View>
+        </View>
+        
+        {/* Form Container -  DodgerBlue*/}
+        <View style = {styles.formContainer}>
 
-      <View style={styles.MainText}>
-        <Text style={styles.MainText}>
-          Don't have an account? Sign up here.
-        </Text>
-        <Text style={styles.MainText}>Forgot your password?</Text>
+        <Input 
+              placeholder = "Username"
+              style = {{textAlign:'center', borderColor:'#a5dfb2', borderWidth:2,borderRadius:5,backgroundColor:'white'}}
+              placeholderTextColor = 'black'
+          />
 
-        <Text style={styles.MainText}>
-          By continuing, you're accepting our terms of service and private
-          policy.
-        </Text>
+          <Input 
+              placeholder = "Password"
+              style = {{textAlign:'center', borderColor:'#a5dfb2', borderWidth:2,borderRadius:5,backgroundColor:'white'}}
+              placeholderTextColor = 'black'
+        />
+
+        <CustomButton label = "Log in" link = "Home" />
+
+        </View>
+
+        {/* Secondary Container Footer - Blue */}
+        <View style = {styles.secondaryContainerFooter} >
+
+          {/* Footer Container - Red*/}
+          <View style = {styles.footerContainer}>
+
+            {/* Footer Content Container - Green */}
+              <View style = {styles.footerContentContainer}>
+                  <View style = {{alignItems:'center'}}>
+                  <Text>Don't have an account? <Text style ={styles.plantLabel} onPress = {() => navigation.navigate("Register")}>Sign up here.</Text></Text>
+                  <Text style ={styles.plantLabel} onPress = {() => navigation.navigate("ForgotPassword")}>Forgot your password?</Text>
+                  </View>
+                  <View style = {{alignItems:'center'}}>
+                  <Text>By continuing, you're accepting our</Text>
+                  <Text><Text style ={styles.plantLabel}>Terms of Service </Text> and <Text style ={styles.plantLabel}>Private Policy</Text></Text>
+                  </View>
+            </View>
+          </View>
+          <Image source = {require('../assets/footer.png')} style = {{}} />
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "green",
+  mainContainer:{
+    flex:1, 
+    // borderWidth:5, borderColor:'purple',
+    backgroundColor:Color.background,
+    alignItems:'center'
   },
-  MainText: {
-    color: "white",
-    alignSelf: "center",
+  secondaryContainerHeader:{
+    marginTop:11,
+    //  borderWidth:5, borderColor:'blue', 
+    alignItems:'center', 
+    height:270
   },
-});
+  headerContainer:{
+    position:'absolute', 
+  //  borderWidth:5, borderColor:'red',
+    alignItems:'center',
+    justifyContent:'flex-end', 
+    width:'100%',height:'100%'
+  },
+  formContainer:{
+    marginTop:10, marginBottom:10, 
+    alignItems:'center', 
+    width:'80%',
+    // borderWidth:5, borderColor:'dodgerblue',
+    flex:1
+  },
+  imgContainer:{
+    borderWidth:5, borderColor:"teal"
+  },
+  secondaryContainerFooter:{
+    justifyContent:'flex-end', 
+    // borderWidth:5, borderColor:'blue',
+    height:195
+  },
+  footerContainer:{
+    position:'absolute',
+    zIndex:1,
+    width:'100%', height:'100%', 
+    alignItems:'center',
+   // borderWidth:5, borderColor:'red'
+  },
+  footerContentContainer:{
+    paddingTop:10,
+    // borderWidth:5, borderColor:'green'
+  },
+  plantLabel:{
+    color:Color.darkGreen, 
+    textDecorationLine:'underline'
+}
+})
 
-export { Login };
+export {Login}

@@ -1,0 +1,91 @@
+import React, {useState} from 'react'
+import {Text, View, Button, StyleSheet,StatusBar, Image, ImagePropTypes} from 'react-native'
+import Color from '../constants/colors';
+import Dash from 'react-native-dash';
+import { Icon } from 'react-native-elements'
+import { CheckBox } from 'react-native-elements'
+import {RoundButton} from './RoundButton'
+import {useNavigation} from '@react-navigation/native';
+
+function PlantEntry(props)
+{
+    const [toggleCheckBox, setToggleCheckBox] = useState(false);
+    const navigation = useNavigation();
+
+    return(
+
+        // Main Container - Purple
+        <View style = {styles.mainContainer}>
+            <Dash style = {{width:'100%',height:1}} dashLength = {7}  dashThickness = {1} dashColor = {Color.HeaderText} dashGap = {5}/>
+
+            {/* Plant Reminder Container - Blue*/}
+            <View style = {styles.PlantRemindersContainer}>
+
+                <View style = {{flexDirection:'row'}}>
+                    <Image source = {props.image} style = {{borderRadius:10}}/>
+
+                    {/* Plant Data Container - DodgerBlue */}
+                    <View style = {styles.plantDataContainer}>
+
+                        {/* Plant Info Container Orange */}
+                        <View style = {styles.plantInfoContainer}>
+                            <Text><Text style = {{color:Color.darkGreen}}>Nickname:</Text> {props.nickname}</Text>
+                            <Text><Text style = {{color:Color.darkGreen}}>Species:</Text> {props.species}</Text>
+                            <Text><Text style = {{color:Color.darkGreen}}>Date Acquired: </Text>{props.date}</Text>
+                            <Text style = {{color:Color.darkGreen}}>Plant Classification: </Text>
+                            <RoundButton name = {props.classification}/>
+                        </View>
+
+                        {/* Entry Container - Green */}
+                        <View style = {styles.EntryContainer}>
+
+                            {/* Delete Entry */}
+                            <View style = {{flexDirection:'row', alignItems:'center', paddingTop:10}}>
+                                <CheckBox
+                                    checked = {toggleCheckBox}
+                                    onPress = {() => {setToggleCheckBox(!toggleCheckBox); props.onModal(props.id)}}
+                                    containerStyle = {{color:'green', padding:0}}
+                                    checkedColor = "green"
+                                />
+                                <Text>Delete Entry</Text>
+                            </View>
+                            
+                            {/* View Entry */}
+                            <View style = {{flexDirection:'row', paddingRight:5, alignItems:'center'}}>
+                                <Text style = {{paddingRight:5}}>View Entry</Text>
+                                <Icon name = 'long-arrow-right' type = 'font-awesome' color = {Color.header} onPress = {() => navigation.navigate("ViewEntry")}/>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </View>
+            
+            <Dash style = {{width:'100%',height:1}} dashLength = {7}  dashThickness = {1} dashColor = {Color.HeaderText} dashGap = {5}/>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    mainContainer:{
+        // borderWidth:5, borderColor:'purple'
+    },
+    PlantRemindersContainer:{
+        // borderWidth:5, borderColor:'blue',
+        paddingVertical:15, paddingLeft:7
+    },
+    plantDataContainer:{
+        // borderWidth:5, borderColor:'dodgerblue',
+        flex:1, 
+        paddingLeft:5
+    },
+    plantInfoContainer:{
+        // borderWidth:5, borderColor:'orange'
+    },
+    EntryContainer:{
+        flexDirection:'row', 
+        justifyContent:'space-between',alignItems:'center', 
+        // borderWidth:5, borderColor:'green'
+    }
+})
+
+export {PlantEntry}

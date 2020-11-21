@@ -1,22 +1,30 @@
-import React from "react";
-import { Text, View, Button, StyleSheet } from "react-native";
+import React from 'react'
+import {Text, View, Button, StyleSheet,StatusBar, Image, ScrollView, FlatList, TextInput} from 'react-native'
+import Color from '../constants/colors';
+import { useEffect } from 'react'
 
-function Account({ navigation }) {
-  return (
-    <View style={styles.Container}>
-      <Text style={{ alignSelf: "center", color: "white" }}>
-        Welcome to the Account page!
-      </Text>
-    </View>
-  );
+function Account({navigation})
+{
+    React.useEffect(() => {
+        const unsubscribe = navigation.addListener('tabPress', (e) => {
+          // Prevent default behavior
+          e.preventDefault();
+
+          navigation.openDrawer();
+          
+        });
+      
+        return unsubscribe;
+      }, [navigation]);
+
+    return(
+        <View style = {{flex:1, backgroundColor:Color.background, justifyContent:'center',alignItems:'center'}}>
+            <Text>This tab will launch our Account drawer</Text>
+        </View>
+    )
 }
 
-const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "green",
-  },
-});
+export default Account;
 
-export { Account };
+
+
