@@ -17,6 +17,8 @@ class RightBoxHome extends React.Component {
   // Reminders API should be:
   // Input: userId
   // Output: List of all reminders for each plant with: image url from S3, nickname, species, and water in days
+  // Grab all Urls on S3 associated with a user ID, then use each of those urls and cut it down into its plant identifier.
+  // Next
   generateReminders() {
     return (
       <div>

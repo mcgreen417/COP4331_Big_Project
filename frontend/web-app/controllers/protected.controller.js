@@ -22,6 +22,7 @@ class ProtectedController {
   initRoutes() {
     this.router.use(this.authMiddleware.verifyToken); // Keep this uncommented when committing
     this.router.post("/fetchUser", this.fetchUser);
+    this.router.post("/fetchReminders", this.fetchReminders);
     this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
     this.router.post(
       "/editEntry",
@@ -70,6 +71,65 @@ class ProtectedController {
       cognitoService.getUser(accessToken).then((success) => {
         success[0] ? fetchUserPhotos(success[1]) : res.status(400).end();
       });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
+  };
+
+  fetchReminders = (req, res) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(422).json({ errors: result.array() });
+    }
+    const { accessToken } = req.body;
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const cognitoService = new Cognito();
+    const s3Service = new S3Service();
+
+    let fetchUserReminders = (json) => {
+      let subId = json.UserAttributes[0].Value;
+      if (!subId) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
+      }
+      var params = {
+        TableName: "Plants",
+        FilterExpression: "#userid = :userid",
+        ExpressionAttributeNames: {
+          "#userid": "UserID",
+        },
+        ExpressionAttributeValues: {
+          ":userid": subId,
+        },
+      };
+
+      documentClient.scan(params, function (err, data) {
+        if (data.Items === undefined || data.Items.length == 0) {
+          var ret = {
+            UserID: subId,
+            Search: search,
+            Error: "Entry not found",
+          };
+          res.status(400).json(ret);
+        } else {
+          let ret = data.Items.map(function (item) {
+            item.Classification = AWS.DynamoDB.Converter.unmarshall(
+              item.Classification
+            );
+            item.Reminders = AWS.DynamoDB.Converter.unmarshall(item.Reminders);
+            item.plantUrl = s3Service.convertPlantIdToUrl(subId, item.PlantID);
+            return item;
+          });
+          res.status(200).json(ret);
+        }
+      });
+    };
+
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? fetchUserReminders(success[1]) : res.status(400).end();
+      });
+      fetchUserReminders();
     } catch (err) {
       console.log(err);
       res.status(400).end();

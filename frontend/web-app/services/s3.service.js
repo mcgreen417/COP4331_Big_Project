@@ -1,4 +1,5 @@
 const AWS = require("aws-sdk");
+const fs = require("fs");
 
 class S3Service {
   constructor() {
@@ -22,13 +23,45 @@ class S3Service {
       let bucketUrl = `https://s3.${this.region}.amazonaws.com/${this.bucketName}/`;
       let photos = objectsPromise.Contents.filter((photo) => photo.Size !== 0);
       if (photos.length !== 0) {
-        return photos.map((photo) => bucketUrl + encodeURIComponent(photo.Key));
+        console.log(photos);
+        return photos.map((photo) => {
+          console.log(photo.Key);
+          return bucketUrl + encodeURIComponent(photo.Key);
+        });
       } else {
         return [];
       }
     } catch (err) {
       throw `Error when listing S3 objects: ${err}`;
     }
+  }
+
+  async uploadPhotoForUser(subId, plantId, fileName) {
+    if (!subId) {
+      throw "No sub ID defined for fetching photo URLs";
+    }
+
+    try {
+      // Filename is probably a buffer...
+      const fileContent = await fs.readFile(fileName);
+      const params = {
+        Key: `${subId}/${plantId}`,
+        Body: fileContent,
+      };
+      let uploadObject = await this.s3Object.upload(params).promise();
+    } catch (err) {
+      throw `Error while uploading S3 object: ${err}`;
+    }
+  }
+
+  convertPlantIdToUrl(subId, plantId) {
+    if (!subId || !plantId) {
+      throw "No sub ID or PlantId defined for fetching photo URLs";
+    }
+
+    let bucketUrl = `https://s3.${this.region}.amazonaws.com/${this.bucketName}/`;
+    let plantKey = `${subId}/${plantId}`;
+    return bucketUrl + encodeURIComponent(plantKey);
   }
 }
 
