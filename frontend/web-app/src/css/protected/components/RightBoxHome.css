@@ -1,0 +1,38 @@
+.image {
+  float: left;
+}
+
+.paragraphs {
+  padding-top: 2%;
+}
+
+.first-line {
+  margin-left: 5%;
+  margin-right: 5%;
+  border: 1px dashed #816868;
+}
+
+.sequent-line {
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 50px;
+  border: 1px dashed #816868;
+}
+
+.reminders-text {
+  padding-top: 3%;
+  padding-left: 5%;
+  padding-bottom: 2%;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 540;
+  font-size: 1.6rem;
+  line-height: 1.1rem;
+  color: #816868;
+  letter-spacing: 0.5px;
+}
+
+.right-box {
+  width: 50%;
+  float: right;
+}
