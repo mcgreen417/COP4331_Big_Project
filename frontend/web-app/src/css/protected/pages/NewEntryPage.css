@@ -1,0 +1,17 @@
+.new-entry-page {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-image: none;
+  background: #f6efed;
+  background-size: cover;
+}
+
+.upload-image {
+  cursor: pointer;
+  margin: 25%;
+}
+
+.new-entry-page > input {
+  display: none;
+}

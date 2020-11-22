@@ -31,7 +31,6 @@ class AuthController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    console.log(req.body);
     const { username, password, email } = req.body;
     let userAttr = [];
     userAttr.push({ Name: "email", Value: email });
@@ -45,7 +44,6 @@ class AuthController {
   // Use username and password to authenticate user
   signIn = (req, res) => {
     const result = validationResult(req);
-    console.log(result);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
@@ -63,7 +61,6 @@ class AuthController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    console.log(req.body);
     const { username, code } = req.body;
 
     let cognitoService = new Cognito();

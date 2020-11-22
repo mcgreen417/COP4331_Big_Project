@@ -105,12 +105,7 @@ class ProtectedController {
 
       documentClient.scan(params, function (err, data) {
         if (data.Items === undefined || data.Items.length == 0) {
-          var ret = {
-            UserID: subId,
-            Search: search,
-            Error: "Entry not found",
-          };
-          res.status(400).json(ret);
+          res.status(400).json({ Error: "User has no reminders" });
         } else {
           let ret = data.Items.map(function (item) {
             item.Classification = AWS.DynamoDB.Converter.unmarshall(
@@ -159,6 +154,7 @@ class ProtectedController {
     var documentClient = new AWS.DynamoDB.DocumentClient(this.config);
 
     const {
+      accessToken,
       userid,
       nickname,
       species,

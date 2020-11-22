@@ -35,7 +35,6 @@ class CognitoService {
 
     try {
       const data = await this.cognitoIdentity.signUp(params).promise();
-      console.log(data);
       return true;
     } catch (error) {
       console.log(error);
@@ -56,7 +55,6 @@ class CognitoService {
 
     try {
       let data = await this.cognitoIdentity.initiateAuth(params).promise();
-      console.log("Signed in to user:");
       return [true, data["AuthenticationResult"]];
     } catch (error) {
       console.log(error);
@@ -73,10 +71,7 @@ class CognitoService {
     };
 
     try {
-      const cognitoResp = await this.cognitoIdentity
-        .confirmSignUp(params)
-        .promise();
-      console.log(cognitoResp);
+      await this.cognitoIdentity.confirmSignUp(params).promise();
       return true;
     } catch (error) {
       console.log("error", error);
@@ -93,7 +88,6 @@ class CognitoService {
 
     try {
       const data = await this.cognitoIdentity.forgotPassword(params).promise();
-      console.log(data);
       return true;
     } catch (error) {
       console.log(error);
@@ -114,7 +108,6 @@ class CognitoService {
       const data = await this.cognitoIdentity
         .confirmForgotPassword(params)
         .promise();
-      console.log(data);
       return true;
     } catch (error) {
       console.log(error);

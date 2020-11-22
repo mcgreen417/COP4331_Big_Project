@@ -23,9 +23,7 @@ class S3Service {
       let bucketUrl = `https://s3.${this.region}.amazonaws.com/${this.bucketName}/`;
       let photos = objectsPromise.Contents.filter((photo) => photo.Size !== 0);
       if (photos.length !== 0) {
-        console.log(photos);
         return photos.map((photo) => {
-          console.log(photo.Key);
           return bucketUrl + encodeURIComponent(photo.Key);
         });
       } else {
