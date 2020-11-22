@@ -1,6 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Backend Folder Information
+
+Before running any scripts, please run `npm i` to install the necessary dependencies.
 
 In the project directory, you can run:
 
