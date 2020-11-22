@@ -1,5 +1,7 @@
 const AWS = require("aws-sdk");
 const fs = require("fs");
+const { resolve } = require("path");
+const { promisify } = require("util");
 
 class S3Service {
   constructor() {
@@ -34,19 +36,42 @@ class S3Service {
     }
   }
 
-  async uploadPhotoForUser(subId, plantId, fileName) {
+  async uploadPhotoForUser(subId, plantId, file) {
     if (!subId) {
       throw "No sub ID defined for fetching photo URLs";
     }
 
     try {
-      // Filename is probably a buffer...
-      const fileContent = await fs.readFile(fileName);
-      const params = {
-        Key: `${subId}/${plantId}`,
-        Body: fileContent,
-      };
-      let uploadObject = await this.s3Object.upload(params).promise();
+      let self = this;
+      return await new Promise(function (resolve, reject) {
+        fs.readFile(file.path, (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            const params = {
+              Key: `${subId}/${plantId}.jpg`,
+              Body: data,
+            };
+            self.s3Object.upload(params, function (err, data) {
+              fs.unlink(file.path, function (err) {
+                if (err) {
+                  reject(err);
+                }
+                console.log("Temp File Delete");
+              });
+
+              console.log("PRINT FILE:", file);
+              if (err) {
+                console.log("ERROR MSG: ", err);
+                reject(err);
+              } else {
+                console.log("Successfully uploaded data");
+                resolve(self.convertPlantIdToUrl(subId, plantId));
+              }
+            });
+          }
+        });
+      });
     } catch (err) {
       throw `Error while uploading S3 object: ${err}`;
     }

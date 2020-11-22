@@ -25,19 +25,32 @@ class NewEntryPage extends React.Component {
 
   uploadHandler = () => {
     console.log(this.state.selectedFile);
+    if (!this.state.selectedFile) {
+      console.log("No Image to upload");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", this.state.selectedFile);
+    fetch("/protected/testUpload", {
+      method: "POST",
+      headers: {
+        Authorization: localStorage.accessToken,
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data));
   };
 
   render() {
     return (
       <div className="new-entry-page">
         <Header />
-        <label for="file-input">
+        <label htmlFor="file-input">
           <Image
-            type="file"
             className="upload-image"
             src={Uploadbutton}
             alt="Click for uploading image"
-            onClick={this.uploadHandler}
             width={300}
             height={300}
           />
@@ -46,8 +59,11 @@ class NewEntryPage extends React.Component {
           id="file-input"
           name=""
           type="file"
-          onClick={this.fileChangedHandler}
+          onChange={this.fileChangedHandler}
         />
+        <br></br>
+        <br></br>
+        <button onClick={this.uploadHandler} />
       </div>
     );
   }

@@ -2,6 +2,7 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
 const AWS = require("aws-sdk");
+const formidable = require("formidable");
 
 const Cognito = require("../services/cognito.service");
 const AuthMiddleware = require("../middleware/auth.middleware");
@@ -23,6 +24,7 @@ class ProtectedController {
     this.router.use(this.authMiddleware.verifyToken); // Keep this uncommented when committing
     this.router.post("/fetchUser", this.fetchUser);
     this.router.post("/fetchReminders", this.fetchReminders);
+    this.router.post("/testUpload", this.testUpload);
     this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
     this.router.post(
       "/editEntry",
@@ -47,9 +49,9 @@ class ProtectedController {
   }
 
   fetchUser = (req, res) => {
-    const { accessToken } = req.body;
-    let cognitoService = new Cognito();
-    let s3Service = new S3Service();
+    const accessToken = req.headers.authorization;
+    const cognitoService = new Cognito();
+    const s3Service = new S3Service();
 
     let fetchUserPhotos = (json) => {
       let subId = json.UserAttributes[0].Value;
@@ -82,7 +84,7 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    const { accessToken } = req.body;
+    const accessToken = req.headers.authorization;
     const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
     const cognitoService = new Cognito();
     const s3Service = new S3Service();
@@ -131,6 +133,43 @@ class ProtectedController {
     }
   };
 
+  testUpload = (req, res) => {
+    const cognitoService = new Cognito();
+    const s3Service = new S3Service();
+    const accessToken = req.headers.authorization;
+    const form = new formidable.IncomingForm();
+    let doUpload = (json) => {
+      form.parse(req, (error, fields, files) => {
+        if (error) {
+          throw `Error with image parsing ${error}`;
+        }
+
+        let subId = json.UserAttributes[0].Value;
+        if (!subId) {
+          throw `User's ID Token is invalid with subId: ${subId}`;
+        }
+        const plantId = uuidv4();
+        s3Service
+          .uploadPhotoForUser(subId, plantId, files.file)
+          .then((success) => {
+            res.status(200).json({ url: success, plantID: plantId });
+          })
+          .catch((err) => {
+            throw err;
+          });
+      });
+    };
+
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? doUpload(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
+  };
+
   // Create a New Plant Entry
   // Input:
   //  - "userid"
@@ -154,7 +193,7 @@ class ProtectedController {
     var documentClient = new AWS.DynamoDB.DocumentClient(this.config);
 
     const {
-      accessToken,
+      plantid,
       userid,
       nickname,
       species,
@@ -165,7 +204,6 @@ class ProtectedController {
       classification,
       reminders,
     } = req.body;
-    const plantid = uuidv4();
 
     const params = {
       TableName: "Plants",

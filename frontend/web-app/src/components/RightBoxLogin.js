@@ -26,8 +26,8 @@ class RightBoxLogin extends React.Component {
       }),
     });
     const body = await response.text();
-    const { AccessToken, RefreshToken, IdToken } = JSON.parse(body);
     if (response.status === 200) {
+      const { AccessToken, RefreshToken, IdToken } = JSON.parse(body);
       localStorage.accessToken = AccessToken;
       localStorage.refreshToken = RefreshToken;
       localStorage.idToken = IdToken;

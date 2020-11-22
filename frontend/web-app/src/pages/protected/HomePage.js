@@ -23,10 +23,8 @@ class HomePage extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.accessToken,
       },
-      body: JSON.stringify({
-        accessToken: localStorage.accessToken,
-      }),
     })
       .then((response) => response.json())
       .then((data) =>
