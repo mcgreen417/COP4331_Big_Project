@@ -1,0 +1,117 @@
+.entry-form-box {
+  padding-top: 6%;
+}
+
+.nickname-field,
+.species-field,
+.date-field {
+  width: 400px !important;
+}
+
+.form-label,
+.h1-label,
+.sun-label,
+.water-label {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 28px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #816868;
+}
+
+.sun-label {
+  float: left;
+  padding-right: 70px;
+}
+
+.h1-label {
+  padding-right: 10px;
+  float: left;
+}
+
+.p-text {
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-family: Roboto;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #816868;
+  display: inline-block;
+}
+
+.left-text,
+.after-text {
+  font-family: Roboto;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #816868;
+  padding-right: 5px;
+  float: left;
+  margin-top: 5px;
+}
+
+strong {
+  font-size: 20px;
+}
+
+.form-state {
+  float: left;
+  width: 45px !important;
+  margin-right: 5px;
+}
+
+.entry-button {
+  padding-right: 20px;
+}
+
+.new-entry-page > input {
+  display: none;
+}
+
+.second {
+  padding-bottom: 7px;
+}
+
+.third {
+  padding-left: 455px;
+}
+
+.another-container {
+  width: 30% !important;
+  position: absolute;
+  top: 80px;
+  right: 50px;
+}
+
+Button {
+  width: 100px;
+  background-color: #a5dfb2 !important;
+  border-color: #a5dfb2 !important;
+  background-color: #816868;
+  font-family: Roboto !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-size: 18px !important;
+  line-height: 16px !important;
+}
+.activated {
+  width: 100px;
+  background-color: aliceblue !important;
+  border-color: #a5dfb2 !important;
+  font-family: Roboto !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-size: 18px !important;
+  line-height: 16px !important;
+}
+.image-set {
+  cursor: pointer;
+  float: left;
+  padding-right: 70px;
+}

@@ -9,9 +9,12 @@
 
 .upload-image {
   cursor: pointer;
-  margin: 25%;
+  margin: 5%;
+  float: left;
 }
 
-.new-entry-page > input {
-  display: none;
+.button-set {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
 }

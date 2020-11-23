@@ -1,15 +1,21 @@
 import React from "react";
-import { Spinner, Container, Row, Col, Image } from "react-bootstrap";
+import { Form, Button, Image } from "react-bootstrap";
 
 import Header from "../../components/Header";
 import "../../css/protected/pages/NewEntryPage.css";
 import Uploadbutton from "../../images/uploadButton.png";
+import createEntryButton from "../../images/create-entry-button.png";
+import cancelButton from "../../images/cancel-button.png";
+import FormBoxEntry from "../../components/protected/FormBoxEntry";
 
 class NewEntryPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       selectedFile: null,
+      nickname: "",
+      species: "",
+      dateAcquired: "",
     };
   }
 
@@ -18,10 +24,6 @@ class NewEntryPage extends React.Component {
       this.props.history.push("/");
     }
   }
-
-  fileChangedHandler = (event) => {
-    this.setState({ selectedFile: event.target.files[0] });
-  };
 
   uploadHandler = () => {
     console.log(this.state.selectedFile);
@@ -46,7 +48,7 @@ class NewEntryPage extends React.Component {
     return (
       <div className="new-entry-page">
         <Header />
-        <label htmlFor="file-input">
+        <label className="upload-image" htmlFor="file-input">
           <Image
             className="upload-image"
             src={Uploadbutton}
@@ -59,11 +61,28 @@ class NewEntryPage extends React.Component {
           id="file-input"
           name=""
           type="file"
-          onChange={this.fileChangedHandler}
+          onChange={(e) => this.setState({ selectedFile: e.target.files[0] })}
         />
+        <FormBoxEntry />
         <br></br>
         <br></br>
-        <button onClick={this.uploadHandler} />
+        <div className="button-set">
+          <input
+            className="entry-button"
+            type="image"
+            src={createEntryButton}
+            width={300}
+            height={64}
+            onClick={this.uploadHandler}
+          />
+          <input
+            type="image"
+            src={cancelButton}
+            width={300}
+            height={64}
+            onClick={() => this.props.history.push("/")}
+          />
+        </div>
       </div>
     );
   }
