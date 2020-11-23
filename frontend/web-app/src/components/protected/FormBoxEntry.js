@@ -238,26 +238,23 @@ class FormBoxEntry extends React.Component {
     );
   }
 
-  doCheck() {
-    return !this.state.beenClicked[0][0] && this.state.selected < 3
-      ? this.setState((prevState) => {
-          let newState = this.state.beenClicked.slice();
-          newState[0][0] = 1;
-          return { beenClicked: newState, selected: prevState.selected + 1 };
-        })
-      : this.setState((prevState) => {
-          let newState = this.state.beenClicked.slice();
-          newState[0][0] = 0;
-          if (this.state.selected === 0) {
-            return { beenClicked: newState };
-          } else {
-            return { beenClicked: newState, selected: prevState.selected - 1 };
-          }
-        });
+  doCheck(x, y) {
+    if (!this.state.beenClicked[x][y] && this.state.selected < 3) {
+      this.setState((prevState) => {
+        let newState = this.state.beenClicked.slice();
+        newState[x][y] = 1;
+        return { beenClicked: newState, selected: prevState.selected + 1 };
+      });
+    } else if (this.state.beenClicked[x][y]) {
+      this.setState((prevState) => {
+        let newState = this.state.beenClicked.slice();
+        newState[x][y] = 0;
+        return { beenClicked: newState, selected: prevState.selected - 1 };
+      });
+    }
   }
 
   render() {
-    console.log(this.state.selected);
     return (
       <>
         <Form className="entry-form-box">
@@ -354,34 +351,94 @@ class FormBoxEntry extends React.Component {
                     : ""
                 }
                 variant="success"
-                onClick={() => this.doCheck()}
+                onClick={() => this.doCheck(0, 0)}
               >
                 Algae
               </Button>{" "}
             </Col>
             <Col xs>
-              <Button variant="success">Flower</Button>{" "}
+              <Button
+                className={
+                  this.state.beenClicked[0][1] && this.state.selected < 4
+                    ? "activated"
+                    : ""
+                }
+                variant="success"
+                onClick={() => this.doCheck(0, 1)}
+              >
+                Flower
+              </Button>{" "}
             </Col>
             <Col xs>
-              <Button variant="success">Fruit</Button>{" "}
+              <Button
+                className={
+                  this.state.beenClicked[0][2] && this.state.selected < 4
+                    ? "activated"
+                    : ""
+                }
+                variant="success"
+                onClick={() => this.doCheck(0, 2)}
+              >
+                Fruit
+              </Button>{" "}
             </Col>
           </Row>
           <br />
           <Row>
             <Col xs>
-              <Button variant="success">Grass</Button>{" "}
+              <Button
+                className={
+                  this.state.beenClicked[1][0] && this.state.selected < 4
+                    ? "activated"
+                    : ""
+                }
+                variant="success"
+                onClick={() => this.doCheck(1, 0)}
+              >
+                Grass
+              </Button>{" "}
             </Col>
             <Col xs>
-              <Button variant="success">Herb</Button>{" "}
+              <Button
+                className={
+                  this.state.beenClicked[1][1] && this.state.selected < 4
+                    ? "activated"
+                    : ""
+                }
+                variant="success"
+                onClick={() => this.doCheck(1, 1)}
+              >
+                Herb
+              </Button>{" "}
             </Col>
             <Col xs>
-              <Button variant="success">Moss</Button>{" "}
+              <Button
+                className={
+                  this.state.beenClicked[1][2] && this.state.selected < 4
+                    ? "activated"
+                    : ""
+                }
+                variant="success"
+                onClick={() => this.doCheck(1, 2)}
+              >
+                Moss
+              </Button>{" "}
             </Col>
           </Row>
           <br />
           <Row>
             <Col xs>
-              <Button variant="success">Other</Button>{" "}
+              <Button
+                className={
+                  this.state.beenClicked[2][0] && this.state.selected < 4
+                    ? "activated"
+                    : ""
+                }
+                variant="success"
+                onClick={() => this.doCheck(2, 0)}
+              >
+                Other
+              </Button>{" "}
             </Col>
           </Row>
           <br />

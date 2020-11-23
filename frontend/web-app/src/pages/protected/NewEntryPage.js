@@ -12,10 +12,17 @@ class NewEntryPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      plantId: null,
       selectedFile: null,
       nickname: "",
       species: "",
       dateAcquired: "",
+      watered: 0,
+      fertilized: 0,
+      rotated: 0,
+      classifications: [],
+      sunlight: 0,
+      water: 0,
     };
   }
 
@@ -23,6 +30,27 @@ class NewEntryPage extends React.Component {
     if (!localStorage.accessToken) {
       this.props.history.push("/");
     }
+  }
+
+  createNewEntry() {
+    if (
+      !this.state.plantId ||
+      !this.state.selectedFile ||
+      !this.state.nickname ||
+      !this.state.species ||
+      !this.state.dateAcquired ||
+      !this.state.classifications
+    ) {
+      console.log("Error, some data is missing");
+      return;
+    }
+    fetch("/protected/testUpload", {
+      method: "POST",
+      headers: {
+        Authorization: localStorage.accessToken,
+      },
+      body: formData,
+    });
   }
 
   uploadHandler = () => {
@@ -41,7 +69,8 @@ class NewEntryPage extends React.Component {
       body: formData,
     })
       .then((response) => response.json())
-      .then((data) => console.log(data));
+      .then((data) => this.setState({ plantId: data.plantId }))
+      .then(() => this.createNewEntry());
   };
 
   render() {
@@ -63,6 +92,7 @@ class NewEntryPage extends React.Component {
           type="file"
           onChange={(e) => this.setState({ selectedFile: e.target.files[0] })}
         />
+        // TODO: Pass the state
         <FormBoxEntry />
         <br></br>
         <br></br>

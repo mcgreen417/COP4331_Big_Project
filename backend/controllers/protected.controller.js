@@ -24,7 +24,7 @@ class ProtectedController {
     this.router.use(this.authMiddleware.verifyToken); // Keep this uncommented when committing
     this.router.post("/fetchUser", this.fetchUser);
     this.router.post("/fetchReminders", this.fetchReminders);
-    this.router.post("/testUpload", this.testUpload);
+    this.router.post("/photoUpload", this.photoUpload);
     this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
     this.router.post(
       "/editEntry",
@@ -133,7 +133,7 @@ class ProtectedController {
     }
   };
 
-  testUpload = (req, res) => {
+  photoUpload = (req, res) => {
     const cognitoService = new Cognito();
     const s3Service = new S3Service();
     const accessToken = req.headers.authorization;
