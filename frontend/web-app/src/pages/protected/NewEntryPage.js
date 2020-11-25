@@ -44,13 +44,7 @@ class NewEntryPage extends React.Component {
       console.log("Error, some data is missing");
       return;
     }
-    fetch("/protected/testUpload", {
-      method: "POST",
-      headers: {
-        Authorization: localStorage.accessToken,
-      },
-      body: formData,
-    });
+    this.uploadHandler();
   }
 
   uploadHandler = () => {
@@ -92,7 +86,6 @@ class NewEntryPage extends React.Component {
           type="file"
           onChange={(e) => this.setState({ selectedFile: e.target.files[0] })}
         />
-        // TODO: Pass the state
         <FormBoxEntry />
         <br></br>
         <br></br>

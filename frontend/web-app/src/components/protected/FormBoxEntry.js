@@ -291,6 +291,7 @@ class FormBoxEntry extends React.Component {
           <h1 className="h1-label">Reminders</h1>
           <p className="p-text">(Leave the number blank if not applicable.)</p>
         </Form>
+
         <Form className="second-form">
           <Form.Group controlId="formBasicEmail">
             <p className="left-text">
@@ -305,7 +306,6 @@ class FormBoxEntry extends React.Component {
             />
             <p className="after-text">days.</p>
           </Form.Group>
-          <br />
           <br />
           <Form.Group className="second" controlId="formBasicEmail">
             <p className="left-text">
@@ -323,7 +323,7 @@ class FormBoxEntry extends React.Component {
             <p className="after-text">days.</p>
           </Form.Group>
           <br />
-          <Form.Group controlId="formBasicEmail">
+          <Form.Group className="group" controlId="formBasicEmail">
             <p className="left-text">
               This plant needs to be <strong>rotated</strong> every
             </p>
@@ -441,14 +441,15 @@ class FormBoxEntry extends React.Component {
               </Button>{" "}
             </Col>
           </Row>
-          <br />
-          <br />
-          <h1 className="sun-label">Sunlight Needed</h1>
-          <h1 className="water-label">Water Needed</h1>
-          <br />
-          <div className="image-set">{this.changeSunlight()}</div>
-          <div className="image-set">{this.changeWater()}</div>
         </Container>
+        <div className="image-set-sun">
+          <h1 className="sun-label">Sunlight Needed</h1>
+          {this.changeSunlight()}
+        </div>
+        <div className="image-set-cloud">
+          <h1 className="water-label">Water Needed</h1>
+          {this.changeWater()}
+        </div>
       </>
     );
   }

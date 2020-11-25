@@ -1,5 +1,8 @@
 .entry-form-box {
   padding-top: 6%;
+  width: 40%;
+  display: inline-block;
+  margin-bottom: 20px;
 }
 
 .nickname-field,
@@ -19,11 +22,6 @@
   line-height: 16px;
   letter-spacing: 0.5px;
   color: #816868;
-}
-
-.sun-label {
-  float: left;
-  padding-right: 70px;
 }
 
 .h1-label {
@@ -51,19 +49,16 @@
   line-height: 16px;
   letter-spacing: 0.5px;
   color: #816868;
-  padding-right: 5px;
+  display: inline;
   float: left;
   margin-top: 5px;
 }
 
-strong {
-  font-size: 20px;
-}
-
 .form-state {
-  float: left;
   width: 45px !important;
+  float: left;
   margin-right: 5px;
+  margin-left: 5px;
 }
 
 .entry-button {
@@ -74,19 +69,11 @@ strong {
   display: none;
 }
 
-.second {
-  padding-bottom: 7px;
-}
-
-.third {
-  padding-left: 455px;
-}
-
 .another-container {
-  width: 30% !important;
+  width: 38% !important;
   position: absolute;
   top: 80px;
-  right: 50px;
+  right: 0%;
 }
 
 Button {
@@ -110,8 +97,27 @@ Button {
   font-size: 18px !important;
   line-height: 16px !important;
 }
-.image-set {
+
+.image-set-sun,
+.image-set-cloud {
   cursor: pointer;
-  float: left;
-  padding-right: 70px;
+  float: right;
+  margin-right: 5%;
+  text-align: center;
+  margin-top: -82px;
+}
+
+.second-form {
+  display: inline-block;
+  width: 40%;
+}
+
+strong {
+  font-size: 20px;
+}
+
+textarea,
+.notes-header {
+  float: right;
+  margin-right: 20% !important;
 }
