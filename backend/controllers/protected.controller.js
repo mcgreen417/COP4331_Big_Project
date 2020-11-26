@@ -204,45 +204,60 @@ class ProtectedController {
       reminders,
     } = req.body;
 
-    //TODO: fetch user ID
-
-    const params = {
-      TableName: "Plants",
-      Item: {
-        PlantID: plantid,
-        UserID: userid,
-        Nickname: nickname.toLowerCase(),
-        Species: species,
-        Sunlight: sunlight,
-        Water: water,
-        DateAcquired: date,
-        Notes: notes,
-        Classification: classification,
-        Reminders: reminders,
-      },
-    };
-    documentClient.put(params, function (err, data) {
-      let returnFormat = {
-        UserID: userid,
-        Nickname: nickname.toLowerCase(),
-        Species: species,
-        Sunlight: sunlight,
-        Water: water,
-        Notes: notes,
-        DateAcquired: date,
-        Classification: classification,
-        Reminders: reminders,
-        Error: "",
-      };
-      if (err) {
-        console.log(" Failed to Create Item ");
-        returnFormat.Error = "Error Creating Entry";
-        res.status(400).json(returnFormat);
-      } else {
-        console.log(" Successfully Created Item ");
-        res.status(200).json(returnFormat);
+    let saveEntry = (json) => {
+      const userid = json.UserAttributes[0].Value;
+      if (!userid) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
       }
-    });
+      const params = {
+        TableName: "Plants",
+        Item: {
+          PlantID: plantid,
+          UserID: userid,
+          Nickname: nickname.toLowerCase(),
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          DateAcquired: date,
+          Notes: notes,
+          Classification: classification,
+          Reminders: reminders,
+        },
+      };
+      documentClient.put(params, function (err, data) {
+        const returnFormat = {
+          UserID: userid,
+          Nickname: nickname.toLowerCase(),
+          Species: species,
+          Sunlight: sunlight,
+          Water: water,
+          Notes: notes,
+          DateAcquired: date,
+          Classification: classification,
+          Reminders: reminders,
+          Error: "",
+        };
+        if (err) {
+          console.log(" Failed to Create Item ");
+          returnFormat.Error = "Error Creating Entry";
+          res.status(400).json(returnFormat);
+        } else {
+          console.log(" Successfully Created Item ");
+          res.status(200).json(returnFormat);
+        }
+      });
+    };
+
+    const accessToken = req.headers.authorization;
+    const cognitoService = new Cognito();
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? saveEntry(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
   };
 
   //edit an existing plant entry
@@ -529,12 +544,11 @@ class ProtectedController {
     switch (type) {
       case "newEntry":
         return [
-          body("userid").notEmpty().isString(),
           body("nickname").notEmpty().isString(),
           body("species").notEmpty().isString(),
           body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
           body("water").notEmpty().isNumeric().isIn([1, 2, 3]),
-          body("notes").notEmpty().isString(),
+          body("notes").isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
           body("reminders").notEmpty(),

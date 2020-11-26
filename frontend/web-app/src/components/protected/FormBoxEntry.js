@@ -107,7 +107,8 @@ class FormBoxEntry extends React.Component {
       }),
     });
 
-    // TODO: Do fetch after uploading photo
+    const json = await response.json();
+    console.log(json);
   };
 
   render() {
@@ -140,7 +141,7 @@ class FormBoxEntry extends React.Component {
             <Form.Control
               className="date-field"
               type="username"
-              placeholder="(mm/dd/yy)"
+              placeholder="(yyyy/mm/dd)"
               value={this.state.dateAcquired}
               onChange={(e) => this.setState({ dateAcquired: e.target.value })}
             />

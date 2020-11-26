@@ -22,21 +22,6 @@ class NewEntryPage extends React.Component {
     }
   }
 
-  createNewEntry() {
-    if (
-      !this.state.plantId ||
-      !this.state.selectedFile ||
-      !this.state.nickname ||
-      !this.state.species ||
-      !this.state.dateAcquired ||
-      !this.state.classifications
-    ) {
-      console.log("Error, some data is missing");
-      return;
-    }
-    this.uploadHandler();
-  }
-
   uploadPhoto = async () => {
     console.log(this.state.selectedFile);
     if (!this.state.selectedFile) {
