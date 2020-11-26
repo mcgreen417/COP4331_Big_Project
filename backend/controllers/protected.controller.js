@@ -194,7 +194,6 @@ class ProtectedController {
 
     const {
       plantid,
-      userid,
       nickname,
       species,
       sunlight,
@@ -204,6 +203,8 @@ class ProtectedController {
       classification,
       reminders,
     } = req.body;
+
+    //TODO: fetch user ID
 
     const params = {
       TableName: "Plants",

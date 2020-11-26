@@ -1,26 +1,12 @@
 import React from "react";
-import { Form, Container, Row, Col, Button } from "react-bootstrap";
+import { Form, Container, Row, Col, Button, Image } from "react-bootstrap";
 
-import createEntryButton from "../../images/create-entry-button.png";
-import cancelButton from "../../images/cancel-button.png";
 import "../../css/protected/components/FormBoxEntry.css";
 import ImageSetEntry from "./ImageSetEntry";
 
-class FormBoxEntry extends React.Component {
+class ViewBoxEntry extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      nickname: "",
-      species: "",
-      dateAcquired: "",
-      daysWatered: 0,
-      daysFertilized: 0,
-      daysRotated: 0,
-      selected: 0,
-      beenClicked: [0, 0, 0, 0, 0, 0, 0],
-      water: 0,
-      sunlight: 0,
-    };
 
     this.updateSunlight = this.updateSunlight.bind(this);
     this.updateWater = this.updateWater.bind(this);
@@ -49,66 +35,6 @@ class FormBoxEntry extends React.Component {
       });
     }
   }
-
-  classificationArray() {
-    const mapper = {
-      0: "Algae",
-      1: "Flower",
-      2: "Fruit",
-      3: "Grass",
-      4: "Herb",
-      5: "Moss",
-      6: "Other",
-    };
-    const mapStrings = this.state.beenClicked.map((val, idx) => {
-      if (val === 1) {
-        return mapper[idx];
-      }
-    });
-
-    return mapStrings.filter((val) => val !== undefined);
-  }
-
-  uploadHandler = async () => {
-    const plantId = await this.props.uploadPhoto();
-
-    if (!plantId) {
-      console.log("Could not fetch Plant ID");
-    }
-
-    if (
-      !this.state.nickname ||
-      !this.state.species ||
-      !this.state.dateAcquired
-    ) {
-      console.log("State missing data");
-    }
-
-    const response = await fetch("/protected/newEntry", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: localStorage.accessToken,
-      },
-      body: JSON.stringify({
-        plantid: plantId,
-        nickname: this.state.nickname,
-        species: this.state.nickname,
-        sunlight: this.state.sunlight,
-        water: this.state.water,
-        notes: "",
-        date: this.state.dateAcquired,
-        classification: this.classificationArray(),
-        reminders: {
-          watered: this.state.daysWatered,
-          fertilized: this.state.daysFertilized,
-          rotated: this.state.daysRotated,
-        },
-      }),
-    });
-
-    // TODO: Do fetch after uploading photo
-  };
 
   render() {
     console.log(this.state.sunlight);
@@ -306,28 +232,9 @@ class FormBoxEntry extends React.Component {
           sunlight={this.state.sunlight}
           water={this.state.water}
         />
-        <br></br>
-        <br></br>
-        <div className="button-set">
-          <input
-            className="entry-button"
-            type="image"
-            src={createEntryButton}
-            width={300}
-            height={64}
-            onClick={this.uploadHandler}
-          />
-          <input
-            type="image"
-            src={cancelButton}
-            width={300}
-            height={64}
-            onClick={() => this.props.history.push("/")}
-          />
-        </div>
       </>
     );
   }
 }
 
-export default FormBoxEntry;
+export default ViewBoxEntry;
