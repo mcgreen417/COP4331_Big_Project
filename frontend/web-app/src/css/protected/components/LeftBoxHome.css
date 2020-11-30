@@ -73,3 +73,7 @@ hr {
   top: 50%;
   left: 50%;
 }
+
+.col-photo {
+  cursor: pointer;
+}

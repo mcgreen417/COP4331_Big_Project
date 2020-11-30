@@ -1,0 +1,128 @@
+.entry-form-box {
+  padding-top: 6%;
+  width: 40%;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.nickname-field,
+.species-field,
+.date-field {
+  width: 400px !important;
+}
+
+.form-label,
+.h1-label,
+.sun-label,
+.water-label {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 28px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #816868;
+}
+
+.h1-label {
+  padding-right: 10px;
+  float: left;
+}
+
+.p-text {
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-family: Roboto;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #816868;
+  display: inline-block;
+}
+
+.left-text,
+.after-text {
+  font-family: Roboto;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #816868;
+  display: inline;
+  float: left;
+  margin-top: 5px;
+}
+
+.form-state {
+  width: 45px !important;
+  float: left;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.entry-button {
+  padding-right: 20px;
+}
+
+.new-entry-page > input {
+  display: none;
+}
+
+.another-container {
+  width: 38% !important;
+  position: absolute;
+  top: 80px;
+  right: 0%;
+}
+
+Button {
+  width: 100px;
+  background-color: #a5dfb2 !important;
+  border-color: #a5dfb2 !important;
+  background-color: #816868;
+  font-family: Roboto !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-size: 18px !important;
+  line-height: 16px !important;
+}
+.activated {
+  width: 100px;
+  background-color: aliceblue !important;
+  border-color: #a5dfb2 !important;
+  font-family: Roboto !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-size: 18px !important;
+  line-height: 16px !important;
+}
+
+.image-set-sun,
+.image-set-cloud {
+  cursor: pointer;
+  float: right;
+  margin-right: 5%;
+  text-align: center;
+  margin-top: -82px;
+}
+
+.second-form {
+  display: inline-block;
+  width: 50%;
+}
+
+strong {
+  font-size: 20px;
+}
+
+textarea,
+.notes-header {
+  float: right;
+  margin-right: 20% !important;
+}
+
+.modify-left {
+  margin-top: 7%;
+  margin-left: 7%;
+}

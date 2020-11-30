@@ -23,19 +23,24 @@ class HomePage extends React.Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: localStorage.accessToken,
       },
-      body: JSON.stringify({
-        accessToken: localStorage.accessToken,
-      }),
     })
       .then((response) => response.json())
-      .then((data) =>
-        this.setState({ username: data.Username, plantPhotos: data.photoUrls })
-      )
+      .then((data) => {
+        console.log(data);
+        this.setState({
+          username: data.Username,
+          plantPhotos: data.photoObjects,
+        });
+      })
       .catch((_) => localStorage.clear() && this.props.history.push("/"));
   }
 
   render() {
+    if (this.props.logout) {
+      localStorage.clear();
+    }
     return (
       <div className="homepage">
         <Header />

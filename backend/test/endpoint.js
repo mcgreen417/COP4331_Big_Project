@@ -48,11 +48,98 @@ describe("New Entry API Testing", () => {
 });
 
 describe("Update Entry API Testing", () => {
-  // TODO: update tests here
+  // Test 1: update mandy, fields: nickname, sunlight, notes, date, reminders, species
+  describe("POST /protected/editEntry", () => {
+    it("Edit and verify planty entry 'mandy'", (done) => {
+      const endpoint = {
+        userid: "1",
+        plantid: "1",
+        nickname: "mandy!",
+        species: "Mandagora",
+        sunlight: 3,
+        water: 2,
+        notes: "Fatal to those who hear its cries, be sure to wear earmuffs!",
+        date: "2020-11-22",
+        classification: ["Other"],
+        reminders: { Watered: 3, Pruned: 30 },
+      };
+      chai
+        .request(port)
+        .post("/protected/editEntry")
+        .send(endpoint)
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.body.should.have.property("UserID").eq("1");
+          response.body.should.have.property("PlantID").eq("1");
+          response.body.should.have.property("Nickname").eq("mandy!");
+          response.body.should.have.property("Species").eq("Mandagora");
+          response.body.should.have.property("Sunlight").eq(3);
+          response.body.should.have.property("Water").eq(2);
+          response.body.should.have
+            .property("Notes")
+            .eq("Fatal to those who hear its cries, be sure to wear earmuffs!");
+          response.body.should.have.property("DateAcquired").eq("2020-11-22");
+          done();
+        });
+    });
+  });
+  //Test 2: update mandy!, fields: classification, nickname
+  describe("POST /protected/editEntry", () => {
+    it("Edit and verify planty entry 'mandy!'", (done) => {
+      const endpoint = {
+        userid: "1",
+        plantid: "1",
+        nickname: "mandy",
+        species: "Mandagora",
+        sunlight: 3,
+        water: 2,
+        notes: "Fatal to those who hear its cries, be sure to wear earmuffs!",
+        date: "2020-11-22",
+        classification: ["Flower"],
+        reminders: { Watered: 3, Pruned: 30 },
+      };
+      chai
+        .request(port)
+        .post("/protected/editEntry")
+        .send(endpoint)
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.body.should.have.property("UserID").eq("1");
+          response.body.should.have.property("PlantID").eq("1");
+          response.body.should.have.property("Nickname").eq("mandy");
+          response.body.should.have.property("Species").eq("Mandagora");
+          response.body.should.have.property("Sunlight").eq(3);
+          response.body.should.have.property("Water").eq(2);
+          response.body.should.have
+            .property("Notes")
+            .eq("Fatal to those who hear its cries, be sure to wear earmuffs!");
+          response.body.should.have.property("DateAcquired").eq("2020-11-22");
+          done();
+        });
+    });
+  });
 });
 
 describe("Delete Entry API Testing", () => {
-  // TODO: delete tests here
+  // Test 1: delete mandy
+  describe("POST /protected/deleteEntry", () => {
+    it("delete and verify planty entry 'mandy'", (done) => {
+      const endpoint = {
+        userid: "1",
+        plantid: "1",
+      };
+      chai
+        .request(port)
+        .post("/protected/deleteEntry")
+        .send(endpoint)
+        .end((err, response) => {
+          response.should.have.status(200);
+          response.body.should.have.property("UserID").eq("1");
+          response.body.should.have.property("PlantID").eq("1");
+          done();
+        });
+    });
+  });
 });
 
 describe("Search Entry API Testing", () => {

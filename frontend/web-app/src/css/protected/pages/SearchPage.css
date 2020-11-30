@@ -1,0 +1,21 @@
+.search-form {
+  width: 20%;
+  margin-top: 5%;
+  margin-left: 5%;
+}
+
+.search-button {
+  float: right;
+}
+
+.search-form-label {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 22px;
+  line-height: 22px;
+}
+
+.move-up {
+  margin-top: -250px;
+}

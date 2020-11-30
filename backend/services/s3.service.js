@@ -23,10 +23,13 @@ class S3Service {
       let bucketUrl = `https://s3.${this.region}.amazonaws.com/${this.bucketName}/`;
       let photos = objectsPromise.Contents.filter((photo) => photo.Size !== 0);
       if (photos.length !== 0) {
-        console.log(photos);
         return photos.map((photo) => {
-          console.log(photo.Key);
-          return bucketUrl + encodeURIComponent(photo.Key);
+          const [_, temp] = photo.Key.split("/");
+          const [plantId, __] = temp.split(".");
+          return {
+            url: bucketUrl + encodeURIComponent(photo.Key),
+            plantId: plantId,
+          };
         });
       } else {
         return [];
@@ -36,22 +39,58 @@ class S3Service {
     }
   }
 
-  async uploadPhotoForUser(subId, plantId, fileName) {
+  async uploadPhotoForUser(subId, plantId, file) {
     if (!subId) {
       throw "No sub ID defined for fetching photo URLs";
     }
 
     try {
-      // Filename is probably a buffer...
-      const fileContent = await fs.readFile(fileName);
-      const params = {
-        Key: `${subId}/${plantId}`,
-        Body: fileContent,
-      };
-      let uploadObject = await this.s3Object.upload(params).promise();
+      let self = this;
+      return await new Promise(function (resolve, reject) {
+        fs.readFile(file.path, (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            const params = {
+              Key: `${subId}/${plantId}.jpg`,
+              Body: data,
+            };
+            self.s3Object.upload(params, function (err, data) {
+              fs.unlink(file.path, function (err) {
+                if (err) {
+                  reject(err);
+                }
+                console.log("Temp File Delete");
+              });
+
+              console.log("PRINT FILE:", file);
+              if (err) {
+                console.log("ERROR MSG: ", err);
+                reject(err);
+              } else {
+                console.log("Successfully uploaded data");
+                resolve(self.convertPlantIdToUrl(subId, plantId));
+              }
+            });
+          }
+        });
+      });
     } catch (err) {
       throw `Error while uploading S3 object: ${err}`;
     }
+  }
+
+  deletePhoto(subId, plantId) {
+    let params = {
+      Key: `${subId}/${plantId}.jpg`,
+    };
+    this.s3Object.deleteObject(params, function (err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(`Successfully deleted ${subId}/${plantId}.jpg`);
+      }
+    });
   }
 
   convertPlantIdToUrl(subId, plantId) {
@@ -61,7 +100,7 @@ class S3Service {
 
     let bucketUrl = `https://s3.${this.region}.amazonaws.com/${this.bucketName}/`;
     let plantKey = `${subId}/${plantId}`;
-    return bucketUrl + encodeURIComponent(plantKey);
+    return bucketUrl + encodeURIComponent(plantKey) + ".jpg";
   }
 }
 

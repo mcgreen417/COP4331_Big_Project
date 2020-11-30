@@ -12,8 +12,10 @@ class AuthMiddleware {
   }
 
   verifyToken(req, resp, next) {
-    const { accessToken } = req.body;
-    if (!accessToken) return resp.status(401).end();
+    if (!req.headers.authorization) {
+      return res.status(401).json({ error: "No credentials sent!" });
+    }
+    const accessToken = req.headers.authorization;
 
     let decodedJwt = jwt.decode(accessToken, { complete: true });
     if (decodedJwt === null) {
@@ -55,7 +57,7 @@ class AuthMiddleware {
         const pem = jwkToPem(jwk);
         pems[key_id] = pem;
       }
-      console.log("got PEMS");
+      console.log("Fetched PEMS from AWS");
     } catch (error) {
       console.log(error);
       console.log("Error! Unable to download JWKs");
