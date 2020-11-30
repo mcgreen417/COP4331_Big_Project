@@ -30,14 +30,16 @@ function App() {
             render={() => <LoginPage isSignUp={true} />}
           />
           <Route path="/forgot-password" exact component={ForgotPasswordPage} />
-          <Route path="/about" exact>
-            {/* // TODO: About page for app */}
-          </Route>
           <Route exact path="/home" component={HomePage} />
           <Route exact path="/newentry" component={NewEntryPage} />
           <Route exact path="/viewentry" component={ViewEntryPage} />
           <Route exact path="/modifyentry" component={ModifyEntryPage} />
           <Route exact path="/search" component={SearchPage} />
+          <Route
+            exact
+            path="/logout"
+            render={() => <HomePage logout={true} />}
+          />
           <Redirect to="/" />
         </Switch>
       </Router>

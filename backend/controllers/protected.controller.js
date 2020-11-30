@@ -377,11 +377,11 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    const accessToken = req.headers.authorization;
-    const { plantid } = req.body;
     const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
     const cognitoService = new Cognito();
     const s3Service = new S3Service();
+    const accessToken = req.headers.authorization;
+    const { plantid } = req.body;
 
     let doDelete = (json) => {
       const subId = json.UserAttributes[0].Value;
@@ -420,39 +420,51 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    console.log(req.body);
     const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
-    const { userid, search } = req.body;
+    const cognitoService = new Cognito();
+    const s3Service = new S3Service();
+    const accessToken = req.headers.authorization;
 
-    var params = {
-      TableName: "Plants",
-      FilterExpression: "contains(#nickname, :nickname) AND #userid = :userid",
-      ExpressionAttributeNames: {
-        "#nickname": "Nickname",
-        "#userid": "UserID",
-      },
-      ExpressionAttributeValues: {
-        ":nickname": search.toLowerCase(),
-        ":userid": userid,
-      },
+    const { search } = req.body;
+    let doSearch = (json) => {
+      const subId = json.UserAttributes[0].Value;
+      if (!subId) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
+      }
+      const params = {
+        TableName: "Plants",
+        FilterExpression:
+          "contains(#nickname, :nickname) AND #userid = :userid",
+        ExpressionAttributeNames: {
+          "#nickname": "Nickname",
+          "#userid": "UserID",
+        },
+        ExpressionAttributeValues: {
+          ":nickname": search.toLowerCase(),
+          ":userid": subId,
+        },
+      };
+
+      documentClient.scan(params, function (err, data) {
+        if (err) {
+          res.status(400).json({ error: err });
+        }
+        const response = data.Items.map(function (item) {
+          item.plantUrl = s3Service.convertPlantIdToUrl(subId, item.PlantID);
+          return item;
+        });
+        res.status(200).json(response);
+      });
     };
 
-    documentClient.scan(params, function (err, data) {
-      if (data.Items === undefined || data.Items.length == 0) {
-        var ret = {
-          UserID: userid,
-          Search: search,
-          Error: "Entry not found",
-        };
-        res.status(400).json(ret);
-      } else {
-        var ret = [];
-        data.Items.forEach(function (item) {
-          ret.push(item);
-        });
-        res.status(200).json(ret);
-      }
-    });
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? doSearch(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
   };
 
   // Reports a problem from the user and stores it into the database.

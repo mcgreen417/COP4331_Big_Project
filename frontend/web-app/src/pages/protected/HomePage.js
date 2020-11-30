@@ -38,6 +38,9 @@ class HomePage extends React.Component {
   }
 
   render() {
+    if (this.props.logout) {
+      localStorage.clear();
+    }
     return (
       <div className="homepage">
         <Header />
