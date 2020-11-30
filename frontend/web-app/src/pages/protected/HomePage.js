@@ -27,9 +27,13 @@ class HomePage extends React.Component {
       },
     })
       .then((response) => response.json())
-      .then((data) =>
-        this.setState({ username: data.Username, plantPhotos: data.photoUrls })
-      )
+      .then((data) => {
+        console.log(data);
+        this.setState({
+          username: data.Username,
+          plantPhotos: data.photoObjects,
+        });
+      })
       .catch((_) => localStorage.clear() && this.props.history.push("/"));
   }
 

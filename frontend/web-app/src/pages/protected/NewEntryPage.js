@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button, Image } from "react-bootstrap";
+import { Image } from "react-bootstrap";
 
 import Header from "../../components/Header";
 import "../../css/protected/pages/NewEntryPage.css";

@@ -62,8 +62,8 @@ class ProtectedController {
 
       s3Service
         .getPhotoUrlsForSubId(subId)
-        .then((photoUrls) => {
-          json.photoUrls = photoUrls;
+        .then((photoObjects) => {
+          json.photoObjects = photoObjects;
           res.status(200).json(json);
         })
         .catch((err) => {
@@ -108,16 +108,16 @@ class ProtectedController {
 
       documentClient.scan(params, function (err, data) {
         if (data.Items === undefined || data.Items.length == 0) {
-          res.status(400).json({ Error: "User has no reminders" });
+          res.status(200).json({ Error: "User has no reminders" });
         } else {
           let filterForReminders = data.Items.filter(function (item) {
             return item.Reminders.length !== 0;
           });
-          let ret = filterForReminders.map(function (item) {
+          let reminders = filterForReminders.map(function (item) {
             item.plantUrl = s3Service.convertPlantIdToUrl(subId, item.PlantID);
             return item;
           });
-          res.status(200).json(ret);
+          res.status(200).json({ reminders: reminders });
         }
       });
     };
@@ -224,8 +224,9 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    console.log(req.body);
     const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const accessToken = req.headers.authorization;
+    const cognitoService = new Cognito();
 
     const {
       plantid,
@@ -283,8 +284,6 @@ class ProtectedController {
       });
     };
 
-    const accessToken = req.headers.authorization;
-    const cognitoService = new Cognito();
     try {
       cognitoService.getUser(accessToken).then((success) => {
         success[0] ? saveEntry(success[1]) : res.status(400).end();
@@ -300,8 +299,10 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const accessToken = req.headers.authorization;
+    const cognitoService = new Cognito();
     const {
-      userid,
       nickname,
       species,
       sunlight,
@@ -313,91 +314,62 @@ class ProtectedController {
       plantid,
     } = req.body;
 
-    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
-    let params = {
-      TableName: "Plants",
-      Key: {
-        PlantID: plantid,
-        UserID: userid,
-      },
-    };
-    // NOTE: The ret value below in both .get() and .update() should maybe be refactored due to DRY
-    // Maybe make a single object and remodify the Error attribute for each ret declaration.
-    documentClient.get(params, function (err, data) {
-      if (err) {
-        console.log(" Item Does Not Exist ");
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Nickname: nickname.toLowerCase(),
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          Notes: notes,
-          DateAcquired: date,
-          Classification: classification,
-          Reminders: reminders,
-          Error: " Item Does Not Exist In Table ",
-        };
-        res.status(400).json(ret);
+    let updateEntry = (json) => {
+      const subId = json.UserAttributes[0].Value;
+      if (!subId) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
       }
-    });
+      let updateParams = {
+        TableName: "Plants",
+        Key: {
+          PlantID: plantid,
+          UserID: subId,
+        },
+        UpdateExpression:
+          "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
+        ExpressionAttributeValues: {
+          ":thisNick": nickname.toLowerCase(),
+          ":thisSpecies": species,
+          ":thisClass": classification,
+          ":thisSunlight": sunlight,
+          ":thisWater": water,
+          ":thisReminders": reminders,
+          ":thisNotes": notes,
+          ":thisDate": date,
+        },
+        ReturnValues: "UPDATED_NEW",
+      };
 
-    let updateParams = {
-      TableName: "Plants",
-      Key: {
-        PlantID: plantid,
-        UserID: userid,
-      },
-      UpdateExpression:
-        "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
-      ExpressionAttributeValues: {
-        ":thisNick": nickname.toLowerCase(),
-        ":thisSpecies": species,
-        ":thisClass": classification,
-        ":thisSunlight": sunlight,
-        ":thisWater": water,
-        ":thisReminders": reminders,
-        ":thisNotes": notes,
-        ":thisDate": date,
-      },
-      ReturnValues: "UPDATED_NEW",
+      documentClient.update(updateParams, function (err, data) {
+        if (err) {
+          console.log(" Failed To Update Item ");
+          res.status(400).json({ Error: err });
+        } else {
+          console.log(" Successfully Updated Item ");
+          var ret = {
+            PlantID: plantid,
+            Nickname: nickname.toLowerCase(),
+            Species: species,
+            Sunlight: sunlight,
+            Water: water,
+            Notes: notes,
+            DateAcquired: date,
+            Classification: classification,
+            Reminders: reminders,
+            Error: "",
+          };
+          res.status(200).json(ret);
+        }
+      });
     };
-    documentClient.update(updateParams, function (err, data) {
-      if (err) {
-        console.log(" Failed To Update Item ");
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Nickname: nickname.toLowerCase(),
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          Notes: notes,
-          DateAcquired: date,
-          Classification: classification,
-          Reminders: reminders,
-          Error: err,
-        };
-        res.status(400).json(ret);
-      } else {
-        console.log(" Successfully Updated Item ");
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Nickname: nickname.toLowerCase(),
-          Species: species,
-          Sunlight: sunlight,
-          Water: water,
-          Notes: notes,
-          DateAcquired: date,
-          Classification: classification,
-          Reminders: reminders,
-          Error: "",
-        };
-        res.status(200).json(ret);
-      }
-    });
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? updateEntry(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
   };
 
   deleteEntry = (req, res) => {
@@ -405,46 +377,42 @@ class ProtectedController {
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
-    const { userid, plantid } = req.body;
-
+    const accessToken = req.headers.authorization;
+    const { plantid } = req.body;
     const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
-    const params = {
-      TableName: "Plants",
-      Key: {
-        PlantID: plantid,
-        UserID: userid,
-      },
+    const cognitoService = new Cognito();
+    const s3Service = new S3Service();
+
+    let doDelete = (json) => {
+      const subId = json.UserAttributes[0].Value;
+      if (!subId) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
+      }
+      const params = {
+        TableName: "Plants",
+        Key: {
+          PlantID: plantid,
+          UserID: subId,
+        },
+      };
+
+      documentClient.delete(params, function (err, data) {
+        if (err) {
+          res.status(400).json({ Error: err });
+        } else {
+          s3Service.deletePhoto(subId, plantid);
+          res.status(200).json("Plant Successfully Deleted");
+        }
+      });
     };
-    documentClient.get(params, function (err, data) {
-      if (err) {
-        console.log(`Error getting entry: ${err}`);
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Error: "Item Does Not Exist In Table ",
-        };
-        res.status(400).json(ret);
-      }
-    });
-    documentClient.delete(params, function (err, data) {
-      if (err) {
-        console.log(err);
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Error: " Unable To Delete Item ",
-        };
-        res.status(400).json(ret);
-      } else {
-        console.log(" Successfully Deleted Item ");
-        var ret = {
-          PlantID: plantid,
-          UserID: userid,
-          Error: "",
-        };
-        res.status(200).json(ret);
-      }
-    });
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? doDelete(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
   };
 
   searchEntry = (req, res) => {
@@ -555,31 +523,20 @@ class ProtectedController {
       case "editEntry":
         return [
           body("plantid").notEmpty().isString(),
-          body("userid").notEmpty().isString(),
           body("nickname").notEmpty().isString(),
           body("species").notEmpty().isString(),
           body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
           body("water").notEmpty().isNumeric().isIn([1, 2, 3]),
-          body("notes").notEmpty().isString(),
           body("date").notEmpty().isISO8601(),
           body("classification").notEmpty().isArray(),
           body("reminders").notEmpty(),
         ];
       case "deleteEntry":
-        return [
-          body("plantid").notEmpty().isString(),
-          body("userid").notEmpty().isString(),
-        ];
+        return [body("plantid").notEmpty().isString()];
       case "searchEntry":
-        return [
-          body("userid").notEmpty().isString(),
-          body("search").notEmpty().isString(),
-        ];
+        return [body("search").notEmpty().isString()];
       case "reportAProblem":
-        return [
-          body("userid").notEmpty().isString(),
-          body("problem").notEmpty().isString(),
-        ];
+        return [body("problem").notEmpty().isString()];
     }
   }
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { Spinner, Container, Row, Col, Image } from "react-bootstrap";
 
+import { withRouter } from "react-router-dom";
 import "../../css/protected/components/LeftBoxHome.css";
 import cutePlant from "../../images/cute-plant.png";
 
@@ -10,14 +11,26 @@ class LeftBoxHome extends React.Component {
     return (
       <Container className="container">
         <Row>
-          {this.props.plantPhotos.map((url, idx) => (
-            <Col key={idx} xs={6} md={4}>
-              <Image className="image" src={url} rounded />
+          {this.props.plantPhotos.map((object, idx) => (
+            <Col className="col-photo" key={idx} xs={6} md={4}>
+              <Image
+                className="image"
+                src={object.url}
+                onClick={() => this.viewEntry(object.plantId)}
+                rounded
+              />
             </Col>
           ))}
         </Row>
       </Container>
     );
+  }
+
+  viewEntry(plantId) {
+    this.props.history.push({
+      pathname: "/viewentry",
+      state: { plantId: plantId },
+    });
   }
 
   topLeft() {
@@ -69,4 +82,4 @@ class LeftBoxHome extends React.Component {
   }
 }
 
-export default LeftBoxHome;
+export default withRouter(LeftBoxHome);

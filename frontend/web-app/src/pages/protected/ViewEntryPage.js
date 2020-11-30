@@ -3,9 +3,8 @@ import { Image } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 
 import Header from "../../components/Header";
-import deleteButton from "../../images/delete-entry.png";
-import modifyEntryButton from "../../images/modify-entry.png";
 import ViewBoxEntry from "../../components/protected/ViewBoxEntry";
+import "../../css/protected/pages/ViewEntryPage.css";
 
 class ViewEntryPage extends React.Component {
   constructor(props) {
@@ -25,12 +24,9 @@ class ViewEntryPage extends React.Component {
 
   componentDidMount() {
     if (!localStorage.accessToken) {
-      // TODO: Probably put an alert.
       this.props.history.push("/");
     }
   }
-
-  modifyEntry() {}
 
   render() {
     return (
@@ -47,26 +43,6 @@ class ViewEntryPage extends React.Component {
           plantid={this.state.plantId}
           setPlantUrl={this.setPlantUrl}
         />
-        <br></br>
-        <br></br>
-        <div className="button-set">
-          <input
-            className="modify-button"
-            type="image"
-            src={modifyEntryButton}
-            width={300}
-            height={64}
-            onClick={this.modifyEntry}
-          />
-          <input
-            className="delete-entry"
-            type="image"
-            src={deleteButton}
-            width={300}
-            height={64}
-            onClick={() => this.props.history.push("/")}
-          />
-        </div>
       </div>
     );
   }

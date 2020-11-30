@@ -24,7 +24,12 @@ class S3Service {
       let photos = objectsPromise.Contents.filter((photo) => photo.Size !== 0);
       if (photos.length !== 0) {
         return photos.map((photo) => {
-          return bucketUrl + encodeURIComponent(photo.Key);
+          const [_, temp] = photo.Key.split("/");
+          const [plantId, __] = temp.split(".");
+          return {
+            url: bucketUrl + encodeURIComponent(photo.Key),
+            plantId: plantId,
+          };
         });
       } else {
         return [];
@@ -73,6 +78,19 @@ class S3Service {
     } catch (err) {
       throw `Error while uploading S3 object: ${err}`;
     }
+  }
+
+  deletePhoto(subId, plantId) {
+    let params = {
+      Key: `${subId}/${plantId}.jpg`,
+    };
+    this.s3Object.deleteObject(params, function (err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(`Successfully deleted ${subId}/${plantId}.jpg`);
+      }
+    });
   }
 
   convertPlantIdToUrl(subId, plantId) {

@@ -14,6 +14,7 @@
 .click-here {
   padding-left: 70%;
   color: #358b59;
+  cursor: pointer;
 }
 
 .paragraphs {

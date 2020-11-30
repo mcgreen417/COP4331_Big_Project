@@ -12,6 +12,7 @@ import HomePage from "./pages/protected/HomePage";
 import NewEntryPage from "./pages/protected/NewEntryPage";
 import SearchPage from "./pages/protected/SearchPage";
 import ViewEntryPage from "./pages/protected/ViewEntryPage";
+import ModifyEntryPage from "./pages/protected/ModifyEntryPage";
 
 function App() {
   useEffect(() => {
@@ -35,6 +36,7 @@ function App() {
           <Route exact path="/home" component={HomePage} />
           <Route exact path="/newentry" component={NewEntryPage} />
           <Route exact path="/viewentry" component={ViewEntryPage} />
+          <Route exact path="/modifyentry" component={ModifyEntryPage} />
           <Route exact path="/search" component={SearchPage} />
           <Redirect to="/" />
         </Switch>

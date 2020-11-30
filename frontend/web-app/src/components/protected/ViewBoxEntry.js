@@ -4,6 +4,8 @@ import { withRouter } from "react-router-dom";
 
 import "../../css/protected/components/FormBoxEntry.css";
 import ImageSetEntryView from "./ImageSetEntryView";
+import deleteButton from "../../images/delete-entry.png";
+import modifyEntryButton from "../../images/modify-entry.png";
 
 class ViewBoxEntry extends React.Component {
   constructor(props) {
@@ -65,28 +67,70 @@ class ViewBoxEntry extends React.Component {
     ));
   }
 
+  modifyEntry() {
+    this.props.history.push({
+      pathname: "/modifyentry",
+      state: {
+        plantId: this.props.plantid,
+        nickname: this.state.nickname,
+        species: this.state.species,
+        dateAcquired: this.state.dateAcquired,
+        daysWatered: this.state.daysWatered,
+        daysRotated: this.state.daysRotated,
+        daysFertilized: this.state.daysFertilized,
+        water: this.state.water,
+        sunlight: this.state.sunlight,
+      },
+    });
+  }
+
+  deleteEntry() {
+    fetch("/protected/deleteEntry", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.accessToken,
+      },
+      body: JSON.stringify({
+        plantid: this.props.plantid,
+      }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        this.props.history.push("/");
+      });
+  }
+
   render() {
-    console.log(this.state.sunlight);
     return (
       <>
         <Form className="entry-form-box">
           <Form.Group controlId="formBasicEmail">
-            <Form.Label className="form-label">Plant Nickname:</Form.Label>{" "}
+            <Form.Label className="form-label">
+              <u>Plant Nickname:</u>
+            </Form.Label>{" "}
             <Form.Label className="form-label">
               {this.state.nickname}
             </Form.Label>
           </Form.Group>
           <Form.Group controlId="formBasicEmail">
-            <Form.Label className="form-label">Plant Species:</Form.Label>{" "}
+            <Form.Label className="form-label viewer">
+              <u>Plant Species:</u>
+            </Form.Label>{" "}
             <Form.Label className="form-label">{this.state.species}</Form.Label>
           </Form.Group>
           <Form.Group controlId="formBasicEmail">
-            <Form.Label className="form-label">Date Acquired:</Form.Label>{" "}
+            <Form.Label className="form-label viewer">
+              <u>Date Acquired:</u>
+            </Form.Label>{" "}
             <Form.Label className="form-label">
               {this.state.dateAcquired}
             </Form.Label>
           </Form.Group>
-          <h1 className="h1-label">Reminders:</h1>
+          <br />
+          <h1 className="h1-label">
+            <u>Reminders:</u>
+          </h1>
         </Form>
 
         <Form className="second-form">
@@ -119,10 +163,31 @@ class ViewBoxEntry extends React.Component {
           <br />
           <Row>{this.generateClassification()}</Row>
         </Container>
+        <br />
         <ImageSetEntryView
           sunlight={this.state.sunlight}
           water={this.state.water}
         />
+        <br></br>
+        <br></br>
+        <div className="button-set">
+          <input
+            className="modify-button"
+            type="image"
+            src={modifyEntryButton}
+            width={300}
+            height={64}
+            onClick={() => this.modifyEntry()}
+          />
+          <input
+            className="delete-entry"
+            type="image"
+            src={deleteButton}
+            width={300}
+            height={64}
+            onClick={() => this.deleteEntry()}
+          />
+        </div>
       </>
     );
   }

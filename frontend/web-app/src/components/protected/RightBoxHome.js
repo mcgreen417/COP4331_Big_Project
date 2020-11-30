@@ -24,8 +24,9 @@ class RightBoxHome extends React.Component {
     })
       .then((response) => response.json())
       .then((data) => {
-        this.setState({ reminders: data });
-        console.log(data);
+        if (data.reminders) {
+          this.setState({ reminders: data.reminders });
+        }
       });
   }
 
@@ -39,8 +40,8 @@ class RightBoxHome extends React.Component {
   generateReminders() {
     return (
       <>
-        {this.state.reminders.map((item) => (
-          <div>
+        {this.state.reminders.map((item, idx) => (
+          <div key={idx}>
             <img
               className="image-reminder"
               alt="Cute plant on home page"
@@ -89,6 +90,7 @@ class RightBoxHome extends React.Component {
   }
 
   render() {
+    console.log(this.state.reminders);
     return (
       <div className="right-box">
         <p className="reminders-text">
