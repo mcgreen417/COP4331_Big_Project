@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 
 class App {
   constructor({ port, middleWares, controllers }) {
@@ -24,14 +25,14 @@ class App {
     if (process.env.NODE_ENV === "production") {
       console.log("Running server in PRODUCTION mode");
       console.log(`Only use the script: "npm run server" on production.`);
-      // Maybe need this?
-      // this.app.use(express.static("client/build"));
+      this.app.use(express.static("../frontend/web-app/build"));
 
       this.app.get("*", (req, res) => {
         res.sendFile(
           path.resolve(
             __dirname,
-            "/../frontend",
+            "..",
+            "frontend",
             "web-app",
             "build",
             "index.html"
