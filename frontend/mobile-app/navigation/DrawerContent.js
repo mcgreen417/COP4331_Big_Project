@@ -19,6 +19,7 @@ function DrawerContent(props)
                 </View>
                 <View style = {{height:70, justifyContent:'space-between'}}>
                     <View style = {{flexDirection:'row'}}>
+<<<<<<< Updated upstream
                     <Text style = {{color:'white'}}>You are currently logged in as Hiyorinne. </Text>
                     <Icon name ='user' type = 'evilicon' color = 'white' />
                     </View>
@@ -26,6 +27,15 @@ function DrawerContent(props)
                     <View style = {{flexDirection:'row'}}>
                     <Text style = {{color:'white'}}>Not you? Log out.</Text>
                     <Icon name = 'logout' type = "material-community" color = 'white' />
+=======
+                        <Text style = {{color:'white'}}>You are currently logged in as Hiyorinne. <Icon name ='user' type = 'evilicon' color = 'white' /> </Text>
+                        
+                    </View>
+
+                    <View style = {{flexDirection:'row'}}>
+                        <Text style = {{color:'white'}}>Not you? Log out.</Text>
+                        <Icon name = 'logout' type = "material-community" color = 'white' />
+>>>>>>> Stashed changes
                     </View>
                 </View>
 

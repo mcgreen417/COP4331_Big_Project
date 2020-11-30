@@ -22,7 +22,11 @@ function PlantEntry(props)
             <View style = {styles.PlantRemindersContainer}>
 
                 <View style = {{flexDirection:'row'}}>
+<<<<<<< Updated upstream
                     <Image source = {props.image} style = {{borderRadius:10}}/>
+=======
+                    <Image source = {props.image} style = {{borderRadius:5, resizeMode:'stretch', height:64, width:64}}/>
+>>>>>>> Stashed changes
 
                     {/* Plant Data Container - DodgerBlue */}
                     <View style = {styles.plantDataContainer}>
@@ -33,17 +37,30 @@ function PlantEntry(props)
                             <Text><Text style = {{color:Color.darkGreen}}>Species:</Text> {props.species}</Text>
                             <Text><Text style = {{color:Color.darkGreen}}>Date Acquired: </Text>{props.date}</Text>
                             <Text style = {{color:Color.darkGreen}}>Plant Classification: </Text>
+<<<<<<< Updated upstream
                             <RoundButton name = {props.classification}/>
+=======
+                            <View style = {{flexDirection:'row'}}>
+                                {props.classification.map((name) => <RoundButton key = {name} name = {name} />)}
+                            </View>
+>>>>>>> Stashed changes
                         </View>
 
                         {/* Entry Container - Green */}
                         <View style = {styles.EntryContainer}>
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
                             {/* Delete Entry */}
                             <View style = {{flexDirection:'row', alignItems:'center', paddingTop:10}}>
                                 <CheckBox
                                     checked = {toggleCheckBox}
+<<<<<<< Updated upstream
                                     onPress = {() => {setToggleCheckBox(!toggleCheckBox); props.onModal(props.id)}}
+=======
+                                    onPress = {() => {props.onToggleDelete(props.id, !toggleCheckBox); setToggleCheckBox(!toggleCheckBox); {/*props.onModal(props.id)*/}}}
+>>>>>>> Stashed changes
                                     containerStyle = {{color:'green', padding:0}}
                                     checkedColor = "green"
                                 />
@@ -53,7 +70,22 @@ function PlantEntry(props)
                             {/* View Entry */}
                             <View style = {{flexDirection:'row', paddingRight:5, alignItems:'center'}}>
                                 <Text style = {{paddingRight:5}}>View Entry</Text>
+<<<<<<< Updated upstream
                                 <Icon name = 'long-arrow-right' type = 'font-awesome' color = {Color.header} onPress = {() => navigation.navigate("ViewEntry")}/>
+=======
+                                <Icon 
+                                    name = 'long-arrow-right' 
+                                    type = 'font-awesome' 
+                                    color = {Color.header} 
+                                    onPress={() => {
+                                        /* 1. Navigate to the Details route with params */
+                                        navigation.navigate('ViewEntrySearch', {
+                                          itemId: props.id,
+                                        });
+                                      }}
+                                    
+                                />
+>>>>>>> Stashed changes
                             </View>
                         </View>
                     </View>

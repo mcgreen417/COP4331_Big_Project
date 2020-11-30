@@ -13,6 +13,11 @@ import Color from '../constants/colors';
 const Tab = createBottomTabNavigator();
 
 import MainStackNavigator from './MainStackNavigator'
+<<<<<<< Updated upstream
+=======
+import SearchNavigator from './SearchStackNavigator'
+import SearchStackNavigator from "./SearchStackNavigator";
+>>>>>>> Stashed changes
 
 function BottomTabNavigator() {
 
@@ -54,7 +59,11 @@ function BottomTabNavigator() {
       }}
     >
       <Tab.Screen name="Home" component={MainStackNavigator} />
+<<<<<<< Updated upstream
       <Tab.Screen name="Search" component={Search} />
+=======
+      <Tab.Screen name="Search" component={SearchStackNavigator} />
+>>>>>>> Stashed changes
       <Tab.Screen name = "NewEntry" component = {NewEntry} />
       <Tab.Screen name = "Nursery" component = {Nursery} />
       <Tab.Screen name = "Account" component = {Account}

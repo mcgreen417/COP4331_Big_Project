@@ -27,7 +27,11 @@ function AccountStackNavigator () {
         <Stack.Screen name="PasswordResetVerification" component={PasswordResetVerification} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+<<<<<<< Updated upstream
         <Stack.Screen name = "Home" component = {BottomTabNavigator} />
+=======
+        <Stack.Screen name = "HomeStack" component = {BottomTabNavigator} />
+>>>>>>> Stashed changes
     </Stack.Navigator>
   )
 }

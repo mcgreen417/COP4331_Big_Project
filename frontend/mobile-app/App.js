@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {StyleSheet, View, Text} from 'react-native';
+<<<<<<< Updated upstream
 import Dash from 'react-native-dash';
 import {Home} from './Screens/Home'
 import {names} from './constants/names'
@@ -22,13 +23,30 @@ import {LogBox} from 'react-native';
 
 LogBox.ignoreLogs(['Warning: ...']);
 LogBox.ignoreAllLogs();
+=======
+import { NavigationContainer } from "@react-navigation/native";
+import DrawerNavigator from './navigation/DrawerNavigator'
+import {GlobalContextProvider} from './context/GlobalContext'
+import {LogBox} from 'react-native';
+
+// LogBox.ignoreLogs(['Warning: ...']);
+// LogBox.ignoreAllLogs();
+>>>>>>> Stashed changes
 
  export default function App() 
 {
   return(
+<<<<<<< Updated upstream
     <NavigationContainer>
       <DrawerNavigator />
     </NavigationContainer>
+=======
+    <GlobalContextProvider>
+      <NavigationContainer>
+        <DrawerNavigator />
+      </NavigationContainer>
+    </GlobalContextProvider>
+>>>>>>> Stashed changes
   );
 }
 

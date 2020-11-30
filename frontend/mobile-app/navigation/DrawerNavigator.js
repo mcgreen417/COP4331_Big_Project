@@ -14,7 +14,12 @@ function DrawerNavigator()
     }} 
     drawerPosition = 'right'
     screenOptions = {{
+<<<<<<< Updated upstream
         headerShown:false
+=======
+        headerShown:false,
+        swipeEnabled:false
+>>>>>>> Stashed changes
       }}
     
     >
