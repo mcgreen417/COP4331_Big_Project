@@ -2,6 +2,20 @@
   float: left;
 }
 
+.image-reminder {
+  float: left;
+  width: 120px;
+  height: 120px;
+  margin-left: 5%;
+  margin-top: 1%;
+  margin-right: 1%;
+}
+
+.click-here {
+  padding-left: 70%;
+  color: #358b59;
+}
+
 .paragraphs {
   padding-top: 2%;
 }
@@ -15,7 +29,7 @@
 .sequent-line {
   margin-left: 5%;
   margin-right: 5%;
-  margin-top: 50px;
+  margin-top: 20px;
   border: 1px dashed #816868;
 }
 
@@ -35,4 +49,8 @@
 .right-box {
   width: 50%;
   float: right;
+}
+
+u {
+  color: #358b59;
 }

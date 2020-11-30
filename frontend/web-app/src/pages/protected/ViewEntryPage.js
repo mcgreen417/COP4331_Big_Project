@@ -1,28 +1,26 @@
 import React from "react";
 import { Image } from "react-bootstrap";
+import { withRouter } from "react-router-dom";
 
 import Header from "../../components/Header";
-import "../../css/protected/pages/NewEntryPage.css";
-import Uploadbutton from "../../images/uploadButton.png";
-import cancelButton from "../../images/cancel-button.png";
-import FormBoxEntry from "../../components/protected/FormBoxEntry";
+import deleteButton from "../../images/delete-entry.png";
+import modifyEntryButton from "../../images/modify-entry.png";
 import ViewBoxEntry from "../../components/protected/ViewBoxEntry";
 
 class ViewEntryPage extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props.location.state);
     this.state = {
-      plantId: null,
-      nickname: "",
-      species: "",
-      dateAcquired: "",
-      watered: 0,
-      fertilized: 0,
-      rotated: 0,
-      classifications: [],
-      sunlight: 0,
-      water: 0,
+      plantId: this.props.location.state.plantId || "",
+      plantUrl: null,
     };
+
+    this.setPlantUrl = this.setPlantUrl.bind(this);
+  }
+
+  setPlantUrl(url) {
+    this.setState({ plantUrl: url });
   }
 
   componentDidMount() {
@@ -40,12 +38,15 @@ class ViewEntryPage extends React.Component {
         <Header />
         <Image
           className="upload-image"
-          src={Uploadbutton}
+          src={this.state.plantUrl}
           alt="Download Image from S3"
           width={300}
           height={300}
         />
-        <ViewBoxEntry />
+        <ViewBoxEntry
+          plantid={this.state.plantId}
+          setPlantUrl={this.setPlantUrl}
+        />
         <br></br>
         <br></br>
         <div className="button-set">
@@ -58,8 +59,9 @@ class ViewEntryPage extends React.Component {
             onClick={this.modifyEntry}
           />
           <input
+            className="delete-entry"
             type="image"
-            src={cancelButton}
+            src={deleteButton}
             width={300}
             height={64}
             onClick={() => this.props.history.push("/")}
@@ -70,4 +72,4 @@ class ViewEntryPage extends React.Component {
   }
 }
 
-export default ViewEntryPage;
+export default withRouter(ViewEntryPage);

@@ -141,7 +141,7 @@ class FormBoxEntry extends React.Component {
             <Form.Control
               className="date-field"
               type="username"
-              placeholder="(yyyy/mm/dd)"
+              placeholder="(yyyy-mm-dd)"
               value={this.state.dateAcquired}
               onChange={(e) => this.setState({ dateAcquired: e.target.value })}
             />

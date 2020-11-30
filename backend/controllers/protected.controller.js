@@ -25,6 +25,7 @@ class ProtectedController {
     this.router.post("/fetchUser", this.fetchUser);
     this.router.post("/fetchReminders", this.fetchReminders);
     this.router.post("/photoUpload", this.photoUpload);
+    this.router.post("/viewEntry", this.viewEntry);
     this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
     this.router.post(
       "/editEntry",
@@ -109,11 +110,10 @@ class ProtectedController {
         if (data.Items === undefined || data.Items.length == 0) {
           res.status(400).json({ Error: "User has no reminders" });
         } else {
-          let ret = data.Items.map(function (item) {
-            item.Classification = AWS.DynamoDB.Converter.unmarshall(
-              item.Classification
-            );
-            item.Reminders = AWS.DynamoDB.Converter.unmarshall(item.Reminders);
+          let filterForReminders = data.Items.filter(function (item) {
+            return item.Reminders.length !== 0;
+          });
+          let ret = filterForReminders.map(function (item) {
             item.plantUrl = s3Service.convertPlantIdToUrl(subId, item.PlantID);
             return item;
           });
@@ -126,10 +126,8 @@ class ProtectedController {
       cognitoService.getUser(accessToken).then((success) => {
         success[0] ? fetchUserReminders(success[1]) : res.status(400).end();
       });
-      fetchUserReminders();
     } catch (err) {
-      console.log(err);
-      res.status(400).end();
+      res.status(400).end(err);
     }
   };
 
@@ -170,27 +168,64 @@ class ProtectedController {
     }
   };
 
-  // Create a New Plant Entry
-  // Input:
-  //  - "userid"
-  //  - "nickname"
-  //  - "species"
-  //  - "sunlight"
-  //  - "water"
-  //  - "notes"
-  //  - "date"
-  //  - "classification" (Expected list of strings)
-  //  - "reminders" (Expected object)
-  // Output:
-  //  - If input types are correct: json object of all input pairs and empty error pair
-  //  - If input types are incorrect: json object of all input pairs and error pair
+  viewEntry = (req, res) => {
+    const cognitoService = new Cognito();
+    const s3Service = new S3Service();
+    const accessToken = req.headers.authorization;
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const { plantid } = req.body;
+
+    let getEntry = (json) => {
+      let subId = json.UserAttributes[0].Value;
+      if (!subId) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
+      }
+      var params = {
+        TableName: "Plants",
+        FilterExpression: "contains(#plantid, :plantid) AND #userid = :userid",
+        ExpressionAttributeNames: {
+          "#plantid": "PlantID",
+          "#userid": "UserID",
+        },
+        ExpressionAttributeValues: {
+          ":plantid": plantid,
+          ":userid": subId,
+        },
+      };
+
+      documentClient.scan(params, function (err, data) {
+        if (data.Items === undefined || data.Items.length != 1) {
+          res
+            .status(400)
+            .json({ Error: "User may have duplicate plantID entries" });
+        } else {
+          let ret = data.Items.map(function (item) {
+            item.plantUrl = s3Service.convertPlantIdToUrl(subId, item.PlantID);
+            return item;
+          });
+          console.log(ret);
+          res.status(200).json(ret[0]);
+        }
+      });
+    };
+
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? getEntry(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(400).end();
+    }
+  };
+
   newEntry = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
       return res.status(422).json({ errors: result.array() });
     }
     console.log(req.body);
-    var documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
 
     const {
       plantid,
@@ -260,24 +295,6 @@ class ProtectedController {
     }
   };
 
-  //edit an existing plant entry
-  // Input:
-  //  - "plantid"
-  //  - "userid"
-  //  - "nickname"
-  //  - "species"
-  //  - "sunlight"
-  //  - "water"
-  //  - "notes"
-  //  - "date"
-  //  - "classification"
-  //  - "reminders"
-  // Output:
-  //  - If input types are correct: json object of all input pairs and empty error pair
-  //    - If input is not already an instance in the table: json object of all input pairs and error pair
-  //    - If input was not able to be deleted: json object of all input pairs and error pair
-  //    - If input was successfully deleted: json object of all input pairs and empty error pair
-  //  - If input types are incorrect: json object of all input pairs and error pair
   editEntry = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -383,17 +400,6 @@ class ProtectedController {
     });
   };
 
-  //delete plant entry
-  //check if entry exists in table
-  // Input:
-  //  - "plantid"
-  //  - "userid"
-  // Output:
-  //  - If input types are correct:
-  //    - If input is not already an instance in the table: json object of all input pairs and error pair
-  //    - If input was not able to be deleted: json object of all input pairs and error pair
-  //    - If input was successfully deleted: json object of all input pairs and empty error pair
-  //  - If input types are incorrect: json object of all input pairs and error pair
   deleteEntry = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -441,13 +447,6 @@ class ProtectedController {
     });
   };
 
-  // Search for an existing plant entry
-  // Input:
-  //  - "userid"
-  //  - "search"
-  // Output:
-  //  - If items found: json array of objects with key pairs of all attributes
-  //  - If no items found: json object of userid, search, and error
   searchEntry = (req, res) => {
     const result = validationResult(req);
     if (!result.isEmpty()) {

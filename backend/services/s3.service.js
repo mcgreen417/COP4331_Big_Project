@@ -82,7 +82,7 @@ class S3Service {
 
     let bucketUrl = `https://s3.${this.region}.amazonaws.com/${this.bucketName}/`;
     let plantKey = `${subId}/${plantId}`;
-    return bucketUrl + encodeURIComponent(plantKey);
+    return bucketUrl + encodeURIComponent(plantKey) + ".jpg";
   }
 }
 

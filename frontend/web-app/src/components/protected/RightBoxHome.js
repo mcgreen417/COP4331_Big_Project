@@ -1,8 +1,7 @@
 import React from "react";
-import {} from "react-bootstrap";
 
 import "../../css/protected/components/RightBoxHome.css";
-import cutePlant from "../../images/cute-plant.png";
+import { withRouter } from "react-router-dom";
 
 class RightBoxHome extends React.Component {
   constructor(props) {
@@ -11,37 +10,81 @@ class RightBoxHome extends React.Component {
       days: 0,
       species: "Cilantro",
       nickname: "Silly Cilantro",
+      reminders: [],
     };
   }
 
-  // Reminders API should be:
-  // Input: userId
-  // Output: List of all reminders for each plant with: image url from S3, nickname, species, and water in days
-  // Grab all Urls on S3 associated with a user ID, then use each of those urls and cut it down into its plant identifier.
-  // Next
+  componentDidMount() {
+    fetch("/protected/fetchReminders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.accessToken,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ reminders: data });
+        console.log(data);
+      });
+  }
+
+  viewEntryWithPlantId(plantId) {
+    this.props.history.push({
+      pathname: "/viewentry",
+      state: { plantId: plantId },
+    });
+  }
+
   generateReminders() {
     return (
-      <div>
-        <img
-          className="image"
-          alt="Cute plant on home page"
-          src={cutePlant}
-          width={200}
-          height={200}
-        />
-        <div className="paragraphs">
-          <p>
-            <u>Nickname:</u> {this.state.nickname}
-          </p>
-          <p>
-            <u>Species:</u> {this.state.species}
-          </p>
-          <p>
-            <u>Reminder:</u> Water in <b>{this.state.days} days</b>
-          </p>
-        </div>
-        <div className="sequent-line"></div>
-      </div>
+      <>
+        {this.state.reminders.map((item) => (
+          <div>
+            <img
+              className="image-reminder"
+              alt="Cute plant on home page"
+              src={item.plantUrl}
+            />
+            <div className="paragraphs">
+              <p>
+                <u>Nickname:</u> {item.Nickname}
+              </p>
+              <p>
+                <u>Species:</u> {item.Species}
+              </p>
+              <p>
+                <u>Reminder:</u>{" "}
+                {item.Reminders.watered !== 0 && (
+                  <>
+                    {" "}
+                    water in <b>{item.Reminders.watered} days,</b>
+                  </>
+                )}
+                {item.Reminders.fertilized !== 0 && (
+                  <>
+                    {" "}
+                    fertilize in <b>{item.Reminders.fertilized} days,</b>
+                  </>
+                )}
+                {item.Reminders.rotated !== 0 && (
+                  <>
+                    {" "}
+                    rotate in <b>{item.Reminders.rotated} days,</b>
+                  </>
+                )}
+              </p>
+              <p
+                className="click-here"
+                onClick={() => this.viewEntryWithPlantId(item.PlantID)}
+              >
+                Click here to view entry
+              </p>
+            </div>
+            <div className="sequent-line"></div>
+          </div>
+        ))}
+      </>
     );
   }
 
@@ -58,4 +101,4 @@ class RightBoxHome extends React.Component {
   }
 }
 
-export default RightBoxHome;
+export default withRouter(RightBoxHome);
