@@ -24,6 +24,7 @@ import { PlantEntry } from "../components/PlantEntry";
 import { DialogueBox } from "../components/DialogueBox";
 import { CheckBox } from "react-native-elements";
 import { GlobalContext } from "../context/GlobalContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Search({ navigation }) {
   const [checkCount, setCheckCount] = useState(0);
@@ -58,7 +59,18 @@ function Search({ navigation }) {
       );
 
       const json = await response.json();
-      console.log(json);
+      let value = json.map((item) => {
+        return {
+          classification: item.Classification,
+          date: item.DateAcquired,
+          nickname: item.Nickname,
+          species: item.Species,
+          id: item.PlantID,
+          key: item.PlantID,
+          image: item.plantUrl,
+        };
+      });
+      setPlantEntries(value);
     }
     fetchPlants();
   }, []);
@@ -70,7 +82,6 @@ function Search({ navigation }) {
 
   // Execute to filter global based on text input
   function filterTable(text) {
-    return;
     let tempArray = [];
 
     for (let i = 0; i < plantEntries.length; i++) {
@@ -98,20 +109,20 @@ function Search({ navigation }) {
     setModalVisible(false);
   }
 
-  function toggleDeleteHandler(id, checkboxState) {
-    let tempArray = [...plantEntries];
-    let index = findEntryIndex(id);
+  // function toggleDeleteHandler(id, checkboxState) {
+  //   let tempArray = [...plantEntries];
+  //   let index = findEntryIndex(id);
 
-    if (checkboxState == true) {
-      tempArray[index].deleteEntry = true;
-      setCheckCount(checkCount + 1);
-    } else {
-      tempArray[index].deleteEntry = false;
-      setCheckCount(checkCount - 1);
-    }
+  //   if (checkboxState == true) {
+  //     tempArray[index].deleteEntry = true;
+  //     setCheckCount(checkCount + 1);
+  //   } else {
+  //     tempArray[index].deleteEntry = false;
+  //     setCheckCount(checkCount - 1);
+  //   }
 
-    setPlantEntries([...tempArray]);
-  }
+  //   setPlantEntries([...tempArray]);
+  // }
 
   function launchModalHandler() {
     setModalVisible(true);
@@ -145,7 +156,6 @@ function Search({ navigation }) {
 
   // Sorts By NickName
   function sortByNickName() {
-    return;
     let tempEntries;
 
     if (searchInput.length == 0) tempEntries = [...plantEntries];
@@ -190,7 +200,6 @@ function Search({ navigation }) {
   }
 
   function sortByDate() {
-    return;
     let tempEntries;
 
     if (searchInput.length == 0) tempEntries = [...plantEntries];
@@ -331,7 +340,8 @@ function Search({ navigation }) {
 
           {/* Vertical Scroll List - Plant Reminders */}
 
-          {/* <View style={{ paddingTop: 20, flex: 1 }}>
+          <View style={{ paddingTop: 20, flex: 1 }}>
+            {console.log("value", plantEntries)}
             {searchInput.length == 0 &&
               plantEntries.map((name) => (
                 <PlantEntry
@@ -343,7 +353,6 @@ function Search({ navigation }) {
                   date={formatDate(name.date)}
                   image={name.image}
                   onModal={launchModalHandler}
-                  onToggleDelete={toggleDeleteHandler}
                 />
               ))}
 
@@ -358,10 +367,9 @@ function Search({ navigation }) {
                   date={formatDate(name.date)}
                   image={name.image}
                   onModal={launchModalHandler}
-                  onToggleDelete={toggleDeleteHandler}
                 />
               ))}
-          </View> */}
+          </View>
         </View>
 
         {plantEntries.length == 0 && (
@@ -376,55 +384,6 @@ function Search({ navigation }) {
         )}
 
         {/* Delete Button */}
-        {plantEntries.length != 0 && (
-          <View style={{ alignItems: "center", paddingTop: 20 }}>
-            {checkCount == 0 ? (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: Color.theme,
-                  flexDirection: "row",
-                  borderRadius: 5,
-                  alignItems: "center",
-                  width: 170,
-                  paddingVertical: 5,
-                }}
-                onPress={() => launchModalHandler()}
-              >
-                <Icon
-                  name="md-close"
-                  type="ionicon"
-                  color="white"
-                  style={{ paddingLeft: 10 }}
-                />
-                <Text style={{ paddingLeft: 10, color: "white", fontSize: 16 }}>
-                  Delete Selected
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: Color.theme,
-                  flexDirection: "row",
-                  borderRadius: 5,
-                  alignItems: "center",
-                  width: 180,
-                  paddingVertical: 5,
-                }}
-                onPress={() => launchModalHandler()}
-              >
-                <Icon
-                  name="md-close"
-                  type="ionicon"
-                  color="white"
-                  style={{ paddingLeft: 10 }}
-                />
-                <Text style={{ paddingLeft: 10, color: "white", fontSize: 16 }}>
-                  Delete Selected ({checkCount})
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
       </View>
 
       {/* <Button title = "TestButton" onPress = {() => setUsername("Dusty")} /> */}
@@ -482,31 +441,31 @@ function formatDate(date) {
   let dateArray = originalDate.split("-");
 
   switch (dateArray[1].toLowerCase()) {
-    case "1":
+    case "01":
       month = "January";
       break;
-    case "2":
+    case "02":
       month = "February";
       break;
-    case "3":
+    case "03":
       month = "March";
       break;
-    case "4":
+    case "04":
       month = "April";
       break;
-    case "5":
+    case "05":
       month = "May";
       break;
-    case "6":
+    case "06":
       month = "June";
       break;
-    case "7":
+    case "07":
       month = "July";
       break;
-    case "8":
+    case "08":
       month = "August";
       break;
-    case "9":
+    case "09":
       month = "September";
       break;
     case "10":

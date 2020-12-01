@@ -34,7 +34,7 @@ function PlantEntry(props) {
       <View style={styles.PlantRemindersContainer}>
         <View style={{ flexDirection: "row" }}>
           <Image
-            source={props.image}
+            source={{ uri: props.image }}
             style={{
               borderRadius: 5,
               resizeMode: "stretch",
@@ -71,29 +71,6 @@ function PlantEntry(props) {
 
             {/* Entry Container - Green */}
             <View style={styles.EntryContainer}>
-              {/* Delete Entry */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingTop: 10,
-                }}
-              >
-                <CheckBox
-                  checked={toggleCheckBox}
-                  onPress={() => {
-                    props.onToggleDelete(props.id, !toggleCheckBox);
-                    setToggleCheckBox(!toggleCheckBox);
-                    {
-                      /*props.onModal(props.id)*/
-                    }
-                  }}
-                  containerStyle={{ color: "green", padding: 0 }}
-                  checkedColor="green"
-                />
-                <Text>Delete Entry</Text>
-              </View>
-
               {/* View Entry */}
               <View
                 style={{
@@ -109,7 +86,7 @@ function PlantEntry(props) {
                   color={Color.header}
                   onPress={() => {
                     /* 1. Navigate to the Details route with params */
-                    navigation.navigate("ViewEntrySearch", {
+                    navigation.navigate("ViewEntry", {
                       itemId: props.id,
                     });
                   }}
