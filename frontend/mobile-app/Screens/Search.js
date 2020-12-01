@@ -26,11 +26,10 @@ import { CheckBox } from "react-native-elements";
 import { GlobalContext } from "../context/GlobalContext";
 
 function Search({ navigation }) {
-  const { plantEntriesContext } = useContext(GlobalContext);
   const [checkCount, setCheckCount] = useState(0);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [plantEntries, setPlantEntries] = plantEntriesContext;
+  const [plantEntries, setPlantEntries] = useState([]);
   const [filteredArray, setFilteredArray] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [deletePressed, setDeletePressed] = useState(false);
@@ -44,6 +43,25 @@ function Search({ navigation }) {
     { id: 4, backgroundColor: Color.background, color: Color.header },
   ]);
 
+  useEffect(() => {
+    async function fetchPlants() {
+      const accessToken = await AsyncStorage.getItem("@storage_Key");
+      const response = await fetch(
+        "https://myflowerpower.net/protected/fetchAllPlants",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: accessToken,
+          },
+        }
+      );
+
+      const json = await response.json();
+      console.log(json);
+    }
+    fetchPlants();
+  }, []);
   // Execute after plant entries update and delete has been pressed
   // React.useEffect(() => {
   //   if (searchInput.length != 0 && deletePressed == true)

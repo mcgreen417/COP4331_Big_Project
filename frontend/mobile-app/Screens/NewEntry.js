@@ -2,26 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   Text,
   View,
-  Button,
   StyleSheet,
   TextInput,
   Image,
   StatusBar,
   TouchableOpacity,
-  ImageBackground,
-  ScrollView,
   Platform,
 } from "react-native";
 import Color from "../constants/colors";
-import { Header } from "../components/Header";
-import { Input } from "react-native-elements";
-import { RoundButton } from "../components/RoundButton";
 import { RoundButtonLarge } from "../components/RoundButtonLarge";
 import { Icon } from "react-native-elements";
-import { GlobalContext } from "../context/GlobalContext";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from "expo-image-picker";
-import Constants from "expo-constants";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -103,40 +95,43 @@ function NewEntry({ navigation, route }) {
     setToggleSubmit({ sunlight: sunlight, water: water, tempArray: tempArray });
   }
 
-  useEffect(async () => {
-    const accessToken = await AsyncStorage.getItem("@storage_Key");
-    const response = await fetch(
-      "https://myflowerpower.net/protected/newEntry",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: accessToken,
-        },
-        body: JSON.stringify({
-          plantid: "empty",
-          nickname: nicknameInput,
-          species: speciesInput,
-          sunlight: toggleSubmit.sunlight,
-          water: toggleSubmit.water,
-          notes: additionalNotesInput,
-          date: convertedDate(selectedDate),
-          classification: toggleSubmit.tempArray,
-          reminders: {
-            watered: wateredInput,
-            fertilized: fertilizedInput,
-            rotated: rotatedInput,
-            prunned: prunnedInput,
-            trimmed: trimmedInput,
-            replanted: replantedInput,
+  useEffect(() => {
+    async function doSubmit() {
+      const accessToken = await AsyncStorage.getItem("@storage_Key");
+      const response = await fetch(
+        "https://myflowerpower.net/protected/newEntry",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: accessToken,
           },
-          noPhoto: true,
-        }),
-      }
-    );
+          body: JSON.stringify({
+            plantid: "empty",
+            nickname: nicknameInput,
+            species: speciesInput,
+            sunlight: toggleSubmit.sunlight,
+            water: toggleSubmit.water,
+            notes: additionalNotesInput,
+            date: convertedDate(selectedDate),
+            classification: toggleSubmit.tempArray,
+            reminders: {
+              watered: wateredInput,
+              fertilized: fertilizedInput,
+              rotated: rotatedInput,
+              prunned: prunnedInput,
+              trimmed: trimmedInput,
+              replanted: replantedInput,
+            },
+            noPhoto: true,
+          }),
+        }
+      );
 
-    const json = await response.json();
-    console.log(json);
+      const json = await response.json();
+      console.log(json);
+    }
+    doSubmit();
     navigation.navigate("Home");
   }, [toggleSubmit]);
 
@@ -156,8 +151,6 @@ function NewEntry({ navigation, route }) {
     { id: 12, name: "Vine", backgroundColor: Color.theme },
     { id: 13, name: "Other", backgroundColor: Color.theme },
   ]);
-
-  React.useEffect(() => {}, [plantEntries]);
 
   // Inputs and initial states
   const [nicknameInput, setNicknameInput] = useState("Grape Fruit");
@@ -798,10 +791,6 @@ function NewEntry({ navigation, route }) {
             </View>
           </View>
         </View>
-
-        {/* <View>
-                    <Button title = "Output" onPress = {() => console.log("selected date is: ", plantEntries)} />
-                </View> */}
       </View>
     </KeyboardAwareScrollView>
   );

@@ -26,6 +26,7 @@ class ProtectedController {
     this.router.post("/fetchReminders", this.fetchReminders);
     this.router.post("/photoUpload", this.photoUpload);
     this.router.post("/viewEntry", this.viewEntry);
+    this.router.post("/fetchAllPlants", this.fetchAllPlants);
     this.router.post("/newEntry", this.validateBody("newEntry"), this.newEntry);
     this.router.post(
       "/editEntry",
@@ -125,6 +126,54 @@ class ProtectedController {
     try {
       cognitoService.getUser(accessToken).then((success) => {
         success[0] ? fetchUserReminders(success[1]) : res.status(400).end();
+      });
+    } catch (err) {
+      res.status(400).end(err);
+    }
+  };
+
+  fetchAllPlants = (req, res) => {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(422).json({ errors: result.array() });
+    }
+    const accessToken = req.headers.authorization;
+    const documentClient = new AWS.DynamoDB.DocumentClient(this.config);
+    const cognitoService = new Cognito();
+    const s3Service = new S3Service();
+
+    let fetchPlants = (json) => {
+      let subId = json.UserAttributes[0].Value;
+      if (!subId) {
+        throw `User's ID Token is invalid with subId: ${subId}`;
+      }
+      var params = {
+        TableName: "Plants",
+        FilterExpression: "#userid = :userid",
+        ExpressionAttributeNames: {
+          "#userid": "UserID",
+        },
+        ExpressionAttributeValues: {
+          ":userid": subId,
+        },
+      };
+
+      documentClient.scan(params, function (err, data) {
+        if (data.Items === undefined || data.Items.length == 0) {
+          res.status(200).json({ Error: "User has no reminders" });
+        } else {
+          let result = data.Items.map(function (item) {
+            item.plantUrl = s3Service.convertPlantIdToUrl(subId, item.PlantID);
+            return item;
+          });
+          res.status(200).json(result);
+        }
+      });
+    };
+
+    try {
+      cognitoService.getUser(accessToken).then((success) => {
+        success[0] ? fetchPlants(success[1]) : res.status(400).end();
       });
     } catch (err) {
       res.status(400).end(err);
