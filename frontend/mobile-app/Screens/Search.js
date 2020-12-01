@@ -27,12 +27,10 @@ import { GlobalContext } from "../context/GlobalContext";
 
 function Search({ navigation }) {
   const { plantEntriesContext } = useContext(GlobalContext);
-  const [username, setUsername] = useState("Richard");
   const [checkCount, setCheckCount] = useState(0);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [plantEntries, setPlantEntries] = plantEntriesContext;
-  const [currentEntry, setCurrentEntry] = useState("");
   const [filteredArray, setFilteredArray] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [deletePressed, setDeletePressed] = useState(false);
@@ -47,13 +45,14 @@ function Search({ navigation }) {
   ]);
 
   // Execute after plant entries update and delete has been pressed
-  React.useEffect(() => {
-    if (searchInput.length != 0 && deletePressed == true)
-      filterTable(searchInput);
-  }, [plantEntries]);
+  // React.useEffect(() => {
+  //   if (searchInput.length != 0 && deletePressed == true)
+  //     filterTable(searchInput);
+  // }, [plantEntries]);
 
   // Execute to filter global based on text input
   function filterTable(text) {
+    return;
     let tempArray = [];
 
     for (let i = 0; i < plantEntries.length; i++) {
@@ -70,6 +69,7 @@ function Search({ navigation }) {
   }
 
   function deleteHandler() {
+    return;
     setDeletePressed(true);
     setPlantEntries((currentPlants) => {
       return currentPlants.filter((name) => name.deleteEntry == false);
@@ -127,6 +127,7 @@ function Search({ navigation }) {
 
   // Sorts By NickName
   function sortByNickName() {
+    return;
     let tempEntries;
 
     if (searchInput.length == 0) tempEntries = [...plantEntries];
@@ -171,6 +172,7 @@ function Search({ navigation }) {
   }
 
   function sortByDate() {
+    return;
     let tempEntries;
 
     if (searchInput.length == 0) tempEntries = [...plantEntries];
@@ -311,7 +313,7 @@ function Search({ navigation }) {
 
           {/* Vertical Scroll List - Plant Reminders */}
 
-          <View style={{ paddingTop: 20, flex: 1 }}>
+          {/* <View style={{ paddingTop: 20, flex: 1 }}>
             {searchInput.length == 0 &&
               plantEntries.map((name) => (
                 <PlantEntry
@@ -341,7 +343,7 @@ function Search({ navigation }) {
                   onToggleDelete={toggleDeleteHandler}
                 />
               ))}
-          </View>
+          </View> */}
         </View>
 
         {plantEntries.length == 0 && (

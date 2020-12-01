@@ -19,38 +19,60 @@ import { Icon } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import { GlobalContext } from "../context/GlobalContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function ViewEntry({ navigation, route }) {
   const { itemId } = route.params;
   const id = itemId;
-  const { plantEntriesContext } = useContext(GlobalContext);
-  const [plantEntries, setPlantEntries] = plantEntriesContext;
+  const [plantEntries, setPlantEntries] = useState([]);
   let num = 0;
   const [sunlight, setSunlight] = useState([false, false, false]);
   const [water, setWater] = useState([false, false, false]);
 
-  const index = findEntryIndex(id);
-
   // Execute after plant entries update and delete has been pressed
   React.useEffect(() => {
-    let tempSunlight = [false, false, false];
-    let tempWater = [false, false, false];
+    console.log(id);
 
-    for (let i = 0; i < plantEntries[index].sunlight; i++) {
-      tempSunlight[i] = true;
+    async function fetchViewEntry() {
+      const accessToken = await AsyncStorage.getItem("@storage_Key");
+      let response = await fetch(
+        "https://myflowerpower.net/protected/viewEntry",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: accessToken,
+          },
+          body: JSON.stringify({
+            plantid: id,
+          }),
+        }
+      );
+      let data = await response.json();
+      console.log(data);
+      setPlantEntries(data);
     }
 
-    for (let i = 0; i < plantEntries[index].water; i++) {
+    fetchViewEntry();
+  }, []);
+
+  React.useEffect(() => {
+    let tempWater = [false, false, false];
+    for (let i = 0; i < plantEntries.Water; i++) {
       tempWater[i] = true;
     }
 
-    setSunlight([...tempSunlight]);
     setWater([...tempWater]);
+    let tempSunlight = [false, false, false];
+
+    for (let i = 0; i < plantEntries.Sunlight; i++) {
+      tempSunlight[i] = true;
+    }
+    setSunlight([...tempSunlight]);
   }, [plantEntries]);
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      {/* Main Container */}
       <View style={styles.mainContainer}>
         <StatusBar
           barstyle="dark-content"
@@ -59,15 +81,11 @@ function ViewEntry({ navigation, route }) {
           translucent={true}
         />
 
-        {/* Secondary Container Header - Blue */}
         <View style={styles.secondaryContainerHeader}>
           <Image source={require("../assets/header.png")} />
-
-          {/* Header Container - Red */}
           <View style={styles.headerContainer}>
-            {/* Tree Image */}
             <Image
-              source={plantEntries[index].image}
+              source={{ uri: plantEntries.plantUrl }}
               style={{
                 resizeMode: "stretch",
                 height: 200,
@@ -78,7 +96,6 @@ function ViewEntry({ navigation, route }) {
           </View>
         </View>
 
-        {/* Content Container - Blue */}
         <View style={styles.contentContainer}>
           <View>
             <View>
@@ -86,17 +103,13 @@ function ViewEntry({ navigation, route }) {
                 <Text style={[styles.contentText, styles.ContentTextHeader]}>
                   Plant's Nickname:
                 </Text>
-                <Text style={styles.contentText}>
-                  {plantEntries[index].nickname}
-                </Text>
+                <Text style={styles.contentText}>{plantEntries.Nickname}</Text>
               </View>
               <View style={{ flexDirection: "row" }}>
                 <Text style={[styles.contentText, styles.ContentTextHeader]}>
                   Plant Species:{" "}
                 </Text>
-                <Text style={styles.contentText}>
-                  {plantEntries[index].species}
-                </Text>
+                <Text style={styles.contentText}>{plantEntries.Species}</Text>
               </View>
             </View>
 
@@ -105,16 +118,15 @@ function ViewEntry({ navigation, route }) {
                 Plant Classification:
               </Text>
               <View style={{ flexDirection: "row" }}>
-                {plantEntries[index].classification.map((name) => (
-                  <RoundButton key={name} name={name} />
-                ))}
+                {plantEntries.Classification &&
+                  plantEntries.Classification.map((name, idx) => (
+                    <RoundButton key={idx} name={name} />
+                  ))}
               </View>
             </View>
           </View>
 
-          {/* Weather Container */}
           <View style={{ paddingTop: 20, width: "90%" }}>
-            {/* Sunlight Set */}
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -123,65 +135,65 @@ function ViewEntry({ navigation, route }) {
                   Sunlight Needed:{" "}
                 </Text>
                 <View style={{ flexDirection: "row" }}>
-                  {sunlight.map((name) =>
-                    name == true ? (
-                      <Image
-                        key={num++}
-                        source={require("../assets/sun.png")}
-                        resizeMode="cover"
-                        style={{ width: 30, height: 30 }}
-                      />
-                    ) : (
-                      <Image
-                        key={num++}
-                        source={require("../assets/dimmedSun.png")}
-                        resizeMode="cover"
-                        style={{ width: 30, height: 30 }}
-                      />
-                    )
-                  )}
+                  {sunlight &&
+                    sunlight.map((name) =>
+                      name == true ? (
+                        <Image
+                          key={num++}
+                          source={require("../assets/sun.png")}
+                          resizeMode="cover"
+                          style={{ width: 30, height: 30 }}
+                        />
+                      ) : (
+                        <Image
+                          key={num++}
+                          source={require("../assets/dimmedSun.png")}
+                          resizeMode="cover"
+                          style={{ width: 30, height: 30 }}
+                        />
+                      )
+                    )}
                 </View>
               </View>
 
-              {/* Water Set */}
               <View>
                 <Text style={[styles.contentText, styles.ContentTextHeader]}>
                   Water Needed:
                 </Text>
                 <View style={{ flexDirection: "row" }}>
-                  {water.map((name) =>
-                    name == true ? (
-                      <Image
-                        key={num++}
-                        source={require("../assets/cloud.png")}
-                        resizeMode="stretch"
-                        style={{ width: 30, height: 24 }}
-                      />
-                    ) : (
-                      <Image
-                        key={num++}
-                        source={require("../assets/dimmedCloud.png")}
-                        resizeMode="stretch"
-                        style={{ width: 30, height: 24 }}
-                      />
-                    )
-                  )}
+                  {water &&
+                    water.map((name) =>
+                      name == true ? (
+                        <Image
+                          key={num++}
+                          source={require("../assets/cloud.png")}
+                          resizeMode="stretch"
+                          style={{ width: 30, height: 24 }}
+                        />
+                      ) : (
+                        <Image
+                          key={num++}
+                          source={require("../assets/dimmedCloud.png")}
+                          resizeMode="stretch"
+                          style={{ width: 30, height: 24 }}
+                        />
+                      )
+                    )}
                 </View>
               </View>
             </View>
           </View>
 
-          {/* Date Acquired */}
           <View style={{ flexDirection: "row", marginTop: 10 }}>
             <Text style={[styles.contentText, styles.ContentTextHeader]}>
               Date Acquired:{" "}
             </Text>
             <Text style={styles.contentText}>
-              {formatDate(plantEntries[index].date)}
+              {plantEntries.DateAcquired &&
+                formatDate(plantEntries.DateAcquired)}
             </Text>
           </View>
 
-          {/* Reminders */}
           <View style={{ marginTop: 10 }}>
             <Text
               style={[
@@ -196,37 +208,22 @@ function ViewEntry({ navigation, route }) {
               <Text style={[styles.contentText, { fontSize: 12 }]}>
                 The plant needs to be{" "}
                 <Text style={{ fontWeight: "bold" }}>watered</Text> every{" "}
-                {plantEntries[index].reminders.watered} days.
+                {plantEntries.Reminders && plantEntries.Reminders.watered} days.
               </Text>
               <Text style={[styles.contentText, { fontSize: 12 }]}>
                 The plant needs to be{" "}
                 <Text style={{ fontWeight: "bold" }}>fertilized</Text> every{" "}
-                {plantEntries[index].reminders.fertilized} days.
+                {plantEntries.Reminders && plantEntries.Reminders.fertilized}{" "}
+                days.
               </Text>
               <Text style={[styles.contentText, { fontSize: 12 }]}>
                 The plant needs to be{" "}
                 <Text style={{ fontWeight: "bold" }}>rotated</Text> every{" "}
-                {plantEntries[index].reminders.rotated} days.
-              </Text>
-              <Text style={[styles.contentText, { fontSize: 12 }]}>
-                The plant needs to be{" "}
-                <Text style={{ fontWeight: "bold" }}>pruned</Text> every{" "}
-                {plantEntries[index].reminders.prunned} days.
-              </Text>
-              <Text style={[styles.contentText, { fontSize: 12 }]}>
-                The plant needs to be{" "}
-                <Text style={{ fontWeight: "bold" }}>trimmed</Text> every{" "}
-                {plantEntries[index].reminders.trimmed} days.
-              </Text>
-              <Text style={[styles.contentText, { fontSize: 12 }]}>
-                The plant needs to be{" "}
-                <Text style={{ fontWeight: "bold" }}>replanted</Text> every{" "}
-                {plantEntries[index].reminders.replanted} days.
+                {plantEntries.Reminders && plantEntries.Reminders.rotated} days.
               </Text>
             </View>
           </View>
 
-          {/* Additional Notes Container */}
           <View style={styles.additionalNotesContainer}>
             <Text
               style={{
@@ -238,7 +235,7 @@ function ViewEntry({ navigation, route }) {
               Additional Notes:
             </Text>
             <TextInput
-              placeholder={plantEntries[index].notes}
+              placeholder={plantEntries.Notes}
               style={{
                 borderColor: "black",
                 borderWidth: 1,
@@ -254,10 +251,9 @@ function ViewEntry({ navigation, route }) {
               placeholderTextColor="black"
               numberOfLines={10}
               multiline
-              value={plantEntries[index].notes}
+              value={plantEntries.Notes}
             />
 
-            {/* Buttons */}
             <View>
               <View
                 style={{
@@ -320,55 +316,47 @@ function ViewEntry({ navigation, route }) {
             </View>
           </View>
         </View>
-        {/* <Button title = "TestButton" onPress = {() => setUsername("Dusty")} /> */}
-        {/* <Button title = "Output" onPress = {() => console.log(plantEntries)} /> */}
       </View>
     </KeyboardAwareScrollView>
   );
 
-  function findEntryIndex(id) {
-    for (let i = 0; i < plantEntries.length; i++) {
-      if (plantEntries[i].key == id) return i;
-    }
-
-    return -1;
-  }
-
   function formatDate(date) {
-    let originalDate = date;
+    if (!date) {
+      return "";
+    }
 
     let day;
     let month = -1;
     let year;
 
-    let dateArray = originalDate.split("-");
+    let dateArray = date.split("-");
 
     switch (dateArray[1].toLowerCase()) {
-      case "1":
+      case "01":
         month = "January";
         break;
-      case "2":
+      case "02":
         month = "February";
         break;
-      case "3":
+      case "03":
         month = "March";
         break;
-      case "4":
+      case "04":
         month = "April";
         break;
-      case "5":
+      case "05":
         month = "May";
         break;
-      case "6":
+      case "06":
         month = "June";
         break;
-      case "7":
+      case "07":
         month = "July";
         break;
-      case "8":
+      case "08":
         month = "August";
         break;
-      case "9":
+      case "09":
         month = "September";
         break;
       case "10":

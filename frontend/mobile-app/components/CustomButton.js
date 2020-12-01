@@ -13,15 +13,19 @@ import {
 } from "react-native";
 import Color from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function CustomButton(props) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
-      onPress={() => {
-        console.log("Going to User page!");
-        navigation.navigate(props.link);
+      onPress={async () => {
+        await props.onPress();
+        const accessToken = await AsyncStorage.getItem("@storage_Key");
+        if (accessToken) {
+          navigation.navigate(props.link);
+        }
       }}
       style={{ width: "100%", zIndex: 1 }}
     >

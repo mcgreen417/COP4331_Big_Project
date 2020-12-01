@@ -64,7 +64,7 @@ function DrawerContent(props) {
         <EmailDropdown />
         <ProblemDropDown />
         <AboutDropdown />
-        <Logout />
+        <Logout {...props} />
         <View
           style={{
             flex: 1,

@@ -15,7 +15,6 @@ import { CheckBox } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 
 function PlantReminder(props) {
-  const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const navigation = useNavigation();
 
   return (
@@ -31,7 +30,7 @@ function PlantReminder(props) {
       <View style={{ paddingVertical: 15 }}>
         <View style={{ flexDirection: "row" }}>
           <Image
-            source={props.plantImage}
+            source={{ uri: props.plantImage }}
             style={{
               borderRadius: 5,
               resizeMode: "stretch",
@@ -59,18 +58,7 @@ function PlantReminder(props) {
                   alignItems: "center",
                   paddingTop: 5,
                 }}
-              >
-                <CheckBox
-                  checked={toggleCheckBox}
-                  onPress={() => {
-                    props.onToggleCompletedTask(props.id, !toggleCheckBox);
-                    setToggleCheckBox(!toggleCheckBox);
-                  }}
-                  containerStyle={{ color: "green", padding: 0, margin: 0 }}
-                  checkedColor="green"
-                />
-                <Text>I completed this task</Text>
-              </View>
+              ></View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text style={{ paddingRight: 5 }}>View Entry Here</Text>
                 <Icon

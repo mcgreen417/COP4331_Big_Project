@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 import {
   Text,
@@ -9,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { Icon } from "react-native-elements";
 
 function PasswordDropdown() {
@@ -379,7 +381,7 @@ function AboutDropdown() {
   );
 }
 
-function Logout() {
+function Logout({ navigation }) {
   return (
     <View style={{ backgroundColor: "#4CB97A", marginTop: 20 }}>
       <View
@@ -390,8 +392,13 @@ function Logout() {
         }}
       >
         <TouchableOpacity
-          onPress={() => {
-            alert("You logged out.");
+          onPress={async () => {
+            try {
+              await AsyncStorage.removeItem("@storage_Key");
+              navigation.navigate("Login");
+            } catch (e) {
+              console.log(`Could not remove item due to: ${e}`);
+            }
           }}
         >
           <View

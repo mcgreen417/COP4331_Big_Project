@@ -19,15 +19,59 @@ import { PlantReminder } from "../components/PlantReminder";
 import { GlobalContext } from "../context/GlobalContext";
 import { ConfirmationBox } from "../components/ConfirmationBox";
 import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Home({ navigation, route }) {
   // States and Intial values
   const [checkCount, setCheckCount] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [usernameVal, setUsernameVal] = useState("");
 
   const { plantEntriesContext } = useContext(GlobalContext);
+  const { photoObjectsContext } = useContext(GlobalContext);
 
   const [plantEntries, setPlantEntries] = plantEntriesContext;
+  const [photoObjects, setPhotoObjects] = photoObjectsContext;
+
+  React.useEffect(() => {
+    async function fetchImages() {
+      const accessToken = await AsyncStorage.getItem("@storage_Key");
+      fetch("https://myflowerpower.net/protected/fetchUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: accessToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setUsernameVal(data.Username);
+          let photoObjectss = data.photoObjects.map((item, idx) => {
+            item.key = idx.toString();
+            return item;
+          });
+          setPhotoObjects(photoObjectss);
+        });
+      // .catch((_) => localStorage.clear() && this.props.history.push("/"));
+    }
+
+    async function fetchReminders() {
+      const accessToken = await AsyncStorage.getItem("@storage_Key");
+      fetch("https://myflowerpower.net/protected/fetchReminders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: accessToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setPlantEntries(data.reminders);
+        });
+    }
+    fetchImages();
+    fetchReminders();
+  }, []);
 
   // Function that updates global when check box is selected.
   // The  idea is that you modify the local global from the server
@@ -97,7 +141,8 @@ function Home({ navigation, route }) {
         <View style={styles.greetingContainer}>
           <View style={{ justifyContent: "center" }}>
             <Text style={[styles.HeaderText]}>
-              Good afternoon, {"\n"}Username!
+              Good afternoon, {"\n"}
+              {usernameVal}!
             </Text>
             <Text>
               Ready for another day of gardening? {"\n"}Let Flower Power land
@@ -113,10 +158,10 @@ function Home({ navigation, route }) {
 
         {/* Plant Info Container- Horizontal Scroll */}
         <View style={styles.plantInfoContainer}>
-          {plantEntries.length != 0 && (
+          {photoObjects.length !== 0 && (
             <Text>Check Information about your plants below!</Text>
           )}
-          {plantEntries.length == 0 ? (
+          {photoObjects.length === 0 ? (
             <View
               style={{
                 justifyContent: "center",
@@ -135,12 +180,12 @@ function Home({ navigation, route }) {
             <FlatList
               style={{ flexDirection: "row", paddingVertical: 5 }}
               horizontal={true}
-              data={plantEntries}
+              data={photoObjects}
               renderItem={(itemData) => (
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate("ViewEntry", {
-                      itemId: itemData.item.key,
+                      itemId: itemData.item.plantId,
                     });
                   }}
                 >
@@ -152,23 +197,11 @@ function Home({ navigation, route }) {
                       height: 100,
                       width: 100,
                     }}
-                    source={itemData.item.image}
+                    source={{ uri: itemData.item.url }}
                   />
                 </TouchableOpacity>
               )}
             />
-          )}
-
-          {/* Search */}
-          {plantEntries.length != 0 && (
-            <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-              <TextInput
-                style={{ textAlign: "right" }}
-                placeholder="Or click here to search for a specific plant..."
-                placeholderTextColor="black"
-              />
-              <Icon name="search" type="material" color={Color.header} />
-            </View>
           )}
         </View>
         {plantEntries.length != 0 && (
@@ -185,77 +218,17 @@ function Home({ navigation, route }) {
 
         {/* Plant Reminder Container - Vertical Scroll */}
         <View style={styles.plantReminderContainer}>
-          {plantEntries.map(
-            (name) =>
-              name.completedTask[1] == false && (
-                <PlantReminder
-                  key={name.key}
-                  plantImage={name.image}
-                  nickname={name.nickname}
-                  species={name.species}
-                  numberOfDays={name.reminders.watered}
-                  id={name.key}
-                  onToggleCompletedTask={toggleCompletedTask}
-                />
-              )
-          )}
+          {plantEntries.map((name) => (
+            <PlantReminder
+              key={name.PlantID}
+              plantImage={name.plantUrl}
+              nickname={name.Nickname}
+              species={name.Species}
+              numberOfDays={name.Reminders.watered}
+              id={name.PlantID}
+            />
+          ))}
         </View>
-
-        {plantEntries.length != 0 && (
-          <View style={{ alignItems: "center", paddingVertical: 10 }}>
-            {/* Complete Selected Button */}
-            {checkCount == 0 ? (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: Color.theme,
-                  flexDirection: "row",
-                  borderRadius: 5,
-                  alignItems: "center",
-                  width: 180,
-                  paddingVertical: 5,
-                  zIndex: 1,
-                }}
-              >
-                <Icon
-                  name="check"
-                  type="entypo"
-                  color="white"
-                  style={{ paddingLeft: 5 }}
-                />
-                <Text style={{ paddingLeft: 5, color: "white", fontSize: 16 }}>
-                  Complete Selected{" "}
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: Color.theme,
-                  flexDirection: "row",
-                  borderRadius: 5,
-                  alignItems: "center",
-                  width: 200,
-                  paddingVertical: 5,
-                  zIndex: 1,
-                }}
-                onPress={() => launchModalHandler()}
-              >
-                <Icon
-                  name="check"
-                  type="entypo"
-                  color="white"
-                  style={{ paddingLeft: 5 }}
-                />
-                <Text style={{ paddingLeft: 5, color: "white", fontSize: 16 }}>
-                  Complete Selected{" "}
-                  {checkCount > 0 && <Text>({checkCount})</Text>}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-
-        {/* <Button title = "TestButton" onPress = {() => setUsername("Dusty")} /> */}
-        {/* <Button title = "Output" onPress = {() => console.log(plantEntries)} /> */}
       </View>
     </ScrollView>
   );

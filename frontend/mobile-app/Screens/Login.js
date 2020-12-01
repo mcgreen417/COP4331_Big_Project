@@ -19,8 +19,42 @@ import { SubText } from "../components/SubText";
 import Color from "../constants/colors";
 import { CustomButton } from "../components/CustomButton";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Login({ navigation }) {
+  const [usernameVal, setUsername] = useState("");
+  const [passwordVal, setPassword] = useState("");
+
+  let login = async () => {
+    console.log("called login");
+    const response = await fetch("https://myflowerpower.net/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: usernameVal,
+        password: passwordVal,
+      }),
+    });
+    const body = await response.text();
+    if (response.status === 200) {
+      const { AccessToken } = JSON.parse(body);
+      console.log("got token and putting in storage");
+      try {
+        await AsyncStorage.setItem("@storage_Key", AccessToken);
+      } catch (e) {
+        console.log(`Error with AsyncStorage in Login ${e}`);
+      }
+      // this.props.history.push("/home");
+    } else if (response.status === 400) {
+      // TODO: Indicate not logged in
+      console.log("Unsuccessful login");
+    } else {
+      console.log("Not logged in due to incorrect input");
+    }
+  };
+
   return (
     <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Main Container - purple */}
@@ -59,6 +93,8 @@ function Login({ navigation }) {
               backgroundColor: "white",
               paddingVertical: Platform.OS === "ios" ? 10 : 0,
             }}
+            value={usernameVal}
+            onChangeText={(e) => setUsername(e)}
             placeholderTextColor="black"
           />
 
@@ -72,10 +108,11 @@ function Login({ navigation }) {
               backgroundColor: "white",
               paddingVertical: Platform.OS === "ios" ? 10 : 0,
             }}
+            value={passwordVal}
+            onChangeText={(e) => setPassword(e)}
             placeholderTextColor="black"
           />
-
-          <CustomButton label="Log in" link="HomeStack" />
+          <CustomButton label="Log in" onPress={login} link="HomeStack" />
         </View>
 
         {/* Secondary Container Footer - Blue */}
