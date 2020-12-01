@@ -77,3 +77,7 @@ hr {
 .col-photo {
   cursor: pointer;
 }
+
+.container.plants {
+  overflow-y: scroll;
+}

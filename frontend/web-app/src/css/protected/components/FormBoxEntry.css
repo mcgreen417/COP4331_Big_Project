@@ -89,8 +89,8 @@ Button {
 }
 .activated {
   width: 100px;
-  background-color: aliceblue !important;
-  border-color: #a5dfb2 !important;
+  background-color: #358b59 !important;
+  border-color: #358b59 !important;
   font-family: Roboto !important;
   font-style: normal !important;
   font-weight: normal !important;
@@ -125,4 +125,8 @@ textarea,
 .modify-left {
   margin-top: 7%;
   margin-left: 7%;
+}
+
+.close {
+  background-color: #fff !important;
 }

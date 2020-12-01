@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
 import "../css/RightBoxLogin.css";
 
@@ -10,6 +10,7 @@ class RightBoxLogin extends React.Component {
       response: "",
       username: "",
       password: "",
+      show: false,
     };
   }
 
@@ -35,6 +36,7 @@ class RightBoxLogin extends React.Component {
     } else if (response.status === 400) {
       // TODO: Indicate not logged in
       console.log("Unsuccessful login");
+      this.setState({ show: true });
     } else {
       console.log("Not logged in due to incorrect input");
     }
@@ -43,6 +45,17 @@ class RightBoxLogin extends React.Component {
   render() {
     return (
       <div className="right-text-box">
+        {this.state.show && (
+          <Alert
+            className="show-button"
+            variant="danger"
+            onClose={() => this.setState({ show: false })}
+            dismissible
+          >
+            <Alert.Heading>Invalid Username and Password!</Alert.Heading>
+            <p>You may need to register or verify your email address.</p>
+          </Alert>
+        )}
         <div className="header-text">Welcome to Flower Power</div>
         <div className="sub-text-right">
           Sign in below or create an account to get started tracking your garden

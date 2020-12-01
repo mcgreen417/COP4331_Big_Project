@@ -9,7 +9,7 @@ class LeftBoxHome extends React.Component {
   constructPlantPhotosContainer() {
     // TODO: Make this scrollable
     return (
-      <Container className="container">
+      <Container className="container plants">
         <Row>
           {this.props.plantPhotos.map((object, idx) => (
             <Col className="col-photo" key={idx} xs={6} md={4}>
