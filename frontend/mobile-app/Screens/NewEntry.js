@@ -23,6 +23,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from "expo-image-picker";
 import Constants from "expo-constants";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function NewEntry({ navigation, route }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -78,11 +79,7 @@ function NewEntry({ navigation, route }) {
 
   // End Image Picker
 
-  const { plantEntriesContext } = useContext(GlobalContext);
-
-  const [plantEntries, setPlantEntries] = plantEntriesContext;
-
-  const [toggleSubmit, setToggleSubmit] = useState(false);
+  const [toggleSubmit, setToggleSubmit] = useState({});
 
   function submitEntry() {
     let tempArray = [];
@@ -103,65 +100,44 @@ function NewEntry({ navigation, route }) {
 
     let key = (Math.floor(Math.random() * 70) + 30).toString();
 
-    setPlantEntries((currentPlants) => [
-      ...currentPlants,
-      {
-        key: key,
-        nickname: nicknameInput,
-        species: speciesInput,
-        date: convertedDate(selectedDate),
-        classification: [...tempArray],
-        image: require("../assets/grapefruit.jpg"),
-        water: water,
-        sunlight: sunlight,
-        reminders: {
-          watered: wateredInput,
-          fertilized: fertilizedInput,
-          rotated: rotatedInput,
-          prunned: prunnedInput,
-          trimmed: trimmedInput,
-          replanted: replantedInput,
-        },
-        notes: additionalNotesInput,
-        completedTask: [false, false],
-      },
-    ]);
-
-    setToggleSubmit(true);
+    setToggleSubmit({ sunlight: sunlight, water: water, tempArray: tempArray });
   }
 
-  React.useEffect(() => {
-    if (toggleSubmit) {
-      setNicknameInput("");
-      setSpeciesInput("");
-      setWateredInput("");
-      setFertilizedInput("");
-      setRotatedInput("");
-      setPrunnedInput("");
-      setTrimmedInput("");
-      setReplantedInput("");
-      setAdditionalNotesInput("");
-      setToggleSubmit(false);
-      setRoundButtons([
-        { id: 0, name: "Algae", backgroundColor: Color.theme },
-        { id: 1, name: "Flower", backgroundColor: Color.theme },
-        { id: 2, name: "Fruit", backgroundColor: Color.theme },
-        { id: 3, name: "Grass", backgroundColor: Color.theme },
-        { id: 4, name: "Herb", backgroundColor: Color.theme },
-        { id: 5, name: "Moss", backgroundColor: Color.theme },
-        { id: 6, name: "Orchid", backgroundColor: Color.theme },
-        { id: 7, name: "Root", backgroundColor: Color.theme },
-        { id: 8, name: "Shrub", backgroundColor: Color.theme },
-        { id: 9, name: "Succulent", backgroundColor: Color.theme },
-        { id: 10, name: "Tree", backgroundColor: Color.theme },
-        { id: 11, name: "Veggie", backgroundColor: Color.theme },
-        { id: 12, name: "Vine", backgroundColor: Color.theme },
-        { id: 13, name: "Other", backgroundColor: Color.theme },
-      ]);
-      setButtonSet([]);
-      setSunInput([false, false, false]);
-      setWaterInput([false, false, false]);
-    }
+  useEffect(async () => {
+    const accessToken = await AsyncStorage.getItem("@storage_Key");
+    const response = await fetch(
+      "https://myflowerpower.net/protected/newEntry",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: accessToken,
+        },
+        body: JSON.stringify({
+          plantid: "empty",
+          nickname: nicknameInput,
+          species: speciesInput,
+          sunlight: toggleSubmit.sunlight,
+          water: toggleSubmit.water,
+          notes: additionalNotesInput,
+          date: convertedDate(selectedDate),
+          classification: toggleSubmit.tempArray,
+          reminders: {
+            watered: wateredInput,
+            fertilized: fertilizedInput,
+            rotated: rotatedInput,
+            prunned: prunnedInput,
+            trimmed: trimmedInput,
+            replanted: replantedInput,
+          },
+          noPhoto: true,
+        }),
+      }
+    );
+
+    const json = await response.json();
+    console.log(json);
+    navigation.navigate("Home");
   }, [toggleSubmit]);
 
   const [roundButtons, setRoundButtons] = useState([
@@ -786,7 +762,6 @@ function NewEntry({ navigation, route }) {
                 }}
                 onPress={() => {
                   submitEntry();
-                  navigation.navigate("Home");
                 }}
               >
                 <Icon

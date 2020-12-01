@@ -105,6 +105,7 @@ class FormBoxEntry extends React.Component {
           fertilized: this.state.daysFertilized,
           rotated: this.state.daysRotated,
         },
+        noPhoto: false,
       }),
     });
 

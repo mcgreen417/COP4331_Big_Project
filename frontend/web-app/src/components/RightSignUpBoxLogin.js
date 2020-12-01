@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
 import "../css/RightSignUpBoxLogin.css";
 
@@ -11,6 +11,8 @@ class RightSignUpBoxLogin extends React.Component {
       email: "",
       password: "",
       confirmPassword: "",
+      show: false,
+      msg: "",
     };
   }
 
@@ -20,7 +22,11 @@ class RightSignUpBoxLogin extends React.Component {
     // TODO: Do checks to ensure user and email is valid input
 
     if (this.state.password !== this.state.confirmPassword) {
-      // TODO: Display issue regarding password not equal to confirm password.
+      this.setState({
+        msg: "Password and confirm password is incorrect.",
+        show: true,
+      });
+      return;
     }
 
     const response = await fetch("/api/signup", {
@@ -42,11 +48,12 @@ class RightSignUpBoxLogin extends React.Component {
         "User successfully signed up... redirect to verification code"
       );
       this.props.handleUsernameChange(this.state.username);
-    } else if (response.status === 400) {
-      // TODO: Indicate invalid code
-      console.log("????? 400 error");
     } else {
-      console.log("Password or code fields are invalid");
+      this.setState({
+        msg:
+          "Ensure your username is longer than 6 characters, and your password consists of 8 characters with alphanumeric symbols.",
+        show: true,
+      });
     }
 
     console.log(body);
@@ -55,6 +62,17 @@ class RightSignUpBoxLogin extends React.Component {
   render() {
     return (
       <div className="right-text-box">
+        {this.state.show && (
+          <Alert
+            className="show-button"
+            variant="danger"
+            onClose={() => this.setState({ show: false })}
+            dismissible
+          >
+            <Alert.Heading>Registration Failed</Alert.Heading>
+            <p>{this.state.msg}</p>
+          </Alert>
+        )}
         <div className="header-text">Welcome to Flower Power</div>
         <div className="sub-text-right">
           Sign in below or create an account to get started tracking your garden

@@ -157,77 +157,78 @@ function Home({ navigation, route }) {
         <Line />
 
         {/* Plant Info Container- Horizontal Scroll */}
-        <View style={styles.plantInfoContainer}>
-          {photoObjects.length !== 0 && (
-            <Text>Check Information about your plants below!</Text>
-          )}
-          {photoObjects.length === 0 ? (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                height: 150,
-              }}
-            >
-              <Text style={{ fontSize: 16 }}>
-                You are currently not watching any plants.
-              </Text>
-              <Text style={{ fontSize: 16 }}>
-                Click New Entry in Tab Bar to add a plant to watch.
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              style={{ flexDirection: "row", paddingVertical: 5 }}
-              horizontal={true}
-              data={photoObjects}
-              renderItem={(itemData) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("ViewEntry", {
-                      itemId: itemData.item.plantId,
-                    });
-                  }}
-                >
-                  <Image
-                    style={{
-                      borderRadius: 5,
-                      marginRight: 10,
-                      resizeMode: "stretch",
-                      height: 100,
-                      width: 100,
+        {photoObjects && (
+          <View style={styles.plantInfoContainer}>
+            {photoObjects.length !== 0 && (
+              <Text>Check Information about your plants below!</Text>
+            )}
+            {photoObjects.length === 0 ? (
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 150,
+                }}
+              >
+                <Text style={{ fontSize: 16 }}>
+                  You are currently not watching any plants.
+                </Text>
+                <Text style={{ fontSize: 16 }}>
+                  Click New Entry in Tab Bar to add a plant to watch.
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                style={{ flexDirection: "row", paddingVertical: 5 }}
+                horizontal={true}
+                data={photoObjects}
+                renderItem={(itemData) => (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("ViewEntry", {
+                        itemId: itemData.item.plantId,
+                      });
                     }}
-                    source={{ uri: itemData.item.url }}
-                  />
-                </TouchableOpacity>
-              )}
-            />
-          )}
-        </View>
-        {plantEntries.length != 0 && (
-          <View>
-            <Line />
-
-            <View style={{ paddingVertical: 10 }}>
-              <Text>
-                You have the following reminders for the following plants...
-              </Text>
-            </View>
+                  >
+                    <Image
+                      style={{
+                        borderRadius: 5,
+                        marginRight: 10,
+                        resizeMode: "stretch",
+                        height: 100,
+                        width: 100,
+                      }}
+                      source={{ uri: itemData.item.url }}
+                    />
+                  </TouchableOpacity>
+                )}
+              />
+            )}
           </View>
         )}
+        <View>
+          <Line />
+
+          <View style={{ paddingVertical: 10 }}>
+            <Text>
+              You have the following reminders for the following plants...
+            </Text>
+          </View>
+        </View>
 
         {/* Plant Reminder Container - Vertical Scroll */}
         <View style={styles.plantReminderContainer}>
-          {plantEntries.map((name) => (
-            <PlantReminder
-              key={name.PlantID}
-              plantImage={name.plantUrl}
-              nickname={name.Nickname}
-              species={name.Species}
-              numberOfDays={name.Reminders.watered}
-              id={name.PlantID}
-            />
-          ))}
+          {plantEntries &&
+            plantEntries.map((name) => (
+              <PlantReminder
+                key={name.PlantID}
+                plantImage={name.plantUrl}
+                nickname={name.Nickname}
+                species={name.Species}
+                numberOfDays={name.Reminders.watered}
+                id={name.PlantID}
+              />
+            ))}
         </View>
       </View>
     </ScrollView>

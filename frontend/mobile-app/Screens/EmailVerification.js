@@ -18,7 +18,40 @@ import { SubText } from "../components/SubText";
 import Color from "../constants/colors";
 import { CustomButton } from "../components/CustomButton";
 
-function EmailVerification({ navigation }) {
+function EmailVerification({ route, navigation }) {
+  const [verifyCode, setVerifyCode] = useState("");
+
+  async function doVerify() {
+    console.log(route.params);
+    console.log("username", route.params.username);
+    const username = route.params.username;
+    console.log(username);
+
+    const response = await fetch("https://myflowerpower.net/api/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        code: verifyCode,
+      }),
+    });
+
+    if (response.status === 200) {
+      // TODO: Indicate code was successful
+      console.log("Password Successfully Changed");
+      navigation.navigate("Home");
+    } else if (response.status === 400) {
+      // TODO: Indicate invalid code
+      this.setState({ enableAlert: true });
+      console.log("Wrong code");
+    } else {
+      // TODO: Indicate code is incorrect
+      console.log("Code field is invalid");
+    }
+  }
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Main Container - purple */}
@@ -57,9 +90,11 @@ function EmailVerification({ navigation }) {
               backgroundColor: "white",
             }}
             placeholderTextColor="black"
+            value={verifyCode}
+            onChangeText={(e) => setVerifyCode(e)}
           />
 
-          <CustomButton label="VERIFY" link="Home" />
+          <CustomButton label="VERIFY" onPress={() => doVerify()} link="Home" />
         </View>
 
         {/* Secondary Container Footer - Blue */}

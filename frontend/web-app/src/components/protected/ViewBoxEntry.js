@@ -209,7 +209,7 @@ class ViewBoxEntry extends React.Component {
               Close
             </Button>
             <Button variant="primary" onClick={() => this.deleteEntry()}>
-              Understood
+              Delete
             </Button>
           </Modal.Footer>
         </Modal>

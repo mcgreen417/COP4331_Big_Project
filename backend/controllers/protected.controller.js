@@ -238,12 +238,17 @@ class ProtectedController {
       date,
       classification,
       reminders,
+      noPhoto,
     } = req.body;
+
+    if (noPhoto) {
+      plantid = uuidv4();
+    }
 
     let saveEntry = (json) => {
       const userid = json.UserAttributes[0].Value;
       if (!userid) {
-        throw `User's ID Token is invalid with subId: ${subId}`;
+        throw `User's ID Token is invalid with userid: ${userid}`;
       }
       const params = {
         TableName: "Plants",

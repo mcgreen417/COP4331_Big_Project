@@ -22,6 +22,46 @@ import { CustomButton } from "../components/CustomButton";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 function Register({ navigation }) {
+  const [usernameVal, setUsername] = useState("");
+  const [emailVal, setEmail] = useState("");
+  const [passwordVal, setPassword] = useState("");
+  const [confirmVal, setConfirm] = useState("");
+
+  async function doSignup() {
+    console.log("executed");
+    if (passwordVal !== confirmVal) {
+      // TODO: Show error
+      return;
+    }
+    const response = await fetch("https://myflowerpower.net/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: usernameVal,
+        email: emailVal,
+        password: passwordVal,
+      }),
+    });
+    const body = await response.text();
+
+    if (response.status === 200) {
+      // TODO: Indicate successfully logged in
+      console.log(
+        "User successfully signed up... redirect to verification code"
+      );
+      navigation.navigate("EmailVerification", { username: usernameVal });
+    } else if (response.status === 400) {
+      // TODO: Indicate invalid code
+      console.log("????? 400 error");
+    } else {
+      console.log("Password or code fields are invalid");
+    }
+
+    console.log(body);
+  }
+
   return (
     <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/*// Main Container - purple */}
@@ -61,6 +101,8 @@ function Register({ navigation }) {
               paddingVertical: Platform.OS === "ios" ? 10 : 3,
             }}
             placeholderTextColor="black"
+            value={usernameVal}
+            onChangeText={(e) => setUsername(e)}
           />
 
           <TextInput
@@ -74,6 +116,8 @@ function Register({ navigation }) {
               paddingVertical: Platform.OS === "ios" ? 10 : 3,
             }}
             placeholderTextColor="black"
+            value={emailVal}
+            onChangeText={(e) => setEmail(e)}
           />
 
           <TextInput
@@ -87,6 +131,8 @@ function Register({ navigation }) {
               paddingVertical: Platform.OS === "ios" ? 10 : 3,
             }}
             placeholderTextColor="black"
+            value={passwordVal}
+            onChangeText={(e) => setPassword(e)}
           />
 
           <TextInput
@@ -100,9 +146,15 @@ function Register({ navigation }) {
               paddingVertical: Platform.OS === "ios" ? 10 : 3,
             }}
             placeholderTextColor="black"
+            value={confirmVal}
+            onChangeText={(e) => setConfirm(e)}
           />
 
-          <CustomButton label="SIGN UP" link="EmailVerification" />
+          <CustomButton
+            label="SIGN UP"
+            onPress={() => doSignup()}
+            link="EmailVerification"
+          />
         </View>
 
         {/* Secondary Container Footer - Blue */}

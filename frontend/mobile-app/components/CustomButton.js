@@ -21,10 +21,15 @@ function CustomButton(props) {
   return (
     <TouchableOpacity
       onPress={async () => {
-        await props.onPress();
-        const accessToken = await AsyncStorage.getItem("@storage_Key");
-        if (accessToken) {
-          navigation.navigate(props.link);
+        if (props.link === "EmailVerification" || props.link === "Home") {
+          await props.onPress();
+          return;
+        } else {
+          await props.onPress();
+          const accessToken = await AsyncStorage.getItem("@storage_Key");
+          if (accessToken) {
+            navigation.navigate(props.link);
+          }
         }
       }}
       style={{ width: "100%", zIndex: 1 }}
