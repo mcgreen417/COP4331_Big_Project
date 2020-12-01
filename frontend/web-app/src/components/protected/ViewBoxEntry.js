@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Container, Row, Col, Button } from "react-bootstrap";
+import { Form, Container, Row, Col, Button, Modal } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 
 import "../../css/protected/components/FormBoxEntry.css";
@@ -21,6 +21,7 @@ class ViewBoxEntry extends React.Component {
       water: 0,
       sunlight: 0,
       classifications: [],
+      show: false,
     };
   }
 
@@ -185,9 +186,33 @@ class ViewBoxEntry extends React.Component {
             src={deleteButton}
             width={300}
             height={64}
-            onClick={() => this.deleteEntry()}
+            onClick={() => this.setState({ show: true })}
           />
         </div>
+        <Modal
+          show={this.state.show}
+          onHide={() => this.setState({ show: false })}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Delete Confirmation</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Are you sure you want to delete this plant entry?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => this.setState({ show: false })}
+            >
+              Close
+            </Button>
+            <Button variant="primary" onClick={() => this.deleteEntry()}>
+              Understood
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </>
     );
   }

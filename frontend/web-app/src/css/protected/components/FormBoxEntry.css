@@ -126,3 +126,7 @@ textarea,
   margin-top: 7%;
   margin-left: 7%;
 }
+
+.close {
+  background-color: #fff !important;
+}
