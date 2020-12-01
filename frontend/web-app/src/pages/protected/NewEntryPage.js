@@ -5,6 +5,7 @@ import Header from "../../components/Header";
 import "../../css/protected/pages/NewEntryPage.css";
 import Uploadbutton from "../../images/uploadButton.png";
 import FormBoxEntry from "../../components/protected/FormBoxEntry";
+import { withRouter } from "react-router-dom";
 
 class NewEntryPage extends React.Component {
   constructor(props) {
@@ -68,4 +69,4 @@ class NewEntryPage extends React.Component {
   }
 }
 
-export default NewEntryPage;
+export default withRouter(NewEntryPage);

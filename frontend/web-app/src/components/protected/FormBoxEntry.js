@@ -5,6 +5,7 @@ import createEntryButton from "../../images/create-entry-button.png";
 import cancelButton from "../../images/cancel-button.png";
 import "../../css/protected/components/FormBoxEntry.css";
 import ImageSetEntry from "./ImageSetEntry";
+import { withRouter } from "react-router-dom";
 
 class FormBoxEntry extends React.Component {
   constructor(props) {
@@ -108,7 +109,7 @@ class FormBoxEntry extends React.Component {
     });
 
     const json = await response.json();
-    console.log(json);
+    this.props.history.push("/");
   };
 
   render() {
@@ -331,4 +332,4 @@ class FormBoxEntry extends React.Component {
   }
 }
 
-export default FormBoxEntry;
+export default withRouter(FormBoxEntry);
