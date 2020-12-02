@@ -33,12 +33,10 @@ class RightBoxLogin extends React.Component {
       localStorage.refreshToken = RefreshToken;
       localStorage.idToken = IdToken;
       this.props.history.push("/home");
-    } else if (response.status === 400) {
+    } else {
       // TODO: Indicate not logged in
       console.log("Unsuccessful login");
       this.setState({ show: true });
-    } else {
-      console.log("Not logged in due to incorrect input");
     }
   };
 

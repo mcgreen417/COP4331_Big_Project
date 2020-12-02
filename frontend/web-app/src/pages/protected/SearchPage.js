@@ -74,6 +74,10 @@ class SearchPage extends React.Component {
 
   doSearch(e) {
     e.preventDefault();
+    if (!this.state.searchValue) {
+      return;
+    }
+
     fetch("/protected/searchEntry", {
       method: "POST",
       headers: {
@@ -111,7 +115,6 @@ class SearchPage extends React.Component {
               onChange={(e) => this.setState({ searchValue: e.target.value })}
             />
           </Form.Group>
-
           <Button
             className="search-button"
             variant="primary"

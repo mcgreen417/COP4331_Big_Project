@@ -21,6 +21,7 @@ class FormBoxEntry extends React.Component {
       beenClicked: [0, 0, 0, 0, 0, 0, 0],
       water: 0,
       sunlight: 0,
+      notes: "",
     };
 
     this.updateSunlight = this.updateSunlight.bind(this);
@@ -94,10 +95,10 @@ class FormBoxEntry extends React.Component {
       body: JSON.stringify({
         plantid: plantId,
         nickname: this.state.nickname,
-        species: this.state.nickname,
+        species: this.state.species,
         sunlight: this.state.sunlight,
         water: this.state.water,
-        notes: "",
+        notes: this.state.notes,
         date: this.state.dateAcquired,
         classification: this.classificationArray(),
         reminders: {
@@ -302,6 +303,22 @@ class FormBoxEntry extends React.Component {
               </Button>{" "}
             </Col>
           </Row>
+          <Form.Group
+            className="form-box-group"
+            controlId="exampleForm.ControlTextarea1"
+          >
+            <Form.Label className="text-label">Notes</Form.Label>
+            <Form.Control
+              className="text-control"
+              as="textarea"
+              rows={3}
+              placeholder={
+                "Write any additional notes you'd like to keep about your plant here."
+              }
+              value={this.state.notes}
+              onChange={(e) => this.setState({ notes: e.target.value })}
+            />
+          </Form.Group>
         </Container>
         <ImageSetEntry
           updateSunlight={this.updateSunlight}

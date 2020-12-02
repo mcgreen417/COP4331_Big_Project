@@ -21,6 +21,7 @@ class FormBoxModify extends React.Component {
       daysRotated,
       water,
       sunlight,
+      notes,
     } = this.props.location.state;
     this.state = {
       plantId: plantId,
@@ -34,6 +35,7 @@ class FormBoxModify extends React.Component {
       beenClicked: [0, 0, 0, 0, 0, 0, 0],
       water: water,
       sunlight: sunlight,
+      notes: notes,
     };
 
     this.updateSunlight = this.updateSunlight.bind(this);
@@ -104,7 +106,7 @@ class FormBoxModify extends React.Component {
         species: this.state.species,
         sunlight: this.state.sunlight,
         water: this.state.water,
-        notes: "",
+        notes: this.state.notes,
         date: this.state.dateAcquired,
         classification: this.classificationArray(),
         reminders: {
@@ -116,7 +118,11 @@ class FormBoxModify extends React.Component {
     });
 
     const json = await response.json();
-    console.log(json);
+    if (response.status === 200) {
+      this.props.history.push("/home");
+    } else {
+      console.log("Unsuccessful update");
+    }
   };
 
   render() {
@@ -314,6 +320,17 @@ class FormBoxModify extends React.Component {
               </Button>{" "}
             </Col>
           </Row>
+          <Form.Group controlId="exampleForm.ControlTextarea1">
+            <Form.Label className="text-label">Notes</Form.Label>
+            <Form.Control
+              className="text-control"
+              as="textarea"
+              rows={3}
+              placeholder={this.props.location.state.notes}
+              value={this.state.notes}
+              onChange={(e) => this.setState({ notes: e.target.value })}
+            />
+          </Form.Group>
         </Container>
         <ImageSetEntry
           updateSunlight={this.updateSunlight}

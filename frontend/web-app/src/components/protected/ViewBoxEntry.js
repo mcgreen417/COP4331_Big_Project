@@ -22,6 +22,7 @@ class ViewBoxEntry extends React.Component {
       sunlight: 0,
       classifications: [],
       show: false,
+      notes: "",
     };
   }
 
@@ -47,17 +48,40 @@ class ViewBoxEntry extends React.Component {
         this.props.setPlantUrl(data.plantUrl);
         this.setState({
           plantUrl: data.plantUrl,
+          notes: data.Notes,
           nickname: data.Nickname,
           species: data.Species,
           dateAcquired: data.DateAcquired,
           water: data.Water,
           sunlight: data.Sunlight,
-          daysWatered: data.Reminders.watered || 0,
-          daysFertilized: data.Reminders.fertilized || 0,
-          daysRotated: data.Reminders.rotated || 0,
+          daysWatered: this.getWater(data.Reminders) || 0,
+          daysFertilized: this.getFertilized(data.Reminders) || 0,
+          daysRotated: this.getRotated(data.Reminders) || 0,
           classifications: data.Classification,
         });
       });
+  }
+
+  getWater(data) {
+    if (typeof data === "undefined" || data === null) {
+      return 0;
+    } else {
+      return data.water;
+    }
+  }
+  getFertilized(data) {
+    if (typeof data === "undefined" || data === null) {
+      return 0;
+    } else {
+      return data.fertilized;
+    }
+  }
+  getRotated(data) {
+    if (typeof data === "undefined" || data === null) {
+      return 0;
+    } else {
+      return data.rotated;
+    }
   }
 
   generateClassification() {
@@ -81,6 +105,7 @@ class ViewBoxEntry extends React.Component {
         daysFertilized: this.state.daysFertilized,
         water: this.state.water,
         sunlight: this.state.sunlight,
+        notes: this.state.notes,
       },
     });
   }
@@ -163,6 +188,19 @@ class ViewBoxEntry extends React.Component {
           <h1 className="form-label">Plant Classification</h1>
           <br />
           <Row>{this.generateClassification()}</Row>
+          <Form.Group
+            className="view-group"
+            controlId="exampleForm.ControlTextarea1"
+          >
+            <Form.Label className="text-label">Notes</Form.Label>
+            <Form.Control
+              className="text-control"
+              as="textarea"
+              rows={3}
+              placeholder={this.state.notes}
+              readOnly
+            />
+          </Form.Group>
         </Container>
         <br />
         <ImageSetEntryView

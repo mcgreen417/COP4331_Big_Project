@@ -26,6 +26,7 @@ class RightBoxHome extends React.Component {
       .then((data) => {
         if (data.reminders) {
           this.setState({ reminders: data.reminders });
+          console.log(data.reminders);
         }
       });
   }

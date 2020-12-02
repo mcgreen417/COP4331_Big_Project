@@ -304,7 +304,7 @@ class ProtectedController {
         Item: {
           PlantID: plantid,
           UserID: userid,
-          Nickname: nickname.toLowerCase(),
+          Nickname: nickname,
           Species: species,
           Sunlight: sunlight,
           Water: water,
@@ -382,7 +382,7 @@ class ProtectedController {
         UpdateExpression:
           "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
         ExpressionAttributeValues: {
-          ":thisNick": nickname.toLowerCase(),
+          ":thisNick": nickname,
           ":thisSpecies": species,
           ":thisClass": classification,
           ":thisSunlight": sunlight,
@@ -402,7 +402,7 @@ class ProtectedController {
           console.log(" Successfully Updated Item ");
           var ret = {
             PlantID: plantid,
-            Nickname: nickname.toLowerCase(),
+            Nickname: nickname,
             Species: species,
             Sunlight: sunlight,
             Water: water,
@@ -594,7 +594,7 @@ class ProtectedController {
           body("sunlight").notEmpty().isNumeric().isIn([1, 2, 3]),
           body("water").notEmpty().isNumeric().isIn([1, 2, 3]),
           body("date").notEmpty().isISO8601(),
-          body("classification").notEmpty().isArray(),
+          body("classification").isArray(),
           body("reminders").notEmpty(),
         ];
       case "deleteEntry":

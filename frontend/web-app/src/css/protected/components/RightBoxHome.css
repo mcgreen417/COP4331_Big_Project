@@ -50,6 +50,8 @@
 .right-box {
   width: 50%;
   float: right;
+  overflow-y: auto;
+  height: 800px;
 }
 
 u {

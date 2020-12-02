@@ -130,3 +130,21 @@ textarea,
 .close {
   background-color: #fff !important;
 }
+
+.text-control {
+  float: none !important;
+}
+
+.text-label {
+  margin-top: 7%;
+}
+
+.form-box-group {
+  margin-top: 200px;
+  width: 75%;
+  position: absolute;
+}
+
+.view-group {
+  margin-top: 2%;
+}
