@@ -382,7 +382,7 @@ class ProtectedController {
         UpdateExpression:
           "SET Nickname = :thisNick, Species = :thisSpecies, Sunlight = :thisSunlight, Water = :thisWater, Notes = :thisNotes, DateAcquired = :thisDate, Classification = :thisClass, Reminders = :thisReminders",
         ExpressionAttributeValues: {
-          ":thisNick": nickname,
+          ":thisNick": nickname.toLowerCase(),
           ":thisSpecies": species,
           ":thisClass": classification,
           ":thisSunlight": sunlight,
