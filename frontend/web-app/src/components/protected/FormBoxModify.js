@@ -219,7 +219,10 @@ class FormBoxModify extends React.Component {
         </div>
 
         <Container className="another-container">
-          <h1 className="form-label">Plant Classification</h1>
+          <h1 className="form-label">
+            Plant Classification{" "}
+            <span className="lower-span">(Select up to 3.)</span>
+          </h1>
           <br />
           <Row>
             <Col xs>

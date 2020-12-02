@@ -85,11 +85,17 @@ class ImageSetEntryView extends React.Component {
     return (
       <>
         <div className="image-set-sun">
-          <h1 className="sun-label">Sunlight Needed</h1>
+          <h1 className="sun-label">
+            <u>Sunlight Needed</u>
+          </h1>
+          <br />
           {this.changeSunlight()}
         </div>
         <div className="image-set-cloud">
-          <h1 className="water-label">Water Needed</h1>
+          <h1 className="water-label">
+            <u>Water Needed</u>
+          </h1>
+          <br />
           {this.changeWater()}
         </div>
       </>

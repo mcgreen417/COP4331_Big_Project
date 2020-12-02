@@ -185,14 +185,20 @@ class ViewBoxEntry extends React.Component {
         </Form>
 
         <Container className="another-container">
-          <h1 className="form-label">Plant Classification</h1>
+          <h1 className="form-label">
+            <u>Plant Classification</u>
+          </h1>
           <br />
           <Row>{this.generateClassification()}</Row>
           <Form.Group
             className="view-group"
             controlId="exampleForm.ControlTextarea1"
           >
-            <Form.Label className="text-label">Notes</Form.Label>
+            <Form.Label className="text-label">
+              <u>Notes</u>
+            </Form.Label>
+            <br />
+            <br />
             <Form.Control
               className="text-control"
               as="textarea"

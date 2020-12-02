@@ -38,52 +38,64 @@ class RightBoxHome extends React.Component {
     });
   }
 
+  isEmpty(item) {
+    return (
+      item.Reminders.watered != 0 ||
+      item.Reminders.fertilized != 0 ||
+      item.Reminders.rotated != 0
+    );
+  }
+
   generateReminders() {
     return (
       <>
         {this.state.reminders.map((item, idx) => (
           <div key={idx}>
-            <img
-              className="image-reminder"
-              alt="Cute plant on home page"
-              src={item.plantUrl}
-            />
-            <div className="paragraphs">
-              <p>
-                <u>Nickname:</u> {item.Nickname}
-              </p>
-              <p>
-                <u>Species:</u> {item.Species}
-              </p>
-              <p>
-                <u>Reminder:</u>{" "}
-                {item.Reminders.watered !== 0 && (
-                  <>
-                    {" "}
-                    water in <b>{item.Reminders.watered} days,</b>
-                  </>
-                )}
-                {item.Reminders.fertilized !== 0 && (
-                  <>
-                    {" "}
-                    fertilize in <b>{item.Reminders.fertilized} days,</b>
-                  </>
-                )}
-                {item.Reminders.rotated !== 0 && (
-                  <>
-                    {" "}
-                    rotate in <b>{item.Reminders.rotated} days,</b>
-                  </>
-                )}
-              </p>
-              <p
-                className="click-here"
-                onClick={() => this.viewEntryWithPlantId(item.PlantID)}
-              >
-                Click here to view entry
-              </p>
-            </div>
-            <div className="sequent-line"></div>
+            {this.isEmpty(item) && (
+              <>
+                <img
+                  className="image-reminder"
+                  alt="Cute plant on home page"
+                  src={item.plantUrl}
+                />
+                <div className="paragraphs">
+                  <p>
+                    <u>Nickname:</u> {item.Nickname}
+                  </p>
+                  <p>
+                    <u>Species:</u> {item.Species}
+                  </p>
+                  <p>
+                    <u>Reminder:</u>{" "}
+                    {item.Reminders.watered != 0 && (
+                      <>
+                        {" "}
+                        water in <b>{item.Reminders.watered} days,</b>
+                      </>
+                    )}
+                    {item.Reminders.fertilized != 0 && (
+                      <>
+                        {" "}
+                        fertilize in <b>{item.Reminders.fertilized} days,</b>
+                      </>
+                    )}
+                    {item.Reminders.rotated != 0 && (
+                      <>
+                        {" "}
+                        rotate in <b>{item.Reminders.rotated} days,</b>
+                      </>
+                    )}
+                  </p>
+                  <p
+                    className="click-here"
+                    onClick={() => this.viewEntryWithPlantId(item.PlantID)}
+                  >
+                    Click here to view entry
+                  </p>
+                </div>
+                <div className="sequent-line"></div>
+              </>
+            )}
           </div>
         ))}
       </>
