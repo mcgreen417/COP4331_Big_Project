@@ -21,6 +21,8 @@ class CenterFormBoxLogin extends React.Component {
       confirmPassword: "",
       stage: props.stage || 0,
       enableAlert: false,
+      header: "",
+      message: "",
     };
   }
 
@@ -42,11 +44,12 @@ class CenterFormBoxLogin extends React.Component {
       // TODO: Indicate successfully logged in
       console.log("Username successfully found");
       this.setState({ stage: 1 });
-    } else if (response.status === 400) {
-      // TODO: Indicate not logged in
-      console.log("Username not found");
     } else {
-      console.log("Incorrect input for username field");
+      this.setState({
+        enableAlert: true,
+        header: "Invalid Input Field",
+        message: "The username could not be found.",
+      });
     }
 
     console.log(body);
@@ -58,8 +61,12 @@ class CenterFormBoxLogin extends React.Component {
     // TODO: Do checks to ensure user and email is valid input
 
     if (this.state.password !== this.state.confirmPassword) {
-      console.log("password !== confirmPassword");
-      // TODO: Display issue regarding password not equal to confirm password.
+      this.setState({
+        enableAlert: true,
+        header: "Invalid Input Field",
+        message: "The Password and Confirm Password fields are incorrect.",
+      });
+      return;
     }
 
     const response = await fetch("/api/confirm-password", {
@@ -77,10 +84,9 @@ class CenterFormBoxLogin extends React.Component {
     const body = await response.text();
 
     if (response.status === 200) {
-      // TODO: Indicate successfully logged in
       console.log("Password Successfully Changed");
+      this.props.history.push("/");
     } else if (response.status === 400) {
-      // TODO: Indicate invalid code
       console.log("Wrong code");
     } else {
       console.log("Password or code fields are invalid");
@@ -118,7 +124,12 @@ class CenterFormBoxLogin extends React.Component {
       this.props.history.push("/");
     } else if (response.status === 400) {
       // TODO: Indicate invalid code
-      this.setState({ enableAlert: true });
+      this.setState({
+        enableAlert: true,
+        header: "Account Creation Unsuccessful",
+        message:
+          "You may have another account with the same email address, or your verification code is incorrect.",
+      });
       console.log("Wrong code");
     } else {
       // TODO: Indicate code is incorrect
@@ -135,11 +146,8 @@ class CenterFormBoxLogin extends React.Component {
             onClose={() => this.setState({ enableAlert: false })}
             dismissible
           >
-            <Alert.Heading>Account Creation Unsuccessful</Alert.Heading>
-            <p>
-              You may have another account with the same email address, or your
-              verification code is incorrect.
-            </p>
+            <Alert.Heading>{this.state.header}</Alert.Heading>
+            <p>{this.state.message}</p>
           </Alert>
         )}
         <div className="header-text">Welcome to Flower Power</div>
