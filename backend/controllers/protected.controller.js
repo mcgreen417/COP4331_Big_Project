@@ -304,7 +304,7 @@ class ProtectedController {
         Item: {
           PlantID: plantid,
           UserID: userid,
-          Nickname: nickname,
+          Nickname: nickname.toLowerCase(),
           Species: species,
           Sunlight: sunlight,
           Water: water,
@@ -402,7 +402,7 @@ class ProtectedController {
           console.log(" Successfully Updated Item ");
           var ret = {
             PlantID: plantid,
-            Nickname: nickname,
+            Nickname: nickname.toLowerCase(),
             Species: species,
             Sunlight: sunlight,
             Water: water,
