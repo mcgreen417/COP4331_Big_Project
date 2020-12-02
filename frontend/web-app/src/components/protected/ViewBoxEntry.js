@@ -66,7 +66,7 @@ class ViewBoxEntry extends React.Component {
     if (typeof data === "undefined" || data === null) {
       return 0;
     } else {
-      return data.water;
+      return data.watered;
     }
   }
   getFertilized(data) {
