@@ -8,6 +8,7 @@ import Color from '../constants/colors'
 import {CustomButton} from '../components/CustomButton'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
+// Test comment
 function Login({navigation}) 
 {
   return(
